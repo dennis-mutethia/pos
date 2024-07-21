@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, current_app, flash
-from flask_login import LoginManager, UserMixin, current_user, login_user, logout_user, login_required
-import sqlite3, secrets, hashlib
+from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_login import LoginManager, login_user, logout_user, login_required
+import secrets
 
 from utils.db import Db
 
@@ -10,156 +10,59 @@ app.secret_key = secret_key
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.app_context().push()
-
-class User(UserMixin):
-    def __init__(self, id, username, password):
-        self.id = id
-        self.username = username
-        self.password = password
-
-class Website:
-    def __init__(self, id, user_id, name, url):
-        self.id = id
-        self.user_id = user_id
-        self.name = name
-        self.url = url
-
-def get_user_by_id(user_id):
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM users WHERE id = {}'.format(int(user_id)))
-    user_data = cursor.fetchone()
-    conn.close()
-    if user_data:
-        return User(user_data[0], user_data[1], user_data[2])
-    else:
-        return None
-
-def get_user_by_username(username):
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users WHERE username = ?", (username))
-    user_data = cursor.fetchone()
-    conn.close()
-    if user_data:
-        return User(user_data[0], user_data[1], user_data[2])
-    else:
-        return None
-    
-def save_user(username, password):
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-    cursor.execute(f'INSERT INTO users(username, password) VALUES(?, ?)', (username, password))
-    conn.commit()
-    conn.close()  
-    
-def hash_password(password):
-   password_bytes = password.encode('utf-8')
-   hash_object = hashlib.sha256(password_bytes)
-   return hash_object.hexdigest()
-    
-def authenticate_user(username, password):
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()    
-    cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
-    user_data = cursor.fetchone()
-    conn.close()
-    if user_data:
-        return User(user_data[0], user_data[1], user_data[2])
-    else:
-        return None
-
-def save_website(name, url):
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-    cursor.execute(f'INSERT INTO websites(user_id, name, url) VALUES(?, ?, ?)', (current_user.id, url, name))
-    conn.commit()
-    conn.close()  
-
-def get_user_website_by_name_url(name, url):
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()    
-    cursor.execute("SELECT * FROM websites WHERE user_id = ? AND (name = ? OR url = ?)", (current_user.id, name, url))
-    website_data = cursor.fetchone()
-    conn.close()
-    if website_data:
-        return Website(website_data[0], website_data[1], website_data[2], website_data[3])
-    else:
-        return None
-
-def get_user_websites():
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()    
-    cursor.execute("SELECT * FROM websites WHERE user_id = ?", (current_user.id,))
-    websites_data = cursor.fetchall()
-    conn.close()
-    user_websites = []
-    for website_data in websites_data:
-        user_websites.append(Website(website_data[0], website_data[1], website_data[2], website_data[3]))
-        
-    return user_websites 
-
-def delete_website(website_id):
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-    cursor.execute(f'DELETE FROM websites WHERE id = ?', (website_id,))
-    conn.commit()
-    conn.close()  
-                    
+Db().create_base_tables()
+         
 # Callback to reload the user object
 @login_manager.user_loader
 def load_user(user_id):
-    return get_user_by_id(user_id)
+    return Db().get_user_by_id(user_id)
 
 # Routes
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-
-    # TODO 1: Implement the user registration.
-
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        confirm_password = request.form['confirm_password']
-        
-        if password == confirm_password:
-            hashed_password = hash_password(password)
-            
-            if get_user_by_username(username) is None: 
-                save_user(username, hashed_password)               
-                flash('Registration Successful! Proceed to Login', 'success')
-                return redirect(url_for('login'))
-            else: 
-                flash('Registration failed! Username already exists.', 'danger') 
-                
-        else: 
-            flash('Registration failed! Passwords do not match.', 'danger')
-    
-    return render_template('register.html')
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-
-    # TODO 2: Implement the user login.
+    shop_types = Db().fetch_shop_types()
 
     error = None
-    if request.method == 'POST':       
-        username = request.form['username']
-        password = request.form['password']        
-        hashed_password = hash_password(password)
-        user = authenticate_user(username, hashed_password)
-        
-        if user: 
+    if request.method == 'POST':
+        if request.form['action'] == 'login':
+            phone = request.form['phone']
+            password = request.form['password']   
+            user = Db().authenticate_user(phone, password)
+            
+            if user: 
+                login_user(user)
+                return redirect(url_for('dashboard'))
+            else: 
+                error = 'Login failed! Phone & Password do not match or Phone does not exist.'
+                
+        if request.form['action'] == 'register':
+            company_name = request.form['company_name']
+            shop_name = request.form['shop_name']  
+            shop_type_id = request.form['shop_type_id']
+            shop_location = request.form['shop_location'] 
+            user_name = request.form['user_name']    
+            user_phone = request.form['user_phone']
+            user_password = request.form['user_password'] 
+            
+            package = Db().get_package_by_id(1)
+            payment_id = Db().save_payment(0, 0, 4)
+            license_id = Db().save_license(package, payment_id)
+            company_id = Db().save_company(company_name, license_id)
+            shop_id = Db().save_shop(shop_name, shop_type_id, company_id, shop_location)
+            user = Db().get_user_by_phone(user_phone)
+            if user is None:
+                user_id = Db().save_user(user_name, user_phone, 1, shop_id, user_password)
+                user = Db().get_user_by_id(user_id)
+                
             login_user(user)
+            print(user.shop.name)
             return redirect(url_for('dashboard'))
-        else: 
-            error = 'Login failed! Username & Password do not match or Username does not exist.'
 
-    return render_template('login.html', error=error)
+    return render_template('login.html', shop_types=shop_types, error=error)
 
 @app.route('/logout')
 @login_required
@@ -197,5 +100,4 @@ def delete(website_id):
     return redirect(url_for("dashboard"))
 
 if __name__ == '__main__':
-    Db()
     app.run(debug=True)

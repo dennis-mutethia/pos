@@ -1,0 +1,17 @@
+{
+    "name": "SOCCER-PREDICTIONS",
+    "dockerFile": "Dockerfile",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-azuretools.vscode-docker",
+                "github.vscode-github-actions",
+                "ms-python.pylint",
+                "mechatroner.rainbow-csv"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux#": "/bin/bash"
+            }
+        }
+    }
+}

@@ -65,7 +65,7 @@ def login():
             login_user(user)
             return redirect(url_for('dashboard'))
 
-    return render_template('login.html', shop_types=shop_types, error=error)
+    return render_template('login.html', shop=None, shop_types=shop_types, error=error)
 
 @app.route('/logout')
 @login_required

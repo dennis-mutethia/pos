@@ -71,19 +71,20 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    shop = db.get_shop_by_id(current_user.shop_id)  
-    print(current_user.shop_id)
+    shop = db.get_shop_by_id(current_user.shop_id) 
+    company = db.get_company_by_id(shop.company_id)
+    license = db.get_license_id(company.license_id)
     
     if request.method == 'POST':       
         website_name = request.form['website_name']
         website_url = request.form['website_url']  
     
-    return render_template('dashboard.html', shop=shop)
+    return render_template('dashboard.html', shop=shop, company=company, license=license, page_title='Dashboard')
 
 @app.route('/dashboard/<int:website_id>/delete', methods=['POST'])
 @login_required

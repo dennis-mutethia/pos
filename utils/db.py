@@ -4,7 +4,7 @@ from flask_login import current_user
 from dotenv import load_dotenv
 from psycopg2 import OperationalError
 
-from utils.entities import Company, Package, Shop, ShopType, User
+from utils.entities import Company, License, Package, Shop, ShopType, User
 
 class Db():
     def __init__(self):
@@ -142,7 +142,7 @@ class Db():
             """
             cursor.execute(query, (str(key), package.id, payment_id, f'+{package.validity} DAYS'))
             self.conn.commit()
-            license_id = cursor.lastrowid
+            license_id = cursor.fetchone()[0]
             return license_id
     
     def save_company(self, name, license_id):
@@ -169,7 +169,7 @@ class Db():
             shop_id = cursor.fetchone()[0]
             return shop_id
     
-    def delete_website(website_id):
+    def delete_website(self, website_id):
         self.ensure_connection()
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
@@ -181,14 +181,14 @@ class Db():
         self.ensure_connection()
         with self.conn.cursor() as cursor:
             query = """
-            SELECT id, key, package_id, expires_at
+            SELECT id, key, package_id, expires_at, expires_at > NOW() as is_valid
             FROM licenses 
             WHERE id = %s 
             """
             cursor.execute(query, (id,))
             data = cursor.fetchone()
             if data:
-                return Company(data[0], data[1], data[2], data[3])
+                return License(data[0], data[1], data[2], data[3], data[4])
             else:
                 return None    
       

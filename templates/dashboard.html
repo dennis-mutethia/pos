@@ -1,12 +1,247 @@
-<!DOCTYPE html>
-<html dir="ltr" lang="en">
-    {% include 'head.html' %}
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- ============================================================== -->
+<!-- Container fluid  -->
+<!-- ============================================================== -->
+<div class="container-fluid table-responsive">
+    <form id="filter-frm" method="POST" class="row">
+        <div class="col-6 text-right">
+            <label class="text-white">ON THIS DATE (filter)</label>
+        </div>
+        <div class="col-6">
+            <input onchange="applyFilter()" style="height: 25px" type="date" id="to" name="to" required="required"
+                value="<?php echo $to; ?>" />
+        </div>
+    </form>
+
+    <!-- dash -->
+    <div class="row">
+        <a class="col-4 mt-3" href="pos-bills">
+            <div class="bg-dark p-10 text-white text-center">
+                <i class="mdi mdi-cart fs-3 mb-1 font-16"></i>
+                <h5 class="mb-0 mt-1">
+                    <?php
+                                    $bill_entries = $_SESSION['stock_app_inventory_logged_user']->shop_id . '_bill_entries';
+                                    $stock = $_SESSION['stock_app_inventory_logged_user']->shop_id . '_stock';
+                                    $table_expenses = $_SESSION['stock_app_inventory_logged_user']->shop_id . '_expenses';
+
+                                    $sql = 'SELECT SUM(be.`qty`*be.`price`) sales,SUM(be.`qty`*s.`purchase_price`) cost,e.expenses
+                                            FROM `' . $bill_entries . '` be
+                                            JOIN `' . $stock . '` s ON s.`id`=be.`stock_id`  
+                                            LEFT JOIN (SELECT `date`,SUM(`amount`) expenses FROM `'.$table_expenses.'` GROUP BY `date`) e ON e.`date`=DATE(be.`created_at`)
+                                            WHERE DATE(be.`created_at`) = ? 
+                                            AND be.`bill_id`>0 AND be.`qty`>0';
+                                    if ($stmt = $mysqli->prepare($sql)) {
+                                        $stmt->bind_param("s", $to);
+                                        $stmt->execute();
+                                        $stmt->bind_result($sale, $cost, $expense);
+                                        while ($stmt->fetch()) {
+                                            echo number_format($sale);
+                                        }
+                                        $stmt->close();
+                                    }
+                                    ?>
+                </h5>
+                <small class="font-light">Total Sales</small>
+            </div>
+        </a>
+
+        <a class="col-4 mt-3" href="expenses">
+            <div class="bg-dark p-10 text-white text-center">
+                <i class="mdi mdi-gas-station fs-3 mb-1 font-16"></i>
+                <h5 class="mb-0 mt-1">
+                    <?php echo number_format($expense); ?>
+                </h5>
+                <small class="font-light">Total Expenses</small>
+            </div>
+        </a>
+
+        <?php if (in_array($_SESSION['stock_app_inventory_logged_user']->user_level, [0, 1, 4])) { ?>
+        <a class="col-4 mt-3" href="reports-profit-loss">
+            <div class="bg-dark p-10 text-white text-center">
+                <i class="mdi mdi-chart-pie fs-3 mb-1 font-16"></i>
+                <h5 class="mb-0 mt-1">
+                    <?php echo number_format($sale - ($cost + $expense)); ?>
+                </h5>
+                <small class="font-light">Net Profit</small>
+            </div>
+        </a>
+        <?php } ?>
+    </div>
+    <!-- dash -->
+    <!-- Line Chart -->
+    <div class="row">
+        <div class="col-12 mt-3">
+            <div class="bg-dark p-10 text-white text-center">
+                <canvas id="myChart" style="width:100%;"></canvas>
+                <?php
+                                $sql = 'SELECT DATE(be.`created_at`),SUM(be.`qty`*be.`price`),COALESCE(exp.total,0)
+                                    FROM `' . $bill_entries . '` be
+                                    LEFT JOIN (SELECT `date`,SUM(`amount`) total FROM `' . $table_expenses . '` GROUP BY `date`) exp ON exp.`date`=DATE(be.`created_at`)
+                                    WHERE MONTH(be.`created_at`) = MONTH(?) AND YEAR(be.`created_at`) = YEAR(?)
+                                    AND be.`bill_id`>0 AND be.`qty`>0
+                                    GROUP BY DATE(be.`created_at`)';
+
+                                if ($stmt = $mysqli->prepare($sql)) {
+                                    $stmt->bind_param("ss", $to, $to);
+                                    $stmt->execute();
+                                    $dates = $sales_all = $expenses_all = $debts = array();
+                                    $stmt->bind_result($date, $sale, $expense);
+                                    while ($stmt->fetch()) {
+                                        $dates[] = "'" . $date . "'";
+                                        $sales_all[] = $sale;
+                                        $expenses_all[] = $expense;
+                                    }
+                                    $stmt->close();
+                                }
+                                ?>
+            </div>
+        </div>
+    </div>
+    <!-- End Line Charts -->
+    <!-- Pie Chart -->
+    <div class="row">
+        <div class="col-12 mt-3">
+            <div class="bg-dark p-10 text-white text-center">
+                <canvas id="myChart2" style="width:100%;"></canvas>
+                <?php
+                                $sql = 'SELECT be.`item_name`, SUM(be.`qty`) sold
+                                        FROM `' . $bill_entries . '` be
+                                        WHERE DATE(be.`created_at`) = ?
+                                        AND be.`bill_id`>0 AND be.`qty`>0
+                                        GROUP BY be.`stock_id`
+                                        ORDER BY be.`item_name`';
+
+                                if ($stmt = $mysqli->prepare($sql)) {
+                                    $stmt->bind_param("s", $to);
+                                    $stmt->execute();
+                                    $items = $qtys = $bgcolors = array();
+                                    $stmt->bind_result($name, $sold);
+                                    while ($stmt->fetch()) {
+                                        if ($sold > 0) {
+                                            $items[] = "'" . $name . "'";
+                                            $qtys[] = $sold;
+                                            $bgcolors[] = "'" . dynamicColor() . "'";
+                                        }
+                                    }
+                                    $stmt->close();
+                                }
+
+                                function dynamicColor() {
+                                    return "rgb(" . rand(1, 255) . "," . rand(1, 255) . "," . rand(1, 255) . ")";
+                                }
+
+                                ;
+                                ?>
+            </div>
+        </div>
+    </div>
+    <!-- End Pie Charts -->
+    <!-- Stock investment -->
+    <?php if (in_array($_SESSION['stock_app_inventory_logged_user']->user_level, [0, 1, 4])) { ?>
+    <div class="row">
+        <a class="col-4 mt-3" href="reports-statement">
+            <div class="bg-dark p-10 text-white text-center">
+                <i class="mdi mdi-cash-multiple fs-3 mb-1 font-16"></i>
+                <h5 class="mb-0 mt-1">
+                    <?php
+                                        $payments = $_SESSION['stock_app_inventory_logged_user']->shop_id . '_stock';
+                                        $sql = 'SELECT 
+          SUM((COALESCE(s.`opening`,0)+COALESCE(s.`additions`,0))*s.`purchase_price`),
+          SUM((COALESCE(s.`opening`,0)+COALESCE(s.`additions`,0))*s.`selling_price`)
+          FROM `' . $payments . '` s
+          WHERE s.`date`=DATE_ADD(?, INTERVAL 1 DAY)';
+
+                                        if ($stmt = $mysqli->prepare($sql)) {
+                                            $stmt->bind_param("s", $to);
+                                            $stmt->execute();
+                                            $stmt->bind_result($total_investment, $total_capital);
+                                            while ($stmt->fetch()) {
+                                                echo number_format($total_capital);
+                                            }
+                                            $stmt->close();
+                                        }
+                                        ?>
+                </h5>
+                <small class="font-light">Total Stock<br />Amount</small>
+            </div>
+        </a>
+
+        <a class="col-4 mt-3" href="reports-statement">
+            <div class="bg-dark p-10 text-white text-center">
+                <i class="mdi mdi-buffer fs-3 mb-1 font-16"></i>
+                <h5 class="mb-0 mt-1">
+                    <?php echo number_format($total_investment); ?>
+                </h5>
+                <small class="font-light">Total Capital<br />Invested</small>
+            </div>
+        </a>
 
 
-<body class="bg-dark">
-    {% include 'preloader.html' %}
 
-    {% include 'footer.html' %}
-</body>
+        <a class="col-4 mt-3" href="customers-bills">
+            <div class="bg-dark p-10 text-white text-center">
+                <i class="mdi mdi-table fs-3 mb-1 font-16"></i>
+                <h5 class="mb-0 mt-1">
+                    <?php
+                                        $payments = $_SESSION['stock_app_inventory_logged_user']->shop_id . '_debts';
+                                        $sql = 'SELECT SUM(`amount`-`paid`) debts
+          FROM `' . $payments . '`
+          WHERE MONTH(`date`) = MONTH(?) AND YEAR(`date`) = YEAR(?)';
 
-</html>
+                                        if ($stmt = $mysqli->prepare($sql)) {
+                                            $stmt->bind_param("ss", $to, $to);
+                                            $stmt->execute();
+                                            $stmt->bind_result($bills);
+                                            while ($stmt->fetch()) {
+                                                echo number_format($bills);
+                                            }
+                                            $stmt->close();
+                                        }
+                                        ?>
+                </h5>
+                <small class="font-light">Unpaid Bills<br />This Month</small>
+            </div>
+        </a>
+    </div>
+    <?php } ?>
+    <!-- Stock investment -->
+    <!-- Line Chart3 -->
+    <?php if (in_array($_SESSION['stock_app_inventory_logged_user']->user_level, [0, 1, 4])) { ?>
+    <div class="row">
+        <div class="col-12 mt-3">
+            <div class="bg-dark p-10 text-white text-center">
+                <canvas id="myChart3" style="width:100%;"></canvas>
+                <?php
+                                        $sql = 'SELECT DATE_FORMAT(s.`date`, "%d-%b"),
+                                                SUM((COALESCE(s.`opening`,0)+COALESCE(s.`additions`,0))*s.`selling_price`) stock
+                                                FROM `' . $stock . '` s
+                                                WHERE MONTH(s.`date`) = MONTH(CURDATE()) AND YEAR(s.`date`) = YEAR(CURDATE())
+                                                AND s.`date`<=?
+                                                GROUP BY s.`date`
+                                                ORDER BY s.`date`';
+
+                                        if ($stmt = $mysqli->prepare($sql)) {
+                                            $stmt->bind_param("s", $to);
+                                            $stmt->execute();
+                                            $dates2 = $stocks2 = $sales2 = array();
+                                            $stmt->bind_result($date2, $stock2);
+                                            while ($stmt->fetch()) {
+                                                $dates2[] = "'" . $date2 . "'";
+                                                $stocks2[] = $stock2;
+                                            }
+                                            $stmt->close();
+                                        }
+                                        ?>
+            </div>
+        </div>
+    </div>
+    <?php } ?>
+    <!-- End Line Chart3 -->
+</div>
+<!-- ============================================================== -->
+<!-- End Container fluid  -->
+<!-- ============================================================== -->
+
+{% endblock %}

@@ -15,11 +15,12 @@ class ShopType():
         self.description = description
     
 class License():
-    def __init__(self, id, key, package_id, expires_at):
+    def __init__(self, id, key, package_id, expires_at, is_valid):
         self.id = id
         self.key = key
         self.package_id = package_id
         self.expires_at = expires_at
+        self.is_valid = is_valid
     
 class Company():
     def __init__(self, id, name, license_id):

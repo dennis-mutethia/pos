@@ -10,7 +10,7 @@ app.secret_key = secret_key
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.app_context().push()
-Db().create_base_tables()
+#Db().create_base_tables()
          
 # Callback to reload the user object
 @login_manager.user_loader

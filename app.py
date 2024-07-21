@@ -10,12 +10,14 @@ app.secret_key = secret_key
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.app_context().push()
-#Db().create_base_tables()
+
+db = Db()
+#db.create_base_tables()
          
 # Callback to reload the user object
 @login_manager.user_loader
 def load_user(user_id):
-    return Db().get_user_by_id(user_id)
+    return db.get_user_by_id(user_id)
 
 # Routes
 @app.route('/')
@@ -24,14 +26,14 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    shop_types = Db().fetch_shop_types()
+    shop_types = db.fetch_shop_types()
 
     error = None
     if request.method == 'POST':
         if request.form['action'] == 'login':
             phone = request.form['phone']
             password = request.form['password']   
-            user = Db().authenticate_user(phone, password)
+            user = db.authenticate_user(phone, password)
             
             if user: 
                 login_user(user)
@@ -48,18 +50,17 @@ def login():
             user_phone = request.form['user_phone']
             user_password = request.form['user_password'] 
             
-            package = Db().get_package_by_id(1)
-            payment_id = Db().save_payment(0, 0, 4)
-            license_id = Db().save_license(package, payment_id)
-            company_id = Db().save_company(company_name, license_id)
-            shop_id = Db().save_shop(shop_name, shop_type_id, company_id, shop_location)
-            user = Db().get_user_by_phone(user_phone)
+            package = db.get_package_by_id(1)
+            payment_id = db.save_payment(0, 0, 4)
+            license_id = db.save_license(package, payment_id)
+            company_id = db.save_company(company_name, license_id)
+            shop_id = db.save_shop(shop_name, shop_type_id, company_id, shop_location)
+            user = db.get_user_by_phone(user_phone)
             if user is None:
-                user_id = Db().save_user(user_name, user_phone, 1, shop_id, user_password)
-                user = Db().get_user_by_id(user_id)
+                user_id = db.save_user(user_name, user_phone, 1, shop_id, user_password)
+                user = db.get_user_by_id(user_id)
                 
             login_user(user)
-            print(user.shop.name)
             return redirect(url_for('dashboard'))
 
     return render_template('login.html', shop_types=shop_types, error=error)

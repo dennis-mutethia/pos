@@ -46,8 +46,7 @@ CREATE TABLE IF NOT EXISTS companies (
   created_at TIMESTAMP,
   created_by INT,
   updated_at TIMESTAMP,
-  updated_by INT,
-  UNIQUE (name)
+  updated_by INT
 );
 
 -- Table structure for table customers
@@ -401,8 +400,7 @@ CREATE TABLE IF NOT EXISTS shops (
   phone_2 varchar(20),
   paybill varchar(16),
   account_no varchar(32),
-  till_no varchar(16),
-  UNIQUE (name)
+  till_no varchar(16)
 );
 
 -- Table structure for table stock
@@ -429,8 +427,8 @@ CREATE TABLE IF NOT EXISTS users (
   name varchar(64),
   phone varchar(20),
   shop_id INT,
-  user_level INT DEFAULT '0',
-  pwd varchar(256),
+  user_level_id INT DEFAULT '0',
+  password varchar(256),
   created_at TIMESTAMP,
   created_by INT,
   updated_at TIMESTAMP,

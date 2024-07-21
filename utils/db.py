@@ -108,17 +108,27 @@ class Db():
     def save_user(self, name, phone, user_level_id, shop_id, password):
         self.ensure_connection()
         with self.conn.cursor() as cursor:
-            cursor.execute("INSERT INTO users(name, phone, user_level_id, shop_id, password, created_at, created_by) VALUES(%s, %s, %s, %s, %s, NOW(), 0)", (name, phone, user_level_id, shop_id, self.hash_password(password)))
+            query = """
+            INSERT INTO users(name, phone, user_level_id, shop_id, password, created_at, created_by) 
+            VALUES(%s, %s, %s, %s, %s, NOW(), 0)
+            RETURNING id
+            """
+            cursor.execute(query, (name, phone, user_level_id, shop_id, self.hash_password(password)))
             self.conn.commit()
-            user_id = cursor.lastrowid 
+            user_id = cursor.fetchone()[0]
             return user_id   
     
     def save_payment(self, bill_id, amount, payment_mode_id):
         self.ensure_connection()
         with self.conn.cursor() as cursor:
-            cursor.execute("INSERT INTO payments(bill_id, amount, payment_mode_id, created_at, created_by) VALUES(%s, %s, %s, NOW(), 0)", (bill_id, amount, payment_mode_id))
+            query = """
+            INSERT INTO payments(bill_id, amount, payment_mode_id, created_at, created_by) 
+            VALUES(%s, %s, %s, NOW(), 0) 
+            RETURNING id
+            """
+            cursor.execute(query, (bill_id, amount, payment_mode_id))
             self.conn.commit()
-            payment_id = cursor.lastrowid 
+            payment_id = cursor.fetchone()[0]
             return payment_id 
     
     def save_license(self, package, payment_id):
@@ -128,6 +138,7 @@ class Db():
             query = """
             INSERT INTO licenses(key, package_id, payment_id, expires_at, created_at, created_by) 
             VALUES(%s, %s, %s, NOW() + INTERVAL %s, NOW(), 0)
+            RETURNING id
             """
             cursor.execute(query, (str(key), package.id, payment_id, f'+{package.validity} DAYS'))
             self.conn.commit()
@@ -137,17 +148,25 @@ class Db():
     def save_company(self, name, license_id):
         self.ensure_connection()
         with self.conn.cursor() as cursor:
-            cursor.execute("INSERT INTO companies(name, license_id, created_at, created_by) VALUES(%s, %s, NOW(), 0)", (name, license_id))
+            query = """
+            INSERT INTO companies(name, license_id, created_at, created_by) 
+            VALUES(%s, %s, NOW(), 0) 
+            RETURNING id"""
+            cursor.execute(query, (name, license_id))
             self.conn.commit()
-            company_id = cursor.lastrowid 
+            company_id = cursor.fetchone()[0]
             return company_id 
     
     def save_shop(self, name, shop_type_id, company_id, location):
         self.ensure_connection()
         with self.conn.cursor() as cursor:
-            cursor.execute("INSERT INTO shops(name, shop_type_id, company_id, location, created_at, created_by) VALUES(%s, %s, %s, %s, NOW(), 0)", (name, shop_type_id, company_id, location))
+            query = """
+            INSERT INTO shops(name, shop_type_id, company_id, location, created_at, created_by) 
+            VALUES(%s, %s, %s, %s, NOW(), 0) RETURNING id
+            """
+            cursor.execute(query, (name, shop_type_id, company_id, location))
             self.conn.commit()
-            shop_id = cursor.lastrowid 
+            shop_id = cursor.fetchone()[0]
             return shop_id
     
     def delete_website(website_id):
@@ -217,3 +236,14 @@ class Db():
                 return Package(data[0], data[1], data[2], data[3], data[4], data[5])
             else:
                 return None    
+            
+    def update_user(self, user_id, name, password, shop_id):
+        self.ensure_connection()
+        with self.conn.cursor() as cursor:
+            query = """
+            UPDATE users 
+            SET name = %s, password = %s, shop_id = %s, updated_by=%s, updated_at=NOW() 
+            WHERE id=%s
+            """
+            cursor.execute(query, (name, self.hash_password(password), shop_id, user_id, user_id))
+            self.conn.commit()

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_login import LoginManager, login_user, logout_user, login_required
+from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 import secrets
 
 from utils.db import Db
@@ -59,7 +59,9 @@ def login():
             if user is None:
                 user_id = db.save_user(user_name, user_phone, 1, shop_id, user_password)
                 user = db.get_user_by_id(user_id)
-                
+            else:
+                db.update_user(user.id, user_name, user_password, shop_id)
+                    
             login_user(user)
             return redirect(url_for('dashboard'))
 
@@ -74,22 +76,14 @@ def logout():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-
-    # TODO 3: Implement the function for adding websites to user profiles.    
+    shop = db.get_shop_by_id(current_user.shop_id)  
+    print(current_user.shop_id)
     
     if request.method == 'POST':       
         website_name = request.form['website_name']
         website_url = request.form['website_url']  
-        
-        if get_user_website_by_name_url(website_name, website_url) is None: 
-            save_website(website_name, website_url)             
-            flash('Website Added Successful!', 'success')
-        else: 
-            flash('Adding Website failed! Website already exists.', 'danger') 
-
-    user_websites = get_user_websites() 
     
-    return render_template('dashboard.html', websites=user_websites)
+    return render_template('dashboard.html', shop=shop)
 
 @app.route('/dashboard/<int:website_id>/delete', methods=['POST'])
 @login_required

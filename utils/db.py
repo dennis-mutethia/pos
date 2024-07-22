@@ -64,7 +64,7 @@ class Db():
     def fetch_shop_types(self):
         self.ensure_connection() 
         with self.conn.cursor() as cursor:
-            cursor.execute("SELECT id, name, description FROM shop_types")
+            cursor.execute("SELECT id, name, description FROM shop_types ORDER BY name")
             data = cursor.fetchall()
             shop_types = []
             for shop_type in data:
@@ -273,6 +273,7 @@ class Db():
             FROM product_categories 
             LEFT JOIN p ON p.category_id = product_categories.id AND p.shop_id = product_categories.shop_id
             WHERE product_categories.shop_id = %s
+            ORDER BY name
             """
             cursor.execute(query, (current_user.shop_id,))
             data = cursor.fetchall()
@@ -326,6 +327,7 @@ class Db():
             SELECT id, name, purchase_price, selling_price, category_id
             FROM products
             WHERE shop_id = %s
+            ORDER BY category_id, name
             """
             params = [current_user.shop_id]
 

@@ -1,16 +1,28 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
-import secrets
+from dotenv import load_dotenv
+from flask_session import Session
+from redis import Redis
 
 from utils.db import Db
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
-app.config['SESSION_COOKIE_SECURE'] = True  # Use this only if you have SSL
+app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['SESSION_TYPE'] = 'redis'
+app.config['SESSION_REDIS'] = r = Redis(
+    host=os.getenv('REDIS_HOSTNAME'),
+    port=os.getenv('REDIS_PORT'),
+    password=os.getenv('REDIS_PASSWORD'),
+    ssl=True
+)
+app.config['SESSION_COOKIE_SECURE'] = True  # Set to True if using HTTPS on Vercel
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-secret_key = secrets.token_hex()
-app.secret_key = secret_key
 
+Session(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'

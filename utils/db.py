@@ -7,9 +7,6 @@ from utils.entities import Company, License, Package, ProductCategories, Shop, S
 
 class Db():
     def __init__(self):
-        # Load environment variables from .env file
-        load_dotenv()
-
         # Access the environment variables
         self.conn_params = {
             'host': os.getenv('DB_HOST'),

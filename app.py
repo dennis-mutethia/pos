@@ -5,11 +5,15 @@ import secrets
 from utils.db import Db
 
 app = Flask(__name__)
+app.config['SESSION_COOKIE_SECURE'] = True  # Use this only if you have SSL
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 secret_key = secrets.token_hex()
 app.secret_key = secret_key
+
 login_manager = LoginManager()
 login_manager.init_app(app)
-app.app_context().push()
+login_manager.login_view = 'login'
 
 db = Db()
 #db.create_base_tables()

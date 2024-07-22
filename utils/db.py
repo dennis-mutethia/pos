@@ -125,7 +125,7 @@ class Db():
             VALUES(%s, %s, %s, %s, %s, NOW(), 0)
             RETURNING id
             """
-            cursor.execute(query, (name, phone, user_level_id, shop_id, self.hash_password(password)))
+            cursor.execute(query, (name.upper(), phone, user_level_id, shop_id, self.hash_password(password)))
             self.conn.commit()
             user_id = cursor.fetchone()[0]
             return user_id   
@@ -165,7 +165,7 @@ class Db():
             VALUES(%s, %s, NOW(), 0) 
             RETURNING id
             """
-            cursor.execute(query, (name, license_id))
+            cursor.execute(query, (name.upper(), license_id))
             self.conn.commit()
             company_id = cursor.fetchone()[0]
             return company_id 
@@ -178,7 +178,7 @@ class Db():
             VALUES(%s, %s, %s, %s, NOW(), 0) 
             RETURNING id
             """
-            cursor.execute(query, (name, shop_type_id, company_id, location))
+            cursor.execute(query, (name.upper(), shop_type_id, company_id, location.upper()))
             self.conn.commit()
             shop_id = cursor.fetchone()[0]
             return shop_id
@@ -259,7 +259,7 @@ class Db():
             SET name = %s, password = %s, shop_id = %s, updated_by=%s, updated_at=NOW() 
             WHERE id=%s
             """
-            cursor.execute(query, (name, self.hash_password(password), shop_id, user_id, user_id))
+            cursor.execute(query, (name.upper(), self.hash_password(password), shop_id, user_id, user_id))
             self.conn.commit()
     
     def fetch_product_categories(self):
@@ -290,7 +290,7 @@ class Db():
             VALUES(%s, %s, NOW(), %s) 
             RETURNING id
             """
-            cursor.execute(query, (name, current_user.shop_id, current_user.id))
+            cursor.execute(query, (name.upper(), current_user.shop_id, current_user.id))
             self.conn.commit()
             id = cursor.fetchone()[0]
             return id   
@@ -313,6 +313,6 @@ class Db():
             SET name=%s
             WHERE id=%s
             """
-            cursor.execute(query, (name, id))
+            cursor.execute(query, (name.upper(), id))
             self.conn.commit()
         

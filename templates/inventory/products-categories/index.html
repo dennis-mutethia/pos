@@ -99,11 +99,11 @@
         let name = $("#category_name_" + id).val();
         $.ajax({
             type: 'post',
-            url: 'inventory-products-categories-update',
+            url: '{{ url_for('inventoryProductsCategoriesUpdate') }}',
             data: {
-                id: id,
+                item_id: id,
                 name: name,
-                submit_update_product_categories: true
+                action: 'update'
             },
             success: function (data) {
                 toastr.success("Updated " + name);

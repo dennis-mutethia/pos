@@ -308,4 +308,15 @@ class Db():
             """
             cursor.execute(query, (id,))
             self.conn.commit()
+            
+    def update_product_category(self, id, name):
+        self.ensure_connection()
+        with self.conn.cursor() as cursor:
+            query = """
+            UPDATE product_categories
+            SET name=%s
+            WHERE id=%s
+            """
+            cursor.execute(query, (name, id))
+            self.conn.commit()
         

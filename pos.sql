@@ -160,17 +160,17 @@ CREATE TABLE IF NOT EXISTS product_categories (
 );
 
 -- Dumping data for table product_categories
-INSERT INTO product_categories (id, name, shop_id, created_at, created_by, updated_at, updated_by) VALUES
-(1, 'BOTTLES', 1, '2022-10-02 11:57:49', 26, '2022-10-02 05:57:49', NULL),
-(2, 'CANS', 1, '2022-10-02 11:57:58', 26, '2022-10-02 05:57:58', NULL),
-(3, 'SOFT DRINKS', 1, '2022-10-02 11:58:08', 26, '2022-10-02 05:58:08', NULL),
-(4, 'QUARTERS - 250ML', 1, '2022-10-02 11:58:55', 26, '2022-10-02 05:59:17', 26),
-(5, 'NUSU - 350ML', 1, '2022-10-02 11:59:08', 26, '2022-10-02 05:59:08', NULL),
-(6, 'MIZINGA', 1, '2022-10-02 11:59:41', 26, '2022-10-02 05:59:41', NULL),
-(7, 'WINES', 1, '2022-10-02 12:32:07', 26, '2022-10-02 06:32:07', NULL),
-(8, 'CIGARETTES', 1, '2022-10-02 12:36:07', 26, '2022-10-02 06:36:07', NULL),
-(9, 'TOTS', 1, '2022-10-02 13:02:24', 26, '2022-10-02 07:02:24', NULL),
-(10, 'OTHERS', 1, '2022-10-02 14:50:45', 26, '2022-10-02 08:50:45', NULL)
+INSERT INTO product_categories (name, shop_id, created_at, created_by, updated_at, updated_by) VALUES
+('BOTTLES', 0, '2022-10-02 11:57:49', 26, '2022-10-02 05:57:49', NULL),
+('CANS', 0, '2022-10-02 11:57:58', 26, '2022-10-02 05:57:58', NULL),
+('SOFT DRINKS', 0, '2022-10-02 11:58:08', 26, '2022-10-02 05:58:08', NULL),
+('QUARTERS - 250ML', 0, '2022-10-02 11:58:55', 26, '2022-10-02 05:59:17', 26),
+('NUSU - 350ML', 0, '2022-10-02 11:59:08', 26, '2022-10-02 05:59:08', NULL),
+('MIZINGA', 0, '2022-10-02 11:59:41', 26, '2022-10-02 05:59:41', NULL),
+('WINES', 0, '2022-10-02 12:32:07', 26, '2022-10-02 06:32:07', NULL),
+('CIGARETTES', 0, '2022-10-02 12:36:07', 26, '2022-10-02 06:36:07', NULL),
+('TOTS', 0, '2022-10-02 13:02:24', 26, '2022-10-02 07:02:24', NULL),
+('OTHERS', 0, '2022-10-02 14:50:45', 26, '2022-10-02 08:50:45', NULL)
 ON CONFLICT (name, shop_id) DO NOTHING;
 
 -- Table structure for table products
@@ -185,7 +185,7 @@ CREATE TABLE IF NOT EXISTS products (
   created_by INT,
   updated_at TIMESTAMP,
   updated_by INT,
-  UNIQUE (name, category_id)
+  UNIQUE (name, shop_id)
 );
 
 -- Dumping data for table products
@@ -329,7 +329,7 @@ INSERT INTO products (id, name, purchase_price, selling_price, category_id, shop
 (207, 'BLACK & WHITE 250ML', 385, 550, 4, 1, '2022-10-02 14:10:31', 26, '2022-10-02 08:11:40', NULL),
 (208, 'CHROME 250ML', 175, 250, 4, 1, '2022-10-02 14:29:41', 26, '2022-10-02 08:29:41', NULL),
 (209, 'TRUST', 70, 100, 10, 1, '2022-10-02 14:51:11', 26, '2022-10-02 08:51:11', NULL)
-ON CONFLICT (category_id) DO NOTHING;
+ON CONFLICT (name, shop_id) DO NOTHING;
 
 -- Table structure for table stock
 CREATE TABLE IF NOT EXISTS stock (
@@ -360,8 +360,7 @@ CREATE TABLE IF NOT EXISTS bills (
   created_at TIMESTAMP,
   created_by INT,
   updated_at TIMESTAMP,
-  updated_by INT,
-  PRIMARY KEY (id)
+  updated_by INT
 );
 
 -- Table structure for table bill_entries
@@ -468,3 +467,4 @@ CREATE TABLE IF NOT EXISTS cashbox (
   UNIQUE (date)
 );
 
+-- product_categories, products, stock, customers, debts, expenses, cashbox, bills, bill_entries, payments, payment_modes

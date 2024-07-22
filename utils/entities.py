@@ -50,5 +50,10 @@ class Package():
         self.description = description
         self.color = color
         self.validity = validity
-             
+
+class ProductCategories():
+    def __init__(self, id, name, products_count):
+        self.id = id
+        self.name = name    
+        self.products_count = products_count   
         

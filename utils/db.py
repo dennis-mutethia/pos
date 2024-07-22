@@ -1,10 +1,9 @@
+from flask_login import current_user
 import sqlite3, hashlib, os, uuid, psycopg2
 from flask import current_app
-from flask_login import current_user
 from dotenv import load_dotenv
-from psycopg2 import OperationalError
 
-from utils.entities import Company, License, Package, Shop, ShopType, User
+from utils.entities import Company, License, Package, ProductCategories, Shop, ShopType, User
 
 class Db():
     def __init__(self):
@@ -49,6 +48,23 @@ class Db():
                 cursor.executescript(f.read().decode("utf8"))
                 self.conn.commit()
     
+    def load_shop_template_data(self, shop_id):        
+        self.ensure_connection()
+        with self.conn.cursor() as cursor:
+            query = """
+            INSERT INTO product_categories(name, shop_id, created_at, created_by)
+            SELECT name, ?, NOW(), ? FROM product_categories WHERE shop_id = 0
+            """
+            cursor.execute(query, (shop_id, current_user.id))
+            self.conn.commit()            
+            
+            query = """
+            INSERT INTO products(name, purchase_price, selling_price, category_id, shop_id, created_at, created_by)
+            SELECT name, purchase_price, selling_price, category_id, ?, NOW(), ? FROM products WHERE shop_id = 0
+            """
+            cursor.execute(query, (shop_id, current_user.id))
+            self.conn.commit()
+            
     def fetch_shop_types(self):
         self.ensure_connection() 
         with self.conn.cursor() as cursor:
@@ -151,7 +167,8 @@ class Db():
             query = """
             INSERT INTO companies(name, license_id, created_at, created_by) 
             VALUES(%s, %s, NOW(), 0) 
-            RETURNING id"""
+            RETURNING id
+            """
             cursor.execute(query, (name, license_id))
             self.conn.commit()
             company_id = cursor.fetchone()[0]
@@ -162,7 +179,8 @@ class Db():
         with self.conn.cursor() as cursor:
             query = """
             INSERT INTO shops(name, shop_type_id, company_id, location, created_at, created_by) 
-            VALUES(%s, %s, %s, %s, NOW(), 0) RETURNING id
+            VALUES(%s, %s, %s, %s, NOW(), 0) 
+            RETURNING id
             """
             cursor.execute(query, (name, shop_type_id, company_id, location))
             self.conn.commit()
@@ -247,3 +265,47 @@ class Db():
             """
             cursor.execute(query, (name, self.hash_password(password), shop_id, user_id, user_id))
             self.conn.commit()
+    
+    def fetch_product_categories(self):
+        self.ensure_connection() 
+        with self.conn.cursor() as cursor:
+            query = """
+            WITH p AS(
+                SELECT shop_id, category_id, COUNT(*) counts FROM products GROUP BY shop_id, category_id
+            )
+            SELECT id, name, COALESCE(counts, 0)
+            FROM product_categories 
+            LEFT JOIN p ON p.category_id = product_categories.id AND p.shop_id = product_categories.shop_id
+            WHERE product_categories.shop_id = %s
+            """
+            cursor.execute(query, (current_user.shop_id,))
+            data = cursor.fetchall()
+            product_categories = []
+            for shop_type in data:
+                product_categories.append(ProductCategories(shop_type[0], shop_type[1], shop_type[2]))
+                
+            return product_categories 
+    
+    def save_product_category(self, name):
+        self.ensure_connection()
+        with self.conn.cursor() as cursor:
+            query = """
+            INSERT INTO product_categories(name, shop_id, created_at, created_by) 
+            VALUES(%s, %s, NOW(), %s) 
+            RETURNING id
+            """
+            cursor.execute(query, (name, current_user.shop_id, current_user.id))
+            self.conn.commit()
+            id = cursor.fetchone()[0]
+            return id   
+            
+    def delete_product_category(self, id):
+        self.ensure_connection()
+        with self.conn.cursor() as cursor:
+            query = """
+            DELETE FROM product_categories
+            WHERE id=%s
+            """
+            cursor.execute(query, (id,))
+            self.conn.commit()
+        

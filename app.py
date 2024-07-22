@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 import secrets
 
@@ -41,7 +41,7 @@ def login():
             else: 
                 error = 'Login failed! Phone & Password do not match or Phone does not exist.'
                 
-        if request.form['action'] == 'register':
+        elif request.form['action'] == 'register':
             company_name = request.form['company_name']
             shop_name = request.form['shop_name']  
             shop_type_id = request.form['shop_type_id']
@@ -61,7 +61,9 @@ def login():
                 user = db.get_user_by_id(user_id)
             else:
                 db.update_user(user.id, user_name, user_password, shop_id)
-                    
+            
+            db.load_shop_template_data(shop_id)
+                   
             login_user(user)
             return redirect(url_for('dashboard'))
 
@@ -81,10 +83,29 @@ def dashboard():
     license = db.get_license_id(company.license_id)
     
     if request.method == 'POST':       
-        website_name = request.form['website_name']
-        website_url = request.form['website_url']  
+        if request.form['action'] == 'add':
+            name = request.form['name']
+            company_id = db.save_company(name)
     
-    return render_template('dashboard.html', shop=shop, company=company, license=license, page_title='Dashboard')
+    return render_template('dashboard/index.html', shop=shop, company=company, license=license, page_title='Dashboard')
+
+@app.route('/inventory-products-categories', methods=['GET', 'POST'])
+@login_required
+def inventoryProductsCategories():
+    shop = db.get_shop_by_id(current_user.shop_id) 
+    company = db.get_company_by_id(shop.company_id)
+    license = db.get_license_id(company.license_id)
+    
+    if request.method == 'POST':       
+        if request.form['action'] == 'add':
+            name = request.form['name']
+            product_category_id = db.save_product_category(name)      
+        elif request.form['action'] == 'delete':
+            id = request.form['item_id']
+            db.delete_product_category(id) 
+    
+    product_categories = db.fetch_product_categories()
+    return render_template('inventory/products-categories/index.html', shop=shop, company=company, license=license, product_categories=product_categories, page_title='Product Categories')
 
 @app.route('/dashboard/<int:website_id>/delete', methods=['POST'])
 @login_required

@@ -1,0 +1,32 @@
+<!-- Line Chart3 -->
+<?php if (in_array($_SESSION['stock_app_inventory_logged_user']->user_level, [0, 1, 4])) { ?>
+<div class="row">
+    <div class="col-12 mt-3">
+        <div class="bg-dark p-10 text-white text-center">
+            <canvas id="myChart3" style="width:100%;"></canvas>
+            <?php
+                                        $sql = 'SELECT DATE_FORMAT(s.`date`, "%d-%b"),
+                                                SUM((COALESCE(s.`opening`,0)+COALESCE(s.`additions`,0))*s.`selling_price`) stock
+                                                FROM `' . $stock . '` s
+                                                WHERE MONTH(s.`date`) = MONTH(CURDATE()) AND YEAR(s.`date`) = YEAR(CURDATE())
+                                                AND s.`date`<=?
+                                                GROUP BY s.`date`
+                                                ORDER BY s.`date`';
+
+                                        if ($stmt = $mysqli->prepare($sql)) {
+                                            $stmt->bind_param("s", $to);
+                                            $stmt->execute();
+                                            $dates2 = $stocks2 = $sales2 = array();
+                                            $stmt->bind_result($date2, $stock2);
+                                            while ($stmt->fetch()) {
+                                                $dates2[] = "'" . $date2 . "'";
+                                                $stocks2[] = $stock2;
+                                            }
+                                            $stmt->close();
+                                        }
+                                        ?>
+        </div>
+    </div>
+</div>
+<?php } ?>
+<!-- End Line Chart3 -->

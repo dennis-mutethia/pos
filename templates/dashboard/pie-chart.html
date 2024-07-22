@@ -1,0 +1,38 @@
+<!-- Pie Chart -->
+<div class="row">
+    <div class="col-12 mt-3">
+        <div class="bg-dark p-10 text-white text-center">
+            <canvas id="myChart2" style="width:100%;"></canvas>
+            <?php
+                                $sql = 'SELECT be.`item_name`, SUM(be.`qty`) sold
+                                        FROM `' . $bill_entries . '` be
+                                        WHERE DATE(be.`created_at`) = ?
+                                        AND be.`bill_id`>0 AND be.`qty`>0
+                                        GROUP BY be.`stock_id`
+                                        ORDER BY be.`item_name`';
+
+                                if ($stmt = $mysqli->prepare($sql)) {
+                                    $stmt->bind_param("s", $to);
+                                    $stmt->execute();
+                                    $items = $qtys = $bgcolors = array();
+                                    $stmt->bind_result($name, $sold);
+                                    while ($stmt->fetch()) {
+                                        if ($sold > 0) {
+                                            $items[] = "'" . $name . "'";
+                                            $qtys[] = $sold;
+                                            $bgcolors[] = "'" . dynamicColor() . "'";
+                                        }
+                                    }
+                                    $stmt->close();
+                                }
+
+                                function dynamicColor() {
+                                    return "rgb(" . rand(1, 255) . "," . rand(1, 255) . "," . rand(1, 255) . ")";
+                                }
+
+                                ;
+                                ?>
+        </div>
+    </div>
+</div>
+<!-- End Pie Charts -->

@@ -126,12 +126,13 @@ class InventoryStockTake():
     def __call__(self):
         search = ''
         category_id = 0   
-        stock_date = datetime.now().strftime('%Y-%m-%d')   
+        current_date = datetime.now().strftime('%Y-%m-%d')
+        stock_date = current_date   
         if request.method == 'GET':   
             try:    
                 search = request.args.get('search', '')
                 category_id = int(request.args.get('category_id', 0))
-                stock_date = request.args.get('stock_date', default=datetime.now().strftime('%Y-%m-%d'))
+                stock_date = request.args.get('stock_date', default=current_date)
                 self.load(stock_date)                
             except ValueError as e:
                 print(f"Error converting category_id: {e}")
@@ -160,4 +161,4 @@ class InventoryStockTake():
         product_categories = InventoryProductsCategories(self.db).fetch_product_categories()
         stocks = self.fetch(stock_date, search, category_id)
         return render_template('inventory/stock-take.html', shop=shop, company=company, license=license, product_categories=product_categories, stocks=stocks, 
-                               page_title='Stock Take', search=search, category_id=category_id)
+                               page_title='Stock Take', stock_date=stock_date, current_date=current_date, search=search, category_id=category_id)

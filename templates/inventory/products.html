@@ -46,8 +46,7 @@
                 </td>
                 <td class="text-center">
                     <input type="number" id="product_purchase_{{ product.id }}" name="product_purchase_{{ product.id }}"
-                        value="{{ product.purchase_price }}" onchange="updateProduct({{ product.id }});"
-                        onkeyup="updateSelling({{ product.id }});" min="0" />
+                        value="{{ product.purchase_price }}" onchange="updateProduct({{ product.id }});" min="0" />
                 </td>
                 <td class="text-center">
                     <input type="number" id="product_selling_{{ product.id }}" name="product_selling_{{ product.id }}"
@@ -152,10 +151,10 @@
             } else {
                 $(this).val($(this).val());
             }
-
         });
         $("#search").focus();
     });
+
     if ($toastr_message)
         toastr.success($toastr_message);
 
@@ -174,14 +173,13 @@
         let from = $("#from").val();
         $.ajax({
             type: 'post',
-            url: 'inventory-products-update',
+            url: '{{ url_for('inventoryProductsUpdate') }}',
             data: {
                 id: id,
                 name: name,
                 purchase_price: purchase_price,
                 selling_price: selling_price,
-                from: from,
-                action: update
+                action: 'update'
             },
             success: function (data) {
                 toastr.success("Updated " + name);

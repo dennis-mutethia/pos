@@ -67,7 +67,7 @@ def inventoryProductsCategories():
 @app.route('/inventory-products-categories-update', methods=['POST'])
 @login_required
 def inventoryProductsCategoriesUpdate():    
-    return InventoryProductsCategories(db).update()
+    return InventoryProductsCategories(db)()
 
 @app.route('/inventory-products', methods=['GET', 'POST'])
 @login_required
@@ -77,7 +77,7 @@ def inventoryProducts():
 @app.route('/inventory-products-update', methods=['POST'])
 @login_required
 def inventoryProductsUpdate():    
-    return InventoryProducts(db).update()
+    return InventoryProducts(db)()
 
 if __name__ == '__main__':
     app.run(debug=True)

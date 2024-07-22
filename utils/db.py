@@ -288,6 +288,7 @@ class Db():
             query = """
             INSERT INTO product_categories(name, shop_id, created_at, created_by) 
             VALUES(%s, %s, NOW(), %s) 
+            ON CONFLICT (name) DO NOTHING
             RETURNING id
             """
             cursor.execute(query, (name.upper(), current_user.shop_id, current_user.id))
@@ -300,10 +301,11 @@ class Db():
         with self.conn.cursor() as cursor:
             query = """
             UPDATE product_categories
-            SET name=%s
+            SET name=%s, updated_at=NOW(), updated_by=%s
             WHERE id=%s
             """
-            cursor.execute(query, (name.upper(), id))
+            params = [name.upper(), current_user.shop_id, current_user.id]
+            cursor.execute(query, tuple(params))
             self.conn.commit()
             
     def delete_product_category(self, id):
@@ -329,7 +331,7 @@ class Db():
             if search:
                 query += " AND name LIKE %s"
                 params.append(f"%{search.upper()}%")
-            if category_id > 0:
+            if int(category_id) > 0:
                 query += " AND category_id = %s"
                 params.append(category_id)
 
@@ -340,30 +342,32 @@ class Db():
                 products.append(Products(product[0], product[1], product[2], product[3], product[4]))
 
             return products
-    
-    def save_product(self, name):
+                    
+    def save_product(self, name, purchase_price, selling_price, category_id):
         self.ensure_connection()
         with self.conn.cursor() as cursor:
             query = """
-            INSERT INTO product_categories(name, shop_id, created_at, created_by) 
-            VALUES(%s, %s, NOW(), %s) 
+            INSERT INTO products(name, purchase_price, selling_price, category_id, shop_id, created_at, created_by) 
+            VALUES(%s, %s, %s, %s, %s, NOW(), %s) 
+            ON CONFLICT (name, shop_id) DO NOTHING
             RETURNING id
             """
-            params = [name.upper(), current_user.shop_id, current_user.id]
+            params = [name.upper(), purchase_price, selling_price, category_id, current_user.shop_id, current_user.id]
             cursor.execute(query, tuple(params))
             self.conn.commit()
             id = cursor.fetchone()[0]
             return id   
             
-    def update_product(self, id, name):
+    def update_product(self, id, name, purchase_price, selling_price):
         self.ensure_connection()
         with self.conn.cursor() as cursor:
             query = """
             UPDATE products
-            SET name=%s
+            SET name=%s, purchase_price=%s, selling_price=%s, updated_at=NOW(), updated_by=%s
             WHERE id=%s
             """
-            cursor.execute(query, (name.upper(), id))
+            params = [name.upper(), purchase_price, selling_price, current_user.id, id]
+            cursor.execute(query, tuple(params))
             self.conn.commit()
             
     def delete_product_category(self, id):

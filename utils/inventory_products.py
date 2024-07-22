@@ -4,15 +4,6 @@ from flask_login import current_user
 class InventoryProducts():
     def __init__(self, db): 
         self.db = db
-    
-    def update(self):    
-        if request.method == 'POST':       
-            if request.form['action'] == 'update':
-                id = request.form['item_id']
-                name = request.form['name']    
-                self.db.update_product_category(id, name)
-                
-        return 'success'
 
     def __call__(self):
         search = ''
@@ -28,11 +19,23 @@ class InventoryProducts():
         
         if request.method == 'POST':       
             if request.form['action'] == 'add':
-                name = request.form['name']
-                self.db.save_product_category(name)      
+                name = request.form['name']    
+                purchase_price = request.form['purchase_price']
+                selling_price = request.form['selling_price']    
+                category_id = request.form['category_id_new']    
+                self.db.save_product(name, purchase_price, selling_price, category_id)
+                
             elif request.form['action'] == 'delete':
                 id = request.form['item_id']
                 self.db.delete_product_category(id) 
+            
+            elif request.form['action'] == 'update':
+                id = request.form['id']
+                name = request.form['name']    
+                purchase_price = request.form['purchase_price']
+                selling_price = request.form['selling_price']    
+                self.db.update_product(id, name, purchase_price, selling_price)
+                return 'success'
                 
         shop = self.db.get_shop_by_id(current_user.shop_id) 
         company = self.db.get_company_by_id(shop.company_id)

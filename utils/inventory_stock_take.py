@@ -101,15 +101,15 @@ class InventoryStockTake():
 
             return stocks
             
-    def update(self, id, name, purchase_price, selling_price, opening, additions):
+    def update(self, id, opening, additions):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
             UPDATE stock
-            SET name=%s, purchase_price=%s, selling_price=%s, opening=%s, additions=%s, updated_at=NOW(), updated_by=%s
+            SET opening=%s, additions=%s, updated_at=NOW(), updated_by=%s
             WHERE id=%s
             """
-            params = [name.upper(), purchase_price, selling_price, opening, additions, current_user.id, id]
+            params = [opening, additions, current_user.id, id]
             cursor.execute(query, tuple(params))
             self.db.conn.commit()
             
@@ -142,12 +142,9 @@ class InventoryStockTake():
         if request.method == 'POST':       
             if request.form['action'] == 'update':
                 id = request.form['id']
-                name = request.form['name']    
-                purchase_price = request.form['purchase_price']
-                selling_price = request.form['selling_price']     
                 opening = request.form['opening']
                 additions = request.form['additions']     
-                self.update(id, name, purchase_price, selling_price, opening, additions)
+                self.update(id, opening, additions)
                 return 'success'
                 
             elif request.form['action'] == 'delete':

@@ -1,4 +1,3 @@
-
 from flask import redirect, render_template, request, url_for
 from flask_login import login_user
 
@@ -54,8 +53,3 @@ class Login():
 
         shop_types = self.db.fetch_shop_types()
         return render_template('login.html', shop=None, shop_types=shop_types, error=None)
-
-        
-
-
-        

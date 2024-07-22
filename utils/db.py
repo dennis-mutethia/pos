@@ -1,7 +1,6 @@
 from flask_login import current_user
 import sqlite3, hashlib, os, uuid, psycopg2
 from flask import current_app
-from dotenv import load_dotenv
 
 from utils.entities import Company, License, Package, ProductCategories, Shop, ShopType, User
 

@@ -327,7 +327,6 @@ class Db():
             SELECT id, name, purchase_price, selling_price, category_id
             FROM products
             WHERE shop_id = %s
-            ORDER BY category_id, name
             """
             params = [current_user.shop_id]
 
@@ -337,7 +336,8 @@ class Db():
             if int(category_id) > 0:
                 query += " AND category_id = %s"
                 params.append(category_id)
-
+            
+            query = query + " ORDER BY category_id, name"
             cursor.execute(query, tuple(params))
             data = cursor.fetchall()
             products = []

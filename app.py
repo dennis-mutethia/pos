@@ -40,17 +40,29 @@ def logout():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard(): 
-    return Dashboard(db)() 
+    Dashboard(db)() 
+    shop = db.get_shop_by_id(current_user.shop_id) 
+    company = db.get_company_by_id(shop.company_id)
+    license = db.get_license_id(company.license_id)
+    
+    return render_template('dashboard/index.html', shop=shop, company=company, license=license, page_title='Dashboard')
 
 @app.route('/inventory-products-categories', methods=['GET', 'POST'])
 @login_required
 def inventoryProductsCategories():
-    return InventoryProductsCategories(db)() 
+    InventoryProductsCategories(db)()
+    
+    shop = db.get_shop_by_id(current_user.shop_id) 
+    company = db.get_company_by_id(shop.company_id)
+    license = db.get_license_id(company.license_id)
+    product_categories = db.fetch_product_categories()
+    
+    return render_template('inventory/products-categories/index.html', shop=shop, company=company, license=license, product_categories=product_categories, page_title='Product Categories')
 
 @app.route('/inventory-products-categories-update', methods=['POST'])
 @login_required
 def inventoryProductsCategoriesUpdate():    
-    return InventoryProductsCategories(db).update()
+    return InventoryProductsCategories(db)()
 
 if __name__ == '__main__':
     app.run(debug=True)

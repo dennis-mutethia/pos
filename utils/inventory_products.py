@@ -24,10 +24,6 @@ class InventoryProducts():
                 selling_price = request.form['selling_price']    
                 category_id = request.form['category_id_new']    
                 self.db.save_product(name, purchase_price, selling_price, category_id)
-                
-            elif request.form['action'] == 'delete':
-                id = request.form['item_id']
-                self.db.delete_product_category(id) 
             
             elif request.form['action'] == 'update':
                 id = request.form['id']
@@ -36,6 +32,10 @@ class InventoryProducts():
                 selling_price = request.form['selling_price']    
                 self.db.update_product(id, name, purchase_price, selling_price)
                 return 'success'
+                
+            elif request.form['action'] == 'delete':
+                id = request.form['item_id']
+                self.db.delete_product(id) 
                 
         shop = self.db.get_shop_by_id(current_user.shop_id) 
         company = self.db.get_company_by_id(shop.company_id)

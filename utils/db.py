@@ -288,7 +288,7 @@ class Db():
             query = """
             INSERT INTO product_categories(name, shop_id, created_at, created_by) 
             VALUES(%s, %s, NOW(), %s) 
-            ON CONFLICT (name) DO NOTHING
+            ON CONFLICT (name, shop_id) DO NOTHING
             RETURNING id
             """
             cursor.execute(query, (name.upper(), current_user.shop_id, current_user.id))
@@ -315,6 +315,7 @@ class Db():
             DELETE FROM product_categories
             WHERE id=%s
             """
+            print(query)
             cursor.execute(query, (id,))
             self.conn.commit()
     
@@ -370,7 +371,7 @@ class Db():
             cursor.execute(query, tuple(params))
             self.conn.commit()
             
-    def delete_product_category(self, id):
+    def delete_product(self, id):
         self.ensure_connection()
         with self.conn.cursor() as cursor:
             query = """

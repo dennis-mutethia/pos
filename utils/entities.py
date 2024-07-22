@@ -56,4 +56,12 @@ class ProductCategories():
         self.id = id
         self.name = name    
         self.products_count = products_count   
+
+class Products():
+    def __init__(self, id, name, purchase_price, selling_price, category_id):
+        self.id = id
+        self.name = name    
+        self.purchase_price = purchase_price   
+        self.selling_price = selling_price    
+        self.category_id = category_id   
         

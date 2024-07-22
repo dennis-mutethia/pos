@@ -2,7 +2,7 @@ from flask_login import current_user
 import sqlite3, hashlib, os, uuid, psycopg2
 from flask import current_app
 
-from utils.entities import Company, License, Package, ProductCategories, Shop, ShopType, User
+from utils.entities import Company, License, Package, ProductCategories, Products, Shop, ShopType, User
 
 class Db():
     def __init__(self):
@@ -295,16 +295,6 @@ class Db():
             id = cursor.fetchone()[0]
             return id   
             
-    def delete_product_category(self, id):
-        self.ensure_connection()
-        with self.conn.cursor() as cursor:
-            query = """
-            DELETE FROM product_categories
-            WHERE id=%s
-            """
-            cursor.execute(query, (id,))
-            self.conn.commit()
-            
     def update_product_category(self, id, name):
         self.ensure_connection()
         with self.conn.cursor() as cursor:
@@ -314,5 +304,75 @@ class Db():
             WHERE id=%s
             """
             cursor.execute(query, (name.upper(), id))
+            self.conn.commit()
+            
+    def delete_product_category(self, id):
+        self.ensure_connection()
+        with self.conn.cursor() as cursor:
+            query = """
+            DELETE FROM product_categories
+            WHERE id=%s
+            """
+            cursor.execute(query, (id,))
+            self.conn.commit()
+    
+    def fetch_products(self, search, category_id):
+        self.ensure_connection()
+        with self.conn.cursor() as cursor:
+            query = """
+            SELECT id, name, purchase_price, selling_price, category_id
+            FROM products
+            WHERE shop_id = %s
+            """
+            params = [current_user.shop_id]
+
+            if search:
+                query += " AND name LIKE %s"
+                params.append(f"%{search.upper()}%")
+            if category_id > 0:
+                query += " AND category_id = %s"
+                params.append(category_id)
+
+            cursor.execute(query, tuple(params))
+            data = cursor.fetchall()
+            products = []
+            for product in data:
+                products.append(Products(product[0], product[1], product[2], product[3], product[4]))
+
+            return products
+    
+    def save_product(self, name):
+        self.ensure_connection()
+        with self.conn.cursor() as cursor:
+            query = """
+            INSERT INTO product_categories(name, shop_id, created_at, created_by) 
+            VALUES(%s, %s, NOW(), %s) 
+            RETURNING id
+            """
+            params = [name.upper(), current_user.shop_id, current_user.id]
+            cursor.execute(query, tuple(params))
+            self.conn.commit()
+            id = cursor.fetchone()[0]
+            return id   
+            
+    def update_product(self, id, name):
+        self.ensure_connection()
+        with self.conn.cursor() as cursor:
+            query = """
+            UPDATE products
+            SET name=%s
+            WHERE id=%s
+            """
+            cursor.execute(query, (name.upper(), id))
+            self.conn.commit()
+            
+    def delete_product_category(self, id):
+        self.ensure_connection()
+        with self.conn.cursor() as cursor:
+            query = """
+            DELETE FROM products
+            WHERE id=%s
+            """
+            cursor.execute(query, (id,))
             self.conn.commit()
         

@@ -28,4 +28,4 @@ class InventoryProductsCategories():
                 self.db.delete_product_category(id) 
         
         product_categories = self.db.fetch_product_categories()
-        return render_template('inventory/products-categories/index.html', shop=shop, company=company, license=license, product_categories=product_categories, page_title='Product Categories')
+        return render_template('inventory/products-categories.html', shop=shop, company=company, license=license, product_categories=product_categories, page_title='Product Categories')

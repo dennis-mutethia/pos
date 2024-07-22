@@ -7,6 +7,7 @@ from redis import Redis
 
 from utils.dashboard import Dashboard
 from utils.db import Db
+from utils.inventory_products import InventoryProducts
 from utils.inventory_products_categories import InventoryProductsCategories
 from utils.login import Login
 # Load environment variables from .env file
@@ -67,6 +68,16 @@ def inventoryProductsCategories():
 @login_required
 def inventoryProductsCategoriesUpdate():    
     return InventoryProductsCategories(db).update()
+
+@app.route('/inventory-products', methods=['GET', 'POST'])
+@login_required
+def inventoryProducts():
+    return InventoryProducts(db)()
+
+@app.route('/inventory-products-update', methods=['POST'])
+@login_required
+def inventoryProductsUpdate():    
+    return InventoryProducts(db).update()
 
 if __name__ == '__main__':
     app.run(debug=True)

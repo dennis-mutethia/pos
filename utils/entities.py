@@ -64,4 +64,14 @@ class Products():
         self.purchase_price = purchase_price   
         self.selling_price = selling_price    
         self.category_id = category_id   
-        
+
+class Stock():
+    def __init__(self, id, product_id, name, category_name, yesterday, opening, additions, sold):
+        self.id = id 
+        self.product_id = product_id   
+        self.name = name     
+        self.category_name = category_name   
+        self.yesterday = yesterday 
+        self.opening = opening   
+        self.additions = additions     
+        self.sold = sold 

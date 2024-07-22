@@ -9,6 +9,7 @@ from utils.dashboard import Dashboard
 from utils.db import Db
 from utils.inventory_products import InventoryProducts
 from utils.inventory_products_categories import InventoryProductsCategories
+from utils.inventory_stock_take import InventoryStockTake
 from utils.login import Login
 # Load environment variables from .env file
 load_dotenv()
@@ -78,6 +79,16 @@ def inventoryProducts():
 @login_required
 def inventoryProductsUpdate():    
     return InventoryProducts(db)()
+
+@app.route('/inventory-stock-take', methods=['GET', 'POST'])
+@login_required
+def inventoryStockTake():
+    return InventoryStockTake(db)()
+
+@app.route('/inventory-stock-take-update', methods=['POST'])
+@login_required
+def inventoryStockTakeUpdate():    
+    return InventoryStockTake(db)()
 
 if __name__ == '__main__':
     app.run(debug=True)

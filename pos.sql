@@ -334,8 +334,8 @@ ON CONFLICT (name, shop_id) DO NOTHING;
 -- Table structure for table stock
 CREATE TABLE IF NOT EXISTS stock (
   id SERIAL PRIMARY KEY,
+  stock_date date,
   product_id INT,
-  date date,
   name varchar(32),
   category_id INT,
   purchase_price DOUBLE PRECISION,
@@ -347,7 +347,7 @@ CREATE TABLE IF NOT EXISTS stock (
   created_by INT,
   updated_at TIMESTAMP,
   updated_by INT,
-  UNIQUE (date,name,category_id)
+  UNIQUE (stock_date,product_id,shop_id)
 );
 
 -- Table structure for table bills

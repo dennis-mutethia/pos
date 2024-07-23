@@ -12,12 +12,12 @@
                 <form id="filter-frm" method="GET" class="row">
                     <input type="hidden" id="page" name="page" value="{{ page }}" />
                     <div class="col-6">
-                        <input onkeyup="applyFilter(1)" style="height: 25px" type="text" id="search" name="search"
-                            required="required" value="{{ search }}" placeholder="Search Item" autofocus
+                        <input onchange="applyFilter(1)" style="height: 25px" type="text" id="search" name="search"
+                            value="{{ search }}" placeholder="Search Item" autofocus
                             onfocus="this.value = this.value;" />
                     </div>
                     <div class="col-6">
-                        <select onchange="applyFilter2(1)" name="category_id" id="category_id" style="width: 100%;">
+                        <select onchange="applyFilter(1)" name="category_id" id="category_id" style="width: 100%;">
                             <option value="0">Filter by Category</option>
                             {% for product_category in product_categories %}
                             <option value="{{ product_category.id }}" {% if product_category.id==category_id %} selected
@@ -53,20 +53,39 @@
             <div class="row">
                 <div class="col-md-4"></div>
                 <div class="col-md-4 text-center">
-                        <nav aria-label="Page navigation example" class="text-center">
-                            <ul class="pagination" class="text-center">
-                                <li class="page-item {{ '' if prev_page > 0 else 'disabled' }}"> 
-                                    <button class="page-link" id="prev_page" onclick="applyFilter2({{ prev_page }})">Previous</button>
-                                </li>
-                                <li class="page-item {{ '' if next_page > 0 else 'disabled' }}">
-                                    <button class="page-link" id="next_page" onclick="applyFilter2({{ next_page }})">Next</button>
-                                </li>
-                            </ul>
-                        </nav>
+                    <nav aria-label="Page navigation example" class="text-center">
+                        <ul class="pagination" class="text-center">
+                            <li class="page-item {{ '' if prev_page > 0 else 'disabled' }}">
+                                <button class="page-link" id="prev_page"
+                                    onclick="applyFilter({{ prev_page }})">Previous</button>
+                            </li>
+                            <li class="page-item {{ '' if next_page > 0 else 'disabled' }}">
+                                <button class="page-link" id="next_page"
+                                    onclick="applyFilter({{ next_page }})">Next</button>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
             <!-- End Pagination-->
         </div>
+
+        <!-- bill entries -->
+        <div class="col-4">
+            <div class="col-12">
+                <select name="temp_customer_id" id="temp_customer_id" style="width: 100%;" class="text-center">
+                    <option value="0">----- Select Customer -----</option>
+                    {% for customer in customers %}
+                    <option value="{{ customer.id }}">{{ customer.name }} - {{ customer.phone }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div id="temp_bill" class="col-12">
+
+            </div>
+        </div>
+        <!-- end bill entries -->
+
     </div>
 </div>
 <!-- ============================================================== -->
@@ -78,47 +97,51 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form method="POST" class="form-horizontal">
+                <input type="hidden" id="category_id_new" name="category_id_new" />
+                <input type="hidden" id="customer_id" name="customer_id" />
                 <div class="modal-header text-center">
-                    <h5 class="text-center">Add New Product</h5>
+                    <h5 class="text-center">Submit Customer Bill</h5>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group row">
                         <div class="col-sm-12">
-                            <input required="required" type="text" name="name" id="name" class="form-control input-sm"
-                                placeholder="Enter Product Name">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-12">
-                            <select class="form-control input-sm" name="category_id_new" id="category_id_new" required>
-                                <option value="0">Select Category</option>
-                                {% for product_category in product_categories %}
-                                <option value="{{ product_category.id }}" {% if product_category.id==category_id %}
-                                    selected {% endif %}>{{ product_category.name }}</option>
-                                {% endfor %}
+                            <h5 class="text-center">Total Bill Amount: <b id="bill_amount"></b></h5>
+                            <select name="payment_mode_id" id="payment_mode_id" style="width: 100%;">
+                                <?php
+                                $payment_modes = $_SESSION['stock_app_inventory_logged_user']->shop_id . '_payment_modes';
+                                $sql = <<<SQL
+SELECT `id`,`name`
+FROM `$payment_modes` 
+SQL;
+                                if ($stmt = $mysqli->prepare($sql)) {
+                                    $stmt->execute();
+                                    $stmt->bind_result($id, $name);
+                                    while ($stmt->fetch()) {
+                                ?>
+                                <option value="<?php echo $id; ?>">
+                                    <?php echo $name; ?>
+                                </option>
+                                <?php
+                                    }
+                                    $stmt->close();
+                                }
+                                ?>
                             </select>
                         </div>
                     </div>
-
-
                     <div class="form-group row">
                         <div class="col-sm-12">
-                            <input required="required" type="number" name="purchase_price" id="purchase_price"
-                                class="form-control input-sm" placeholder="Enter Buying Price">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-12">
-                            <input required="required" type="number" name="selling_price" id="selling_price"
-                                class="form-control input-sm" placeholder="Enter Selling Price">
+                            <input type="hidden" name="total_bill_amount" id="total_bill_amount" />
+                            <input type="number" name="amount_paid" id="amount_paid" min="0"
+                                class="form-control input-sm" placeholder="Enter Amount Paid" />
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    <button type="submit" id="action" name="action" value="add" class="btn btn-success">Save
-                        Product</button>
+                    <button type="submit" id="submit_bill" name="submit_bill" value="submit_bill"
+                        class="btn btn-success">Save & Print</button>
                 </div>
             </form>
         </div>
@@ -130,21 +153,21 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form method="POST">
-                <input type="hidden" id="item_id" name="item_id" />
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Are you Sure You want to Delete this Product?</h5>
+                    <h5 class="modal-title" id="deleteModalLabel">Are you Sure You want to Clear this Customer Bill?
+                    </h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <div style="color: black" class="modal-body">Select "Confirm Delete" below if you want to delete this
-                    Product from the System.
+                <div style="color: black" class="modal-body">Select "Confirm Clear" below if you want to Clear this
+                    Customer Bill without Saving.
                     <p style="color: red">This action is not reversible!!</p>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary" type="button" data-dismiss="modal">Cancel</button>
-                    <button id="action" name="action" value="delete" class="btn btn-danger float-end">Confirm
-                        Delete</button>
+                    <button id="submit_clear_temp_bill" name="submit_clear_temp_bill" value="submit_clear_temp_bill"
+                        class="btn btn-danger float-end">Confirm Clear</button>
                 </div>
             </form>
         </div>
@@ -160,47 +183,97 @@
             } else {
                 $(this).val($(this).val());
             }
+
         });
         $("#search").focus();
+        refreshBillEntries();
     });
-
-    if ($toastr_message)
-        toastr.success($toastr_message);
 
     function applyFilter(page) {
         $("#page").val(page);
-        if ($("#search").val().length > 3)
-            $("#filter-frm").submit();
-    }
-    function applyFilter2(page) {
-        $("#page").val(page);
-        document.getElementById('filter-frm').submit();
+        $("#filter-frm").submit();
     }
 
-    function updateProduct(id) {
-        let name = $("#product_name_" + id).val();
-        let purchase_price = parseFloat($("#product_purchase_" + id).val());
-        let selling_price = parseFloat($("#product_selling_" + id).val());
-        let from = $("#from").val();
+    function AddBillEntry(id) {
+        let product = document.getElementById("product_" + id);
+        let stock = document.getElementById("stock_" + id);
+        let name = product.name;
+        let price = product.value;
+        let inStock = parseFloat(stock.innerHTML);
+        let oQty = document.getElementById("qt_" + id) ? parseFloat(document.getElementById("qt_" + id).value) : 0;
+        let qty = oQty + 1;
+
+        if (inStock > 0) {
+            submitTempBill(id, name, price, qty, true);
+        } else {
+            toastr.error("Sorry!<br />Product Not in Stock");
+        }
+    }
+
+    function UpdateBillEntry(id) {
+        let price = parseFloat(document.getElementById("pr_" + id).value);
+        let qty = parseFloat(document.getElementById("qt_" + id).value);
+        let inStock = parseFloat($("#stocko_" + id).html());
+        if (qty > inStock) {
+            toastr.error("Sorry!<br />Product Not in Stock. The maximum you can sell is " + inStock);
+            qty = inStock
+        }
+        submitTempBill(id, name, price, qty, true);
+    }
+
+    function submitTempBill(id, name, price, qty, refresh) {
         $.ajax({
             type: 'post',
-            url: '{{ url_for('inventoryProductsUpdate') }}',
+            url: '{{ url_for('posBillEntriesUpdate') }}',
             data: {
-                id: id,
-                name: name,
-                purchase_price: purchase_price,
-                selling_price: selling_price,
-                action: 'update'
+                stock_id: id,
+                bill_id: 0,
+                item_name: name,
+                price: price,
+                qty: qty,
+                action: 'add'
             },
             success: function (data) {
-                toastr.success("Updated " + name);
-                $("#product_name_" + id).val(name.toUpperCase());
+                let inStock = parseFloat(document.getElementById("stocko_" + id).innerHTML);
+                document.getElementById("stock_" + id).innerHTML = inStock - qty;
+                if (refresh)
+                    refreshBillEntries();
             }
         });
     }
 
-    function deleteItem(id) {
-        document.getElementById("item_id").value = id;
+    function refreshBillEntries() {
+        $.ajax({
+            type: 'get',
+            url: '{{ url_for('posBillEntries') }}',
+            success: function (data) {
+                document.getElementById("temp_bill").innerHTML = data;
+            }
+        });
+    }
+
+    function updateBillAmount() {
+        let amt = document.getElementById("grand_total").innerHTML;
+        document.getElementById("bill_amount").innerHTML = amt;
+        document.getElementById("total_bill_amount").value = amt.replaceAll(',', '');
+        document.getElementById("amount_paid").value = amt.replaceAll(',', '');
+        $("#customer_id").val($("#temp_customer_id").val());
+    }
+
+    function Print(id) {
+        var show_vat = 1; //document.getElementById('show_vat').checked ? 1 : 0;
+        var win = window.open("print.php?show_vat=" + show_vat + "&bill_id=" + id, "_blank", "scrollbars=yes,resizable=yes,top=200,left=500,width=400,height=500");
+        var document_focus = false;
+        $(document).ready(function () {
+            win.window.print();
+            document_focus = true;
+        });
+        setInterval(function () {
+            if (document_focus === true) {
+                win.window.close();
+                //window.location.reload();
+            }
+        }, 10000);
     }
 
 </script>

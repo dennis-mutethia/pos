@@ -91,4 +91,20 @@ class InStock():
         self.name = name     
         self.selling_price = selling_price   
         self.actual = actual 
-        self.temp_qty = temp_qty   
+        self.temp_qty = temp_qty     
+
+class Customer():
+    def __init__(self, id, name, phone):
+        self.id = id    
+        self.name = name     
+        self.selling_price = phone    
+
+class BillEntry():
+    def __init__(self, id, bill_id, stock_id, item_name, price, qty):
+        self.id = id    
+        self.bill_id = bill_id     
+        self.stock_id = stock_id   
+        self.item_name = item_name     
+        self.price = price   
+        self.qty = qty     
+        

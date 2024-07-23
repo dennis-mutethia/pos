@@ -2,45 +2,32 @@ from datetime import datetime
 from flask import render_template, request
 from flask_login import current_user
 
-from utils.entities import InStock
+from utils.entities import Customer
 from utils.inventory.products_categories import ProductsCategories
 from utils.inventory.stock_take import StockTake
-from utils.pos.customers import Customers
 
-class NewSale():
+class Customers():
     def __init__(self, db): 
         self.db = db
     
-    def fetch(self, search, category_id, page):
+    def fetch(self):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             #$id, $name, $selling_price, remaining, $temp_qty
             query = """
-            SELECT id, name, selling_price, (opening+additions) AS actual, 0 AS temp_qty
-            FROM stock
-            WHERE shop_id=%s AND DATE(stock_date) = CURRENT_DATE --AND (opening+additions) > 0
+            SELECT id, name, phone
+            FROM customers
+            WHERE shop_id=%s 
+            ORDER BY name
             """
             params = [current_user.shop.id]
-
-            if search:
-                query += " AND name LIKE %s"
-                params.append(f"%{search.upper()}%")
-            if int(category_id) > 0:
-                query += " AND category_id = %s"
-                params.append(category_id)
-            
-            query = query + """
-            ORDER BY category_id, name
-            LIMIT 30 OFFSET %s            
-            """
-            params.append((page - 1)*30)
             
             cursor.execute(query, tuple(params))
             data = cursor.fetchall()
             stocks = []
             for stock in data:
                 #id, name, selling_price, actual, temp_qty
-                stocks.append(InStock(stock[0], stock[1], stock[2], stock[3], stock[4]))
+                stocks.append(Customer(stock[0], stock[1], stock[2]))
 
             return stocks
         
@@ -74,11 +61,14 @@ class NewSale():
                 selling_price = request.form['selling_price']    
                 self.update(id, name, purchase_price, selling_price)
                 return 'success'
+                
+            elif request.form['action'] == 'delete':
+                id = request.form['item_id']
+                self.delete(id) 
         
         product_categories = ProductsCategories(self.db).fetch()
         products = self.fetch(search, category_id, page)
-        customers = Customers(self.db).fetch()
         prev_page = page-1 if page>1 else 0
         next_page = page+1 if len(products)==30 else 0
-        return render_template('pos/new-sale.html', product_categories=product_categories, products=products, customers=customers,
-                               page_title='POS > New Sale', search=search, category_id=category_id, page=page, prev_page=prev_page, next_page=next_page )
+        return render_template('pos/customers.html', product_categories=product_categories, products=products, 
+                               page_title='POS > Customers', search=search, category_id=category_id, page=page, prev_page=prev_page, next_page=next_page )

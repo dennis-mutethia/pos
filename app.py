@@ -13,6 +13,7 @@ from utils.inventory.purchases import Purchases
 from utils.inventory.stock_adjustment import StockAdjustment
 from utils.inventory.stock_take import StockTake
 from utils.login import Login
+from utils.pos.bill_entries import BillEntries
 from utils.pos.new_sale import NewSale
 
 app = Flask(__name__)
@@ -119,6 +120,16 @@ def inventoryStockAdjustmentUpdate():
 @login_required
 def posNewSale():
     return NewSale(db)()
+
+@app.route('/pos-bill-entries', methods=['GET'])
+@login_required
+def posBillEntries():
+    return BillEntries(db)()
+
+@app.route('/pos-bill-entries-update', methods=['POST'])
+@login_required
+def posBillEntriesUpdate():
+    return BillEntries(db)()
 
 if __name__ == '__main__':
     debug_mode = os.getenv('IS_DEBUG', 'False').lower() in ['true', '1', 't']

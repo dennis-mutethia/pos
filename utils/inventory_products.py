@@ -107,7 +107,7 @@ class InventoryProducts():
                 id = request.form['item_id']
                 self.delete(id) 
         
-        product_categories = InventoryProductsCategories(self.db).fetch_product_categories()
-        products = self.fetch_products(search, category_id)
+        product_categories = InventoryProductsCategories(self.db).fetch()
+        products = self.fetch(search, category_id)
         return render_template('inventory/products.html', product_categories=product_categories, products=products, 
                                page_title='Product Categories', search=search, category_id=category_id)

@@ -2,7 +2,7 @@ from flask_login import current_user
 import sqlite3, hashlib, os, uuid, psycopg2
 from flask import current_app
 
-from utils.entities import Company, License, Package, Shop, ShopType, User
+from utils.entities import Company, License, Package, Shop, ShopType, User, UserLevel
 
 class Db():
     def __init__(self):
@@ -83,10 +83,11 @@ class Db():
             cursor.execute(query, (id,))
             data = cursor.fetchone()
             if data:
+                user_level = self.get_user_level_id(data[3])
                 shop = self.get_shop_by_id(data[4]) 
                 company = self.get_company_by_id(shop.company_id)
                 license = self.get_license_id(company.license_id)   
-                return User(data[0], data[1], data[2], data[3], shop, company, license)
+                return User(data[0], data[1], data[2], user_level, shop, company, license)
             else:
                 return None      
     
@@ -101,10 +102,11 @@ class Db():
             cursor.execute(query, (phone,))
             data = cursor.fetchone()
             if data:
+                user_level = self.get_user_level_id(data[3])
                 shop = self.get_shop_by_id(data[4]) 
                 company = self.get_company_by_id(shop.company_id)
                 license = self.get_license_id(company.license_id)   
-                return User(data[0], data[1], data[2], data[3], shop, company, license)
+                return User(data[0], data[1], data[2], user_level, shop, company, license)
             else:
                 return None    
            
@@ -119,10 +121,11 @@ class Db():
             cursor.execute(query, (phone, self.hash_password(password)))
             data = cursor.fetchone()
             if data:
+                user_level = self.get_user_level_id(data[3])
                 shop = self.get_shop_by_id(data[4]) 
                 company = self.get_company_by_id(shop.company_id)
                 license = self.get_license_id(company.license_id)   
-                return User(data[0], data[1], data[2], data[3], shop, company, license)
+                return User(data[0], data[1], data[2], user_level, shop, company, license)
             else:
                 return None 
     
@@ -242,6 +245,21 @@ class Db():
             data = cursor.fetchone()
             if data:
                 return Shop(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9])
+            else:
+                return None       
+      
+    def get_user_level_id(self, id):
+        self.ensure_connection()
+        with self.conn.cursor() as cursor:
+            query = """
+            SELECT id, name, level, description
+            FROM user_levels 
+            WHERE id = %s 
+            """
+            cursor.execute(query, (id,))
+            data = cursor.fetchone()
+            if data:
+                return UserLevel(data[0], data[1], data[2], data[3])
             else:
                 return None    
         

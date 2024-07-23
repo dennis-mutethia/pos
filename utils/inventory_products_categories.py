@@ -7,7 +7,7 @@ class InventoryProductsCategories():
     def __init__(self, db): 
         self.db = db
     
-    def fetch_product_categories(self):
+    def fetch(self):
         self.db.ensure_connection() 
         with self.db.conn.cursor() as cursor:
             query = """
@@ -28,7 +28,7 @@ class InventoryProductsCategories():
                 
             return product_categories 
     
-    def save_product_category(self, name):
+    def add(self, name):
         self.db.ensure_connection()
         with self.conn.cursor() as cursor:
             query = """
@@ -42,7 +42,7 @@ class InventoryProductsCategories():
             id = cursor.fetchone()[0]
             return id   
             
-    def update_product_category(self, id, name):
+    def update(self, id, name):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
@@ -54,7 +54,7 @@ class InventoryProductsCategories():
             cursor.execute(query, tuple(params))
             self.db.conn.commit()
             
-    def delete_product_category(self, id):
+    def delete(self, id):
         self.db.ensure_connection()
         with self.conn.cursor() as cursor:
             query = """
@@ -69,17 +69,17 @@ class InventoryProductsCategories():
         if request.method == 'POST':       
             if request.form['action'] == 'add':
                 name = request.form['name']
-                self.save_product_category(name)   
+                self.add(name)   
                 
             elif request.form['action'] == 'update':
                 id = request.form['id']
                 name = request.form['name']    
-                self.update_product_category(id, name)
+                self.update(id, name)
                 return 'success'
                    
             elif request.form['action'] == 'delete':
                 id = request.form['item_id']
-                self.delete_product_category(id) 
+                self.delete(id) 
         
-        product_categories = self.fetch_product_categories()
+        product_categories = self.fetch()
         return render_template('inventory/products-categories.html', product_categories=product_categories, page_title='Product Categories')

@@ -32,7 +32,7 @@ class InventoryPurchases():
                 InventoryStockTake(self.db).update(id, opening, additions)
                 return 'success'
         
-        product_categories = InventoryProductsCategories(self.db).fetch_product_categories()
+        product_categories = InventoryProductsCategories(self.db).fetch()
         stocks = InventoryStockTake(self.db).fetch(stock_date, search, category_id)
         return render_template('inventory/purchases.html', product_categories=product_categories, stocks=stocks, 
                                page_title='Purchases', stock_date=stock_date, current_date=current_date, search=search, category_id=category_id)

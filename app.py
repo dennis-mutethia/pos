@@ -16,6 +16,7 @@ from utils.inventory_stock_take import InventoryStockTake
 from utils.login import Login
 
 app = Flask(__name__)
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000  # One year in seconds
 
 # Configure caching
 cache = Cache(config={

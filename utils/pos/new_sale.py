@@ -44,7 +44,64 @@ class NewSale():
                 stocks.append(InStock(stock[0], stock[1], stock[2], stock[3], stock[4]))
 
             return stocks
+    
+    def save_bill(self, customer_id, amount_paid):
+        self.db.ensure_connection()            
+        query = """
+        WITH temp_bill AS(
+            SELECT %s AS customer_id, SUM(price*qty) AS total, %s AS paid, %s AS shop_id, NOW() AS created_at, %s AS created_by
+            FROM bill_entries
+            WHERE shop_id = %s AND bill_id=0 AND created_by = %s
+        )
+        INSERT INTO bills(customer_id, total, paid, shop_id, created_at, created_by) 
+        SELECT * FROM temp_bill
+        RETURNING id
+        """
+
+        params = (customer_id, amount_paid, current_user.shop.id, current_user.id, current_user.shop.id, current_user.id)
+        try:
+            with self.db.conn.cursor() as cursor:
+                cursor.execute(query, tuple(params))
+                self.db.conn.commit()
+                row_id = cursor.fetchone()[0]
+                return row_id
+        except Exception as e:
+            self.db.conn.rollback()
+            raise e
+    
+    def update_bill_entries(self, bill_id):
+        self.db.ensure_connection()
         
+        query = """
+        UPDATE bill_entries
+        SET bill_id = %s
+        WHERE bill_id=0 AND shop_id=%s AND created_by=%s
+        """
+        
+        params = (bill_id, current_user.shop.id, current_user.id)
+        with self.db.conn.cursor() as cursor:
+            cursor.execute(query, params)
+            self.db.conn.commit()
+            
+    def save_payment(self, bill_id, amount, payment_mode_id):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:              
+            query = """
+            INSERT INTO payments(bill_id, amount, payment_mode_id, shop_id, created_at, created_by) 
+            VALUES(%s, %s, %s, %s, NOW(), %s) 
+            RETURNING id
+            """
+            params = (bill_id, amount, payment_mode_id, current_user.shop.id, current_user.id)
+            try:
+                with self.db.conn.cursor() as cursor:
+                    cursor.execute(query, params)
+                    self.db.conn.commit()
+                    row_id = cursor.fetchone()[0]
+                    return row_id
+            except Exception as e:
+                self.db.conn.rollback()
+                raise e
+              
     def __call__(self):
         search = ''
         category_id = 0  
@@ -77,6 +134,15 @@ class NewSale():
                 selling_price = request.form['selling_price']    
                 self.update(id, name, purchase_price, selling_price)
                 return 'success'
+            
+            elif request.form['action'] == 'submit_bill':
+                customer_id = int(request.form['customer_id'])
+                amount_paid = float(request.form['amount_paid'])
+                payment_mode_id = request.form['payment_mode_id'] 
+                bill_id = self.save_bill(customer_id, amount_paid)
+                self.update_bill_entries(bill_id)
+                if amount_paid>0:
+                    self.save_payment(bill_id, amount_paid, payment_mode_id)
 
             elif request.form['action'] == 'clear':
                 BillEntries(self.db).clear()
@@ -84,6 +150,7 @@ class NewSale():
         product_categories = ProductsCategories(self.db).fetch()
         products = self.fetch(search, category_id, page, in_stock)
         customers = Customers(self.db).fetch()
+        payment_modes = self.db.fetch_payment_modes()
         prev_page = page-1 if page>1 else 0
         next_page = page+1 if len(products)==30 else 0
         bill_entries = BillEntries(self.db).fetch()
@@ -92,5 +159,5 @@ class NewSale():
             grandtotal = grandtotal + (bill_entry.price * bill_entry.qty) 
             
         return render_template('pos/new-sale.html', product_categories=product_categories, products=products, customers=customers, in_stock=in_stock,
-                               bill_entries=bill_entries, grandtotal=grandtotal,
+                               bill_entries=bill_entries, grandtotal=grandtotal, payment_modes=payment_modes,
                                page_title='POS > New Sale', search=search, category_id=category_id, page=page, prev_page=prev_page, next_page=next_page )

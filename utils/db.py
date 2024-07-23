@@ -2,7 +2,7 @@ from flask_login import current_user
 import sqlite3, hashlib, os, uuid, psycopg2
 from flask import current_app
 
-from utils.entities import Company, License, Package, Shop, ShopType, User, UserLevel
+from utils.entities import Company, License, Package, PaymentMode, Shop, ShopType, User, UserLevel
 
 class Db():
     def __init__(self):
@@ -288,3 +288,14 @@ class Db():
             """
             cursor.execute(query, (name.upper(), self.hash_password(password), shop_id, user_id, user_id))
             self.conn.commit()
+            
+    def fetch_payment_modes(self):
+        self.ensure_connection() 
+        with self.conn.cursor() as cursor:
+            cursor.execute("SELECT id, name, account FROM payment_modes")
+            data = cursor.fetchall()
+            payment_modes = []
+            for payment_mode in data:
+                payment_modes.append(PaymentMode(payment_mode[0], payment_mode[1], payment_mode[2]))
+                
+            return payment_modes

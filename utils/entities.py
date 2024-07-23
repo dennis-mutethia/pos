@@ -106,5 +106,12 @@ class BillEntry():
         self.stock_id = stock_id   
         self.item_name = item_name     
         self.price = price   
-        self.qty = qty     
+        self.qty = qty 
+          
+class PaymentMode():
+    def __init__(self, id, name, account):
+        self.id = id    
+        self.name = name     
+        self.account = account    
+        
         

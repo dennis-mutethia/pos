@@ -14,7 +14,7 @@ class BillEntries():
             query = """
             SELECT id, bill_id, stock_id, item_name, price, qty
             FROM bill_entries
-            WHERE shop_id=%s 
+            WHERE shop_id=%s AND bill_id=0
             ORDER BY id
             """
             params = [current_user.shop.id]

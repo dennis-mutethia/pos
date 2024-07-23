@@ -113,25 +113,9 @@
                         <div class="col-sm-12">
                             <h5 class="text-center">Total Bill Amount: <b id="bill_amount"></b></h5>
                             <select name="payment_mode_id" id="payment_mode_id" style="width: 100%;">
-                                <?php
-                                $payment_modes = $_SESSION['stock_app_inventory_logged_user']->shop_id . '_payment_modes';
-                                $sql = <<<SQL
-SELECT `id`,`name`
-FROM `$payment_modes` 
-SQL;
-                                if ($stmt = $mysqli->prepare($sql)) {
-                                    $stmt->execute();
-                                    $stmt->bind_result($id, $name);
-                                    while ($stmt->fetch()) {
-                                ?>
-                                <option value="<?php echo $id; ?>">
-                                    <?php echo $name; ?>
-                                </option>
-                                <?php
-                                    }
-                                    $stmt->close();
-                                }
-                                ?>
+                                {% for payment_mode in payment_modes %}
+                                <option value="{{ payment_mode.id }}">{{ payment_mode.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
@@ -145,7 +129,7 @@ SQL;
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    <button type="submit" id="submit_bill" name="submit_bill" value="submit_bill"
+                    <button type="submit" id="submit_bill" name="action" value="submit_bill"
                         class="btn btn-success">Save & Print</button>
                 </div>
             </form>

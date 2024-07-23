@@ -86,5 +86,11 @@ class NewSale():
         customers = Customers(self.db).fetch()
         prev_page = page-1 if page>1 else 0
         next_page = page+1 if len(products)==30 else 0
+        bill_entries = BillEntries(self.db).fetch()
+        grandtotal = 0
+        for bill_entry in bill_entries:
+            grandtotal = grandtotal + (bill_entry.price * bill_entry.qty) 
+            
         return render_template('pos/new-sale.html', product_categories=product_categories, products=products, customers=customers, in_stock=in_stock,
+                               bill_entries=bill_entries, grandtotal=grandtotal,
                                page_title='POS > New Sale', search=search, category_id=category_id, page=page, prev_page=prev_page, next_page=next_page )

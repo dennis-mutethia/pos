@@ -86,7 +86,7 @@
                 </select>
             </div>
             <div id="temp_bill" class="col-12">
-
+                {% include 'pos/bill-entries.html' %}
             </div>
         </div>
         <!-- end bill entries -->
@@ -191,7 +191,6 @@ SQL;
 
         });
         $("#search").focus();
-        refreshBillEntries();
     });
 
     function applyFilter(page) {

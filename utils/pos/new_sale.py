@@ -5,6 +5,7 @@ from flask_login import current_user
 from utils.entities import InStock
 from utils.inventory.products_categories import ProductsCategories
 from utils.inventory.stock_take import StockTake
+from utils.pos.bill_entries import BillEntries
 from utils.pos.customers import Customers
 
 class NewSale():
@@ -76,6 +77,9 @@ class NewSale():
                 selling_price = request.form['selling_price']    
                 self.update(id, name, purchase_price, selling_price)
                 return 'success'
+
+            elif request.form['action'] == 'clear':
+                BillEntries(self.db).clear()
         
         product_categories = ProductsCategories(self.db).fetch()
         products = self.fetch(search, category_id, page, in_stock)

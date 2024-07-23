@@ -50,6 +50,16 @@ class BillEntries():
         except Exception as e:
             self.db.conn.rollback()
             raise e
+            
+    def clear(self):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:
+            query = """
+            DELETE FROM bill_entries
+            WHERE bill_id=0 AND shop_id=%s AND created_by=%s
+            """
+            cursor.execute(query, (current_user.shop.id, current_user.id))
+            self.db.conn.commit()
     
     def __call__(self):
         if request.method == 'POST':       

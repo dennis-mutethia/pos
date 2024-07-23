@@ -1,11 +1,10 @@
 from flask import render_template, request
-from flask_login import current_user
 from datetime import datetime
 
-from utils.inventory_products_categories import InventoryProductsCategories
-from utils.inventory_stock_take import InventoryStockTake
+from utils.inventory.products_categories import ProductsCategories
+from utils.inventory.stock_take import StockTake
 
-class InventoryStockAdjustment():
+class StockAdjustment():
     def __init__(self, db): 
         self.db = db 
         
@@ -29,10 +28,10 @@ class InventoryStockAdjustment():
                 id = request.form['id']
                 opening = request.form['opening']
                 additions = request.form['additions']     
-                InventoryStockTake(self.db).update(id, opening, additions)
+                StockTake(self.db).update(id, opening, additions)
                 return 'success'
         
-        product_categories = InventoryProductsCategories(self.db).fetch()
-        stocks = InventoryStockTake(self.db).fetch(stock_date, search, category_id)
+        product_categories = ProductsCategories(self.db).fetch()
+        stocks = StockTake(self.db).fetch(stock_date, search, category_id)
         return render_template('inventory/stock-adjustment.html', product_categories=product_categories, stocks=stocks, 
                                page_title='Purchases', stock_date=stock_date, current_date=current_date, search=search, category_id=category_id)

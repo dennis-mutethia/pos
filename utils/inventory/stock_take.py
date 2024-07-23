@@ -3,9 +3,9 @@ from flask_login import current_user
 from datetime import datetime
 
 from utils.entities import Stock
-from utils.inventory_products_categories import InventoryProductsCategories
+from utils.inventory.products_categories import ProductsCategories
 
-class InventoryStockTake():
+class StockTake():
     def __init__(self, db): 
         self.db = db
                     
@@ -136,7 +136,7 @@ class InventoryStockTake():
                 self.update(id, opening, additions)
                 return 'success'             
              
-        product_categories = InventoryProductsCategories(self.db).fetch()
+        product_categories = ProductsCategories(self.db).fetch()
         stocks = self.fetch(stock_date, search, category_id)
         return render_template('inventory/stock-take.html', product_categories=product_categories, stocks=stocks, 
                                page_title='Stock Take', stock_date=stock_date, current_date=current_date, search=search, category_id=category_id)

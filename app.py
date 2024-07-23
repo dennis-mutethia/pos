@@ -7,12 +7,13 @@ from redis import Redis
 
 from utils.dashboard import Dashboard
 from utils.db import Db
-from utils.inventory_products import InventoryProducts
-from utils.inventory_products_categories import InventoryProductsCategories
-from utils.inventory_purchases import InventoryPurchases
-from utils.inventory_stock_adjustment import InventoryStockAdjustment
-from utils.inventory_stock_take import InventoryStockTake
+from utils.inventory.products import Products
+from utils.inventory.products_categories import ProductsCategories
+from utils.inventory.purchases import Purchases
+from utils.inventory.stock_adjustment import StockAdjustment
+from utils.inventory.stock_take import StockTake
 from utils.login import Login
+from utils.pos.new_sale import NewSale
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000  # One year in seconds
@@ -67,52 +68,57 @@ def dashboard():
 @app.route('/inventory-products-categories', methods=['GET', 'POST'])
 @login_required
 def inventoryProductsCategories():
-    return InventoryProductsCategories(db)()
+    return ProductsCategories(db)()
 
 @app.route('/inventory-products-categories-update', methods=['POST'])
 @login_required
 def inventoryProductsCategoriesUpdate():    
-    return InventoryProductsCategories(db)()
+    return ProductsCategories(db)()
 
 @app.route('/inventory-products', methods=['GET', 'POST'])
 @login_required
 def inventoryProducts():
-    return InventoryProducts(db)()
+    return Products(db)()
 
 @app.route('/inventory-products-update', methods=['POST'])
 @login_required
 def inventoryProductsUpdate():    
-    return InventoryProducts(db)()
+    return Products(db)()
 
 @app.route('/inventory-stock-take', methods=['GET', 'POST'])
 @login_required
 def inventoryStockTake():
-    return InventoryStockTake(db)()
+    return StockTake(db)()
 
 @app.route('/inventory-stock-take-update', methods=['POST'])
 @login_required
 def inventoryStockTakeUpdate():    
-    return InventoryStockTake(db)()
+    return StockTake(db)()
 
 @app.route('/inventory-purchases', methods=['GET', 'POST'])
 @login_required
 def inventoryPurchases():
-    return InventoryPurchases(db)()
+    return Purchases(db)()
 
 @app.route('/inventory-purchases-update', methods=['POST'])
 @login_required
 def inventoryPurchasesUpdate():
-    return InventoryPurchases(db)()
+    return Purchases(db)()
 
 @app.route('/inventory-stock-adjustment', methods=['GET', 'POST'])
 @login_required
 def inventoryStockAdjustment():
-    return InventoryStockAdjustment(db)()
+    return StockAdjustment(db)()
 
 @app.route('/inventory-stock-adjustment-update', methods=['POST'])
 @login_required
 def inventoryStockAdjustmentUpdate():
-    return InventoryStockAdjustment(db)()
+    return StockAdjustment(db)()
+
+@app.route('/pos-new-sale', methods=['GET', 'POST'])
+@login_required
+def posNewSale():
+    return NewSale(db)()
 
 if __name__ == '__main__':
     debug_mode = os.getenv('IS_DEBUG', 'False').lower() in ['true', '1', 't']

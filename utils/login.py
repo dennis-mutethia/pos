@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import redirect, render_template, request, url_for
 from flask_login import login_user
 
-from utils.inventory_stock_take import InventoryStockTake
+from utils.inventory.stock_take import StockTake
 
 class Login():
     def __init__(self, db): 
@@ -17,7 +17,7 @@ class Login():
                 
                 if user:        
                     login_user(user)
-                    InventoryStockTake(self.db).load(datetime.now().strftime('%Y-%m-%d'))
+                    StockTake(self.db).load(datetime.now().strftime('%Y-%m-%d'))
                     return redirect(url_for('dashboard'))
                 else: 
                     error = 'Login failed! Phone & Password do not match or Phone does not exist.'
@@ -46,7 +46,7 @@ class Login():
             self.db.update_user(user.id, user_name, user_password, shop_id)
                     
         login_user(user)
-        InventoryStockTake(self.db).load(datetime.now().strftime('%Y-%m-%d'))                
+        StockTake(self.db).load(datetime.now().strftime('%Y-%m-%d'))                
         return redirect(url_for('dashboard'))
       
     def __call__(self):

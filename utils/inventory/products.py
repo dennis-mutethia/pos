@@ -2,11 +2,11 @@ from datetime import datetime
 from flask import render_template, request
 from flask_login import current_user
 
-from utils.entities import Products
-from utils.inventory_products_categories import InventoryProductsCategories
-from utils.inventory_stock_take import InventoryStockTake
+from utils.entities import Product
+from utils.inventory.products_categories import ProductsCategories
+from utils.inventory.stock_take import StockTake
 
-class InventoryProducts():
+class Products():
     def __init__(self, db): 
         self.db = db
     
@@ -32,7 +32,7 @@ class InventoryProducts():
             data = cursor.fetchall()
             products = []
             for product in data:
-                products.append(Products(product[0], product[1], product[2], product[3], product[4]))
+                products.append(Product(product[0], product[1], product[2], product[3], product[4]))
 
             return products
                     
@@ -93,7 +93,7 @@ class InventoryProducts():
                 selling_price = request.form['selling_price']    
                 category_id = request.form['category_id_new']    
                 self.add(name, purchase_price, selling_price, category_id)
-                InventoryStockTake(db).load(datetime.now().strftime('%Y-%m-%d'))
+                StockTake(self.db).load(datetime.now().strftime('%Y-%m-%d'))
             
             elif request.form['action'] == 'update':
                 id = request.form['id']
@@ -107,7 +107,7 @@ class InventoryProducts():
                 id = request.form['item_id']
                 self.delete(id) 
         
-        product_categories = InventoryProductsCategories(self.db).fetch()
+        product_categories = ProductsCategories(self.db).fetch()
         products = self.fetch(search, category_id)
         return render_template('inventory/products.html', product_categories=product_categories, products=products, 
                                page_title='Product Categories', search=search, category_id=category_id)

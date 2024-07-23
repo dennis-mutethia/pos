@@ -60,13 +60,13 @@ class Package():
         self.color = color
         self.validity = validity
 
-class ProductCategories():
+class ProductCategory():
     def __init__(self, id, name, products_count):
         self.id = id
         self.name = name    
         self.products_count = products_count   
 
-class Products():
+class Product():
     def __init__(self, id, name, purchase_price, selling_price, category_id):
         self.id = id
         self.name = name    
@@ -83,4 +83,12 @@ class Stock():
         self.yesterday = yesterday 
         self.opening = opening   
         self.additions = additions     
-        self.sold = sold 
+        self.sold = sold  
+
+class InStock():
+    def __init__(self, id, name, selling_price, actual, temp_qty):
+        self.id = id    
+        self.name = name     
+        self.selling_price = selling_price   
+        self.actual = actual 
+        self.temp_qty = temp_qty   

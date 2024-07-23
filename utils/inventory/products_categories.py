@@ -1,9 +1,9 @@
 from flask import render_template, request
 from flask_login import current_user
 
-from utils.entities import ProductCategories
+from utils.entities import ProductCategory
 
-class InventoryProductsCategories():
+class ProductsCategories():
     def __init__(self, db): 
         self.db = db
     
@@ -24,7 +24,7 @@ class InventoryProductsCategories():
             data = cursor.fetchall()
             product_categories = []
             for shop_type in data:
-                product_categories.append(ProductCategories(shop_type[0], shop_type[1], shop_type[2]))
+                product_categories.append(ProductCategory(shop_type[0], shop_type[1], shop_type[2]))
                 
             return product_categories 
     

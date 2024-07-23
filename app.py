@@ -1,5 +1,6 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for
+from flask_caching import Cache
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from dotenv import load_dotenv
 from flask_session import Session
@@ -13,10 +14,18 @@ from utils.inventory_purchases import InventoryPurchases
 from utils.inventory_stock_adjustment import InventoryStockAdjustment
 from utils.inventory_stock_take import InventoryStockTake
 from utils.login import Login
-# Load environment variables from .env file
-load_dotenv()
 
 app = Flask(__name__)
+
+# Configure caching
+cache = Cache(config={
+    'CACHE_TYPE': 'simple',
+    'CACHE_DEFAULT_TIMEOUT': 300
+})
+cache.init_app(app)
+
+# Load environment variables from .env file
+load_dotenv()
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_REDIS'] = r = Redis(
@@ -113,4 +122,5 @@ def inventoryStockAdjustmentUpdate():
     return InventoryStockAdjustment(db)()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    debug_mode = os.getenv('IS_DEBUG', 'False').lower() in ['true', '1', 't']
+    app.run(debug=debug_mode)

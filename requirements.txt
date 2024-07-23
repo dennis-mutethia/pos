@@ -1,6 +1,7 @@
 python-dotenv
 psycopg2-binary
 Flask
+Flask-Caching
 Flask-Login
 redis 
 flask-session

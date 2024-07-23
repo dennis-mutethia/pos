@@ -11,16 +11,16 @@ class NewSale():
     def __init__(self, db): 
         self.db = db
     
-    def fetch(self, search, category_id, page):
+    def fetch(self, search, category_id, page, in_stock):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             #$id, $name, $selling_price, remaining, $temp_qty
             query = """
             SELECT id, name, selling_price, (opening+additions) AS actual, 0 AS temp_qty
             FROM stock
-            WHERE shop_id=%s AND DATE(stock_date) = CURRENT_DATE --AND (opening+additions) > 0
+            WHERE shop_id=%s AND DATE(stock_date) = CURRENT_DATE AND (opening+additions) >= %s
             """
-            params = [current_user.shop.id]
+            params = [current_user.shop.id, in_stock]
 
             if search:
                 query += " AND name LIKE %s"
@@ -48,11 +48,13 @@ class NewSale():
         search = ''
         category_id = 0  
         page = 1   
+        in_stock = 0
         if request.method == 'GET':   
             try:    
                 search = request.args.get('search', '')
                 category_id = int(request.args.get('category_id', 0))
                 page = int(request.args.get('page', 1))
+                in_stock = int(request.args.get('in_stock', 0))
             except ValueError as e:
                 print(f"Error converting category_id: {e}")
             except Exception as e:
@@ -76,9 +78,9 @@ class NewSale():
                 return 'success'
         
         product_categories = ProductsCategories(self.db).fetch()
-        products = self.fetch(search, category_id, page)
+        products = self.fetch(search, category_id, page, in_stock)
         customers = Customers(self.db).fetch()
         prev_page = page-1 if page>1 else 0
         next_page = page+1 if len(products)==30 else 0
-        return render_template('pos/new-sale.html', product_categories=product_categories, products=products, customers=customers,
+        return render_template('pos/new-sale.html', product_categories=product_categories, products=products, customers=customers, in_stock=in_stock,
                                page_title='POS > New Sale', search=search, category_id=category_id, page=page, prev_page=prev_page, next_page=next_page )

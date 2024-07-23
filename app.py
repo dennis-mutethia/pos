@@ -9,6 +9,8 @@ from utils.dashboard import Dashboard
 from utils.db import Db
 from utils.inventory_products import InventoryProducts
 from utils.inventory_products_categories import InventoryProductsCategories
+from utils.inventory_purchases import InventoryPurchases
+from utils.inventory_stock_adjustment import InventoryStockAdjustment
 from utils.inventory_stock_take import InventoryStockTake
 from utils.login import Login
 # Load environment variables from .env file
@@ -89,6 +91,26 @@ def inventoryStockTake():
 @login_required
 def inventoryStockTakeUpdate():    
     return InventoryStockTake(db)()
+
+@app.route('/inventory-purchases', methods=['GET', 'POST'])
+@login_required
+def inventoryPurchases():
+    return InventoryPurchases(db)()
+
+@app.route('/inventory-purchases-update', methods=['POST'])
+@login_required
+def inventoryPurchasesUpdate():
+    return InventoryPurchases(db)()
+
+@app.route('/inventory-stock-adjustment', methods=['GET', 'POST'])
+@login_required
+def inventoryStockAdjustment():
+    return InventoryStockAdjustment(db)()
+
+@app.route('/inventory-stock-adjustment-update', methods=['POST'])
+@login_required
+def inventoryStockAdjustmentUpdate():
+    return InventoryStockAdjustment(db)()
 
 if __name__ == '__main__':
     app.run(debug=True)

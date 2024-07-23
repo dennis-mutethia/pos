@@ -1,12 +1,14 @@
 from flask_login import UserMixin
 
 class User(UserMixin):
-    def __init__(self, id, name, phone, user_level_id, shop_id):  
+    def __init__(self, id, name, phone, user_level_id, shop, company, license):  
         self.id = id
         self.name = name
         self.phone = phone
         self.user_level_id = user_level_id
-        self.shop_id = shop_id
+        self.shop = shop 
+        self.company = company 
+        self.license = license
     
 class ShopType():
     def __init__(self, id, name, description):

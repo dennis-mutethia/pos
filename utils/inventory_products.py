@@ -1,14 +1,16 @@
+from datetime import datetime
 from flask import render_template, request
 from flask_login import current_user
 
 from utils.entities import Products
 from utils.inventory_products_categories import InventoryProductsCategories
+from utils.inventory_stock_take import InventoryStockTake
 
 class InventoryProducts():
     def __init__(self, db): 
         self.db = db
     
-    def fetch_products(self, search, category_id):
+    def fetch(self, search, category_id):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
@@ -16,7 +18,7 @@ class InventoryProducts():
             FROM products
             WHERE shop_id = %s
             """
-            params = [current_user.shop_id]
+            params = [current_user.shop.id]
 
             if search:
                 query += " AND name LIKE %s"
@@ -34,7 +36,7 @@ class InventoryProducts():
 
             return products
                     
-    def save_product(self, name, purchase_price, selling_price, category_id):
+    def add(self, name, purchase_price, selling_price, category_id):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
@@ -43,13 +45,13 @@ class InventoryProducts():
             ON CONFLICT (name, shop_id) DO NOTHING
             RETURNING id
             """
-            params = [name.upper(), purchase_price, selling_price, category_id, current_user.shop_id, current_user.id]
+            params = [name.upper(), purchase_price, selling_price, category_id, current_user.shop.id, current_user.id]
             cursor.execute(query, tuple(params))
             self.db.conn.commit()
             id = cursor.fetchone()[0]
             return id   
             
-    def update_product(self, id, name, purchase_price, selling_price):
+    def update(self, id, name, purchase_price, selling_price):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
@@ -61,7 +63,7 @@ class InventoryProducts():
             cursor.execute(query, tuple(params))
             self.db.conn.commit()
             
-    def delete_product(self, id):
+    def delete(self, id):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
@@ -90,25 +92,22 @@ class InventoryProducts():
                 purchase_price = request.form['purchase_price']
                 selling_price = request.form['selling_price']    
                 category_id = request.form['category_id_new']    
-                self.save_product(name, purchase_price, selling_price, category_id)
+                self.add(name, purchase_price, selling_price, category_id)
+                InventoryStockTake(db).load(datetime.now().strftime('%Y-%m-%d'))
             
             elif request.form['action'] == 'update':
                 id = request.form['id']
                 name = request.form['name']    
                 purchase_price = request.form['purchase_price']
                 selling_price = request.form['selling_price']    
-                self.update_product(id, name, purchase_price, selling_price)
+                self.update(id, name, purchase_price, selling_price)
                 return 'success'
                 
             elif request.form['action'] == 'delete':
                 id = request.form['item_id']
-                self.delete_product(id) 
-                
-        shop = self.db.get_shop_by_id(current_user.shop_id) 
-        company = self.db.get_company_by_id(shop.company_id)
-        license = self.db.get_license_id(company.license_id)
+                self.delete(id) 
         
         product_categories = InventoryProductsCategories(self.db).fetch_product_categories()
         products = self.fetch_products(search, category_id)
-        return render_template('inventory/products.html', shop=shop, company=company, license=license, product_categories=product_categories, products=products, 
+        return render_template('inventory/products.html', product_categories=product_categories, products=products, 
                                page_title='Product Categories', search=search, category_id=category_id)

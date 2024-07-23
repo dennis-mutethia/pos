@@ -12,7 +12,7 @@
         <!-- Sidebar navigation-->
         <nav class="sidebar-nav">
             <ul id="sidebarnav" class="pt-4">
-                {% if license.is_valid %}
+                {% if current_user.license.is_valid %}
                 {% if current_user.user_level_id in [0, 1] %}
                 <li class="sidebar-item">
                     <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{ url_for('dashboard') }}" aria-expanded="false"><i class="mdi mdi-apps"></i><span class="hide-menu">Dashboard</span></a>
@@ -59,10 +59,10 @@
                             <a href="{{ url_for('inventoryStockTake') }}" class="sidebar-link"><i class="mdi mdi-table-edit"></i><span class="hide-menu"> Stock Take </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="stock-purchases" class="sidebar-link"><i class="mdi mdi-truck-delivery"></i><span class="hide-menu"> Purchases </span></a>
+                            <a href="{{ url_for('inventoryPurchases') }}" class="sidebar-link"><i class="mdi mdi-truck-delivery"></i><span class="hide-menu"> Purchases </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="stock-adjustment" class="sidebar-link"><i class="mdi mdi-calendar"></i><span class="hide-menu"> Stock Adjustment </span></a>
+                            <a href="{{ url_for('inventoryStockAdjustment') }}" class="sidebar-link"><i class="mdi mdi-calendar"></i><span class="hide-menu"> Stock Adjustment </span></a>
                         </li>
                     </ul>
                 </li>

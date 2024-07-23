@@ -20,7 +20,7 @@ class InventoryProductsCategories():
             WHERE product_categories.shop_id = %s
             ORDER BY name
             """
-            cursor.execute(query, (current_user.shop_id,))
+            cursor.execute(query, (current_user.shop.id,))
             data = cursor.fetchall()
             product_categories = []
             for shop_type in data:
@@ -37,7 +37,7 @@ class InventoryProductsCategories():
             ON CONFLICT (name, shop_id) DO NOTHING
             RETURNING id
             """
-            cursor.execute(query, (name.upper(), current_user.shop_id, current_user.id))
+            cursor.execute(query, (name.upper(), current_user.shop.id, current_user.id))
             self.db.conn.commit()
             id = cursor.fetchone()[0]
             return id   
@@ -50,7 +50,7 @@ class InventoryProductsCategories():
             SET name=%s, updated_at=NOW(), updated_by=%s
             WHERE id=%s
             """
-            params = [name.upper(), current_user.shop_id, current_user.id]
+            params = [name.upper(), current_user.shop.id, current_user.id]
             cursor.execute(query, tuple(params))
             self.db.conn.commit()
             
@@ -65,11 +65,7 @@ class InventoryProductsCategories():
             cursor.execute(query, (id,))
             self.db.conn.commit()
             
-    def __call__(self):
-        shop = self.db.get_shop_by_id(current_user.shop_id) 
-        company = self.db.get_company_by_id(shop.company_id)
-        license = self.db.get_license_id(company.license_id)
-        
+    def __call__(self):        
         if request.method == 'POST':       
             if request.form['action'] == 'add':
                 name = request.form['name']
@@ -86,4 +82,4 @@ class InventoryProductsCategories():
                 self.delete_product_category(id) 
         
         product_categories = self.fetch_product_categories()
-        return render_template('inventory/products-categories.html', shop=shop, company=company, license=license, product_categories=product_categories, page_title='Product Categories')
+        return render_template('inventory/products-categories.html', product_categories=product_categories, page_title='Product Categories')

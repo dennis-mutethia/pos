@@ -70,7 +70,7 @@ class Db():
             for shop_type in data:
                 shop_types.append(ShopType(shop_type[0], shop_type[1], shop_type[2]))
                 
-            return shop_types    
+            return shop_types
     
     def get_user_by_id(self, id):
         self.ensure_connection()
@@ -83,7 +83,10 @@ class Db():
             cursor.execute(query, (id,))
             data = cursor.fetchone()
             if data:
-                return User(data[0], data[1], data[2], data[3], data[4])
+                shop = self.get_shop_by_id(data[4]) 
+                company = self.get_company_by_id(shop.company_id)
+                license = self.get_license_id(company.license_id)   
+                return User(data[0], data[1], data[2], data[3], shop, company, license)
             else:
                 return None      
     
@@ -98,7 +101,10 @@ class Db():
             cursor.execute(query, (phone,))
             data = cursor.fetchone()
             if data:
-                return User(data[0], data[1], data[2], data[3], data[4])
+                shop = self.get_shop_by_id(data[4]) 
+                company = self.get_company_by_id(shop.company_id)
+                license = self.get_license_id(company.license_id)   
+                return User(data[0], data[1], data[2], data[3], shop, company, license)
             else:
                 return None    
            
@@ -113,7 +119,10 @@ class Db():
             cursor.execute(query, (phone, self.hash_password(password)))
             data = cursor.fetchone()
             if data:
-                return User(data[0], data[1], data[2], data[3], data[4])
+                shop = self.get_shop_by_id(data[4]) 
+                company = self.get_company_by_id(shop.company_id)
+                license = self.get_license_id(company.license_id)   
+                return User(data[0], data[1], data[2], data[3], shop, company, license)
             else:
                 return None 
     

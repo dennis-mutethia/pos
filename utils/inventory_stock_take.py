@@ -35,7 +35,7 @@ class InventoryStockTake():
                     COALESCE(yesterday.purchase_price, p.purchase_price) AS purchase_price,
                     COALESCE(yesterday.selling_price, p.selling_price) AS selling_price,
                     COALESCE(yesterday.closing, 0) AS opening,
-                    COALESCE(yesterday.additions, 0) AS additions,
+                    0 AS additions,
                     %s AS shop_id, NOW() AS created_at, %s AS created_by              
                 FROM p
                 LEFT JOIN yesterday ON yesterday.product_id = p.id
@@ -45,7 +45,7 @@ class InventoryStockTake():
             ON CONFLICT (stock_date, product_id, shop_id) DO NOTHING
             RETURNING id
             """
-            params = [current_user.shop_id, stock_date, stock_date, current_user.shop_id, current_user.id]
+            params = [current_user.shop.id, stock_date, stock_date, current_user.shop.id, current_user.id]
             
             try:
                 cursor.execute(query, tuple(params))
@@ -83,7 +83,7 @@ class InventoryStockTake():
             LEFT JOIN yesterday ON yesterday.product_id = today.product_id
             WHERE today.id > 0
             """
-            params = [current_user.shop_id, stock_date, stock_date]
+            params = [current_user.shop.id, stock_date, stock_date]
 
             if search:
                 query += " AND today.name LIKE %s"
@@ -112,16 +112,6 @@ class InventoryStockTake():
             params = [opening, additions, current_user.id, id]
             cursor.execute(query, tuple(params))
             self.db.conn.commit()
-            
-    def delete(self, id):
-        self.db.ensure_connection()
-        with self.db.conn.cursor() as cursor:
-            query = """
-            DELETE FROM stock
-            WHERE id=%s
-            """
-            cursor.execute(query, (id,))
-            self.db.conn.commit()
              
     def __call__(self):
         search = ''
@@ -133,7 +123,6 @@ class InventoryStockTake():
                 search = request.args.get('search', '')
                 category_id = int(request.args.get('category_id', 0))
                 stock_date = request.args.get('stock_date', default=current_date)
-                self.load(stock_date)                
             except ValueError as e:
                 print(f"Error converting category_id: {e}")
             except Exception as e:
@@ -145,17 +134,9 @@ class InventoryStockTake():
                 opening = request.form['opening']
                 additions = request.form['additions']     
                 self.update(id, opening, additions)
-                return 'success'
-                
-            elif request.form['action'] == 'delete':
-                id = request.form['item_id']
-                self.delete(id) 
-               
-        shop = self.db.get_shop_by_id(current_user.shop_id) 
-        company = self.db.get_company_by_id(shop.company_id)
-        license = self.db.get_license_id(company.license_id)
-        
+                return 'success'             
+             
         product_categories = InventoryProductsCategories(self.db).fetch_product_categories()
         stocks = self.fetch(stock_date, search, category_id)
-        return render_template('inventory/stock-take.html', shop=shop, company=company, license=license, product_categories=product_categories, stocks=stocks, 
+        return render_template('inventory/stock-take.html', product_categories=product_categories, stocks=stocks, 
                                page_title='Stock Take', stock_date=stock_date, current_date=current_date, search=search, category_id=category_id)

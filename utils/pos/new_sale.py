@@ -45,24 +45,8 @@ class NewSale():
             except Exception as e:
                 print(f"An error occurred: {e}")
         
-        if request.method == 'POST':       
-            if request.form['action'] == 'add':
-                name = request.form['name']    
-                purchase_price = request.form['purchase_price']
-                selling_price = request.form['selling_price']    
-                category_id = request.form['category_id_new']    
-                self.add(name, purchase_price, selling_price, category_id)
-                StockTake(self.db).load(datetime.now().strftime('%Y-%m-%d'))
-            
-            elif request.form['action'] == 'update':
-                id = request.form['id']
-                name = request.form['name']    
-                purchase_price = request.form['purchase_price']
-                selling_price = request.form['selling_price']    
-                self.update(id, name, purchase_price, selling_price)
-                return 'success'
-            
-            elif request.form['action'] == 'submit_bill':
+        if request.method == 'POST':          
+            if request.form['action'] == 'submit_bill':
                 customer_id = int(request.form['customer_id'])
                 amount_paid = float(request.form['amount_paid'])
                 payment_mode_id = request.form['payment_mode_id'] 
@@ -76,7 +60,7 @@ class NewSale():
         
         current_date = datetime.now().strftime('%Y-%m-%d')
         product_categories = ProductsCategories(self.db).fetch()
-        stocks = StockTake(self.db).fetch(current_date, search, category_id, in_stock)
+        stocks = StockTake(self.db).fetch(current_date, search, category_id, in_stock, page)
         customers = Customers(self.db).fetch()
         payment_modes = self.db.fetch_payment_modes()
         prev_page = page-1 if page>1 else 0

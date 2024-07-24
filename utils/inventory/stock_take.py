@@ -57,7 +57,7 @@ class StockTake():
                 print(f"Error loading stock: {e}")
                 return None
     
-    def fetch(self, stock_date, search, category_id, in_stock=0):
+    def fetch(self, stock_date, search, category_id, in_stock=0, page=0):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             #id, product_id, name, category_name, yesterday, opening, additions, sold
@@ -99,7 +99,13 @@ class StockTake():
                 query += " AND today.category_id = %s"
                 params.append(category_id)
             
-            query = query + " ORDER BY today.category_id, today.name"
+            if page>0:
+                query = query + """
+                ORDER BY today.category_id, today.name
+                LIMIT 30 OFFSET %s
+                """
+                params.append((page - 1)*30)
+            
             cursor.execute(query, tuple(params))
             data = cursor.fetchall()
             stocks = []

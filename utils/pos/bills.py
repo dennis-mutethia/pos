@@ -23,7 +23,7 @@ class Bills():
             if bill_status==1:
                 query = query + " AND paid>=total"
             if bill_status==2:
-                query = query + " AND paid<=total"
+                query = query + " AND paid<total"
             
             cursor.execute(query, tuple(params))
             data = cursor.fetchall()

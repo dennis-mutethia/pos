@@ -14,6 +14,7 @@ from utils.inventory.stock_adjustment import StockAdjustment
 from utils.inventory.stock_take import StockTake
 from utils.login import Login
 from utils.pos.bill_entries import BillEntries
+from utils.pos.bills import Bills
 from utils.pos.new_sale import NewSale
 from utils.pos.print import Print
 
@@ -136,6 +137,11 @@ def posBillEntriesUpdate():
 @login_required
 def posPrint():
     return Print(db)()
+
+@app.route('/pos-bills', methods=['GET', 'POST'])
+@login_required
+def posBills():
+    return Bills(db)()
 
 if __name__ == '__main__':
     debug_mode = os.getenv('IS_DEBUG', 'False').lower() in ['true', '1', 't']

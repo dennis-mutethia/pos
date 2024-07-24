@@ -110,22 +110,30 @@ class PaymentMode():
         self.account = account
           
 class Payment():
-    def __init__(self, id, bill_id, amount, payment_mode, created_at, user ):
+    def __init__(self, id, bill_id, amount, created_at, user, payment_mode ):
         self.id = id    
         self.bill_id = bill_id   
         self.amount = amount     
-        self.payment_mode = payment_mode   
         self.created_at = created_at   
         self.user = user   
+        self.payment_mode = payment_mode   
           
 class Bill():
-    def __init__(self, id, customer_id, total, paid, created_at, user ):
+    def __init__(self, id, total, paid, created_at, customer, user, payments):
         self.id = id    
-        self.customer_id = customer_id   
         self.total = total     
         self.paid = paid     
-        self.created_at = created_at   
+        self.created_at = created_at  
+        self.customer = customer    
         self.user = user   
+        self.payments = payments
+        self.cash = 0 
+        self.mpesa = 0
+        for payment in payments:
+            if payment.payment_mode.name == 'CASH':
+                self.cash = self.cash + payment.amount
+            elif payment.payment_mode.name == 'MPESA':
+                self.mpesa = self.mpesa + payment.amount
         
         
         

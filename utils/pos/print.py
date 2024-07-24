@@ -35,9 +35,9 @@ class Print():
         show_vat = int(request.args.get('show_vat', 0))
                      
         customer = self.fetch_customer(bill_id)
-        bill = Bills(self.db).fetch(bill_id)
+        bill = Bills(self.db).fetch_by_id(bill_id)
         bill_entries = BillEntries(self.db).fetch(bill_id)
-        payments = Payments(self.db).fetch(bill_id)
+        payments = Payments(self.db).fetch_by_bill_id(bill_id)
             
         return render_template('pos/print.html', customer=customer, bill_id=bill_id, show_vat=show_vat, 
                                bill=bill, bill_entries=bill_entries, payments=payments )

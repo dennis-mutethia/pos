@@ -1,27 +1,58 @@
+from datetime import datetime
 from flask import render_template, request
 from flask_login import current_user
 
-from utils.entities import Bill, BillEntry
+from utils.entities import Bill
+from utils.pos.customers import Customers
+from utils.pos.payments import Payments
 
 class Bills():
     def __init__(self, db): 
         self.db = db
             
-    def fetch(self, bill_id):
+    def fetch(self, report_date, bill_status):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
-            SELECT id, customer_id, total, paid, created_at, created_by
+            SELECT id, total, paid, created_at, customer_id, created_by
+            FROM bills
+            WHERE DATE(created_at) = DATE(%s) AND shop_id = %s
+            """
+            params = [report_date, current_user.shop.id]
+            
+            if bill_status==1:
+                query = query + " AND paid>=total"
+            if bill_status==2:
+                query = query + " AND paid<=total"
+            
+            cursor.execute(query, tuple(params))
+            data = cursor.fetchall()
+            bills = []
+            for datum in data:                
+                customer = Customers(self.db).fetch_by_id(datum[4])
+                user = self.db.get_user_by_id(datum[5])  
+                payments = Payments(self.db).fetch_by_bill_id(datum[0])         
+                bills.append(Bill(datum[0], datum[1], datum[2], datum[3], customer, user, payments))
+
+            return bills 
+               
+    def fetch_by_id(self, id):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:
+            query = """
+            SELECT id, total, paid, created_at, customer_id, created_by
             FROM bills
             WHERE id = %s
             """
-            params = [bill_id]
+            params = [id]
             
             cursor.execute(query, tuple(params))
             data = cursor.fetchone()
             if data:
+                customer = Customers(self.db).fetch_by_id(data[4])
                 user = self.db.get_user_by_id(data[5])
-                return Bill(data[0], data[1], data[2], data[3], data[4], user)
+                payments = Payments(self.db).fetch_by_bill_id(data[0])
+                return Bill(data[0], data[1], data[2], data[3], customer, user, payments)
             else:
                 return None    
       
@@ -50,6 +81,19 @@ class Bills():
             raise e
         
     def __call__(self):
+        current_date = datetime.now().strftime('%Y-%m-%d')
+        report_date = current_date
+        bill_status = 0 
+        
+        if request.method == 'GET':   
+            try:    
+                report_date = request.args.get('report_date', datetime.now().strftime('%Y-%m-%d'))
+                bill_status = int(request.args.get('bill_status', 0))
+            except ValueError as e:
+                print(f"Error converting bill_status: {e}")
+            except Exception as e:
+                print(f"An error occurred: {e}")
+                
         if request.method == 'POST':       
             if request.form['action'] == 'add':
                 stock_id = request.form['stock_id']    
@@ -64,9 +108,13 @@ class Bills():
                 id = request.form['item_id']
                 self.delete(id) 
                 
-        bill_entries = self.fetch(0)
-        grandtotal = 0
-        for bill_entry in bill_entries:
-            grandtotal = grandtotal + (bill_entry.price * bill_entry.qty) 
+        bills = self.fetch(report_date, bill_status) 
+        grand_total = grand_paid = cash_total = mpesa_total =  0
+        for bill in bills:
+            grand_total = grand_total + bill.total
+            grand_paid = grand_paid + bill.paid
+            cash_total = cash_total + bill.cash
+            mpesa_total = mpesa_total + bill.mpesa
             
-        return render_template('pos/bill-entries.html', bill_entries=bill_entries, grandtotal=grandtotal )
+        return render_template('pos/bills.html', page_title='POS > Bills', bills=bills, current_date=current_date, 
+                               grand_total=grand_total, grand_paid=grand_paid, cash_total=cash_total, mpesa_total=mpesa_total )

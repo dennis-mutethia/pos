@@ -7,7 +7,7 @@ class Payments():
     def __init__(self, db): 
         self.db = db
             
-    def fetch(self, bill_id):
+    def fetch_by_bill_id(self, bill_id):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
@@ -23,7 +23,7 @@ class Payments():
             for datum in data:
                 payment_mode = self.db.get_payment_mode_by_id(datum[3])
                 user = self.db.get_user_by_id(datum[5])                
-                payments.append(Payment(datum[0], datum[1], datum[2], payment_mode, datum[4], user))
+                payments.append(Payment(datum[0], datum[1], datum[2], datum[4], user, payment_mode))
 
             return payments 
             

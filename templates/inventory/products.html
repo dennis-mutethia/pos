@@ -7,22 +7,24 @@
 <div class="container-fluid table-responsive">
     <form id="filter-frm" method="GET" class="row">
         <div class="col-6">
-            <input onkeyup="onchange()" style="height: 25px" type="text" id="search" name="search" value="{{ search }}" placeholder="Search Item" autofocus
-                onfocus="this.value = this.value;" />
+            <input onkeyup="onchange()" style="height: 25px" type="text" id="search" name="search" value="{{ search }}"
+                placeholder="Search Item" autofocus onfocus="this.value = this.value;" />
         </div>
         <div class="col-6">
             <select onchange="applyFilter()" name="category_id" id="category_id" style="width: 100%;">
                 <option value="0">Filter by Category</option>
                 {% for product_category in product_categories %}
-                <option value="{{ product_category.id }}" {% if product_category.id == category_id %} selected {% endif %}>{{ product_category.name }}</option>
+                <option value="{{ product_category.id }}" {% if product_category.id==category_id %} selected {% endif
+                    %}>{{ product_category.name }}</option>
                 {% endfor %}
             </select>
         </div>
     </form><br />
-    <table id="data-table-basic" class="table table-bordered table-striped">
+    <table class="table-bordered table-striped">
         <thead>
             <tr>
                 <th width="40%">PRODUCT NAME</th>
+                <th width="40%">PRODUCT CATEGORY</th>
                 <th class="text-center">BUYING PRICE</th>
                 <th class="text-center">SELLING PRICE</th>
                 <th class="text-center">
@@ -40,16 +42,25 @@
             </style>
             <tr>
                 <td>
-                    <input type="text" id="product_name_{{ product.id }}" name="product_name{{ product.id }}"
+                    <input type="text" id="product_name_{{ product.id }}" name="product_name_{{ product.id }}"
                         value="{{ product.name }}" onchange="updateProduct({{ product.id }});" />
                 </td>
-                <td class="text-center">
-                    <input type="number" id="product_purchase_{{ product.id }}" name="product_purchase_{{ product.id }}"
-                        value="{{ product.purchase_price }}" onchange="updateProduct({{ product.id }});" min="0" />
+                <td>
+                    <select onchange="updateProduct({{ product.id }});" id="product_category_id_{{ product.id }}" name="product_category_id_{{ product.id }}" style="width: 100%;">
+                        {% for product_category in product_categories %}
+                        <option value="{{ product_category.id }}" {% if product_category.id==product.category_id %} selected {%
+                            endif %}>{{ product_category.name }}</option>
+                        {% endfor %}
+                    </select>
+
                 </td>
-                <td class="text-center">
+                <td>
+                    <input type="number" id="product_purchase_{{ product.id }}" name="product_purchase_{{ product.id }}"
+                        value="{{ product.purchase_price }}" onchange="updateProduct({{ product.id }});" min="0" style="width: 100%;" />
+                </td>
+                <td>
                     <input type="number" id="product_selling_{{ product.id }}" name="product_selling_{{ product.id }}"
-                        value="{{ product.selling_price }}" onchange="updateProduct({{ product.id }});" min="0" />
+                        value="{{ product.selling_price }}" onchange="updateProduct({{ product.id }});" min="0" style="width: 100%;" />
                 </td>
                 <td class="text-center">
                     <a href="#" onclick="deleteItem({{ product.id }})" data-toggle="modal" data-target="#deleteModal"><i
@@ -85,7 +96,8 @@
                             <select class="form-control input-sm" name="category_id_new" id="category_id_new" required>
                                 <option value="0">Select Category</option>
                                 {% for product_category in product_categories %}
-                                <option value="{{ product_category.id }}" {% if product_category.id == category_id %} selected {% endif %}>{{ product_category.name }}</option>
+                                <option value="{{ product_category.id }}" {% if product_category.id==category_id %}
+                                    selected {% endif %}>{{ product_category.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -163,6 +175,7 @@
 
     function updateProduct(id) {
         let name = $("#product_name_" + id).val();
+        let category_id = $("#product_category_id_" + id).val();        
         let purchase_price = parseFloat($("#product_purchase_" + id).val());
         let selling_price = parseFloat($("#product_selling_" + id).val());
         let from = $("#from").val();
@@ -171,6 +184,7 @@
             url: '{{ url_for('inventoryProductsUpdate') }}',
             data: {
                 id: id,
+                category_id: category_id,
                 name: name,
                 purchase_price: purchase_price,
                 selling_price: selling_price,

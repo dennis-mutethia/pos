@@ -46,20 +46,26 @@ class Products():
             RETURNING id
             """
             params = [name.upper(), purchase_price, selling_price, category_id, current_user.shop.id, current_user.id]
-            cursor.execute(query, tuple(params))
-            self.db.conn.commit()
-            id = cursor.fetchone()[0]
-            return id   
             
-    def update(self, id, name, purchase_price, selling_price):
+            try:
+                cursor.execute(query, tuple(params))
+                self.db.conn.commit()
+                id = cursor.fetchone()[0]
+                return id
+            except Exception as e:
+                self.db.conn.rollback()
+                print(f"Error loading stock: {e}")
+                return None
+            
+    def update(self, id, name, category_id, purchase_price, selling_price):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
             UPDATE products
-            SET name=%s, purchase_price=%s, selling_price=%s, updated_at=NOW(), updated_by=%s
+            SET name=%s, category_id=%s, purchase_price=%s, selling_price=%s, updated_at=NOW(), updated_by=%s
             WHERE id=%s
             """
-            params = [name.upper(), purchase_price, selling_price, current_user.id, id]
+            params = [name.upper(), category_id, purchase_price, selling_price, current_user.id, id]
             cursor.execute(query, tuple(params))
             self.db.conn.commit()
             
@@ -97,10 +103,11 @@ class Products():
             
             elif request.form['action'] == 'update':
                 id = request.form['id']
+                category_id = request.form['category_id']
                 name = request.form['name']    
                 purchase_price = request.form['purchase_price']
                 selling_price = request.form['selling_price']    
-                self.update(id, name, purchase_price, selling_price)
+                self.update(id, name, category_id, purchase_price, selling_price)
                 return 'success'
                 
             elif request.form['action'] == 'delete':

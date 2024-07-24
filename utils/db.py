@@ -1,6 +1,5 @@
 from flask_login import current_user
-import sqlite3, hashlib, os, uuid, psycopg2
-from flask import current_app
+import hashlib, os, uuid, psycopg2
 
 from utils.entities import Company, License, Package, PaymentMode, Shop, ShopType, User, UserLevel
 
@@ -37,12 +36,20 @@ class Db():
         return hash_object.hexdigest()
     
     def create_base_tables(self):
-        self.ensure_connection()
-        # Creates new tables in the pos.db database if they do not already exist.
-        with current_app.open_resource("pos.sql") as f:
-            with self.conn.cursor() as cursor:
-                cursor.executescript(f.read().decode("utf8"))
-                self.conn.commit()
+        try:
+            self.ensure_connection()  # Ensure your connection to PostgreSQL is established
+            
+            # Read the SQL script file
+            with open("pos.sql", "r") as f:
+                sql_script = f.read()
+                
+                # Execute the SQL script
+                with self.conn.cursor() as cursor:
+                    cursor.execute(sql_script)
+                    self.conn.commit()
+                
+        except psycopg2.Error as e:
+            print(f"Error executing SQL script: {e}")
     
     def load_shop_template_data(self, shop_id):        
         self.ensure_connection()
@@ -194,14 +201,6 @@ class Db():
             self.conn.commit()
             shop_id = cursor.fetchone()[0]
             return shop_id
-    
-    def delete_website(self, website_id):
-        self.ensure_connection()
-        conn = sqlite3.connect('database.db')
-        cursor = conn.cursor()
-        cursor.execute(f'DELETE FROM websites WHERE id = %s', (website_id,))
-        conn.commit()
-        conn.close() 
       
     def get_license_id(self, id):
         self.ensure_connection()

@@ -114,7 +114,7 @@ class NewSale():
         payment_modes = self.db.fetch_payment_modes()
         prev_page = page-1 if page>1 else 0
         next_page = page+1 if len(products)==30 else 0
-        bill_entries = BillEntries(self.db).fetch()
+        bill_entries = BillEntries(self.db).fetch(0)
         grandtotal = 0
         for bill_entry in bill_entries:
             grandtotal = grandtotal + (bill_entry.price * bill_entry.qty) 

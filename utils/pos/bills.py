@@ -101,12 +101,12 @@ class Bills():
                 item_name = request.form['item_name']    
                 price = request.form['price']       
                 qty = request.form['qty']    
-                self.add(bill_id, stock_id, item_name, price, qty)
+                #self.add(bill_id, stock_id, item_name, price, qty)
                 return 'success'                
                 
             elif request.form['action'] == 'delete':
                 id = request.form['item_id']
-                self.delete(id) 
+                #self.delete(id) 
                 
         bills = self.fetch(report_date, bill_status) 
         grand_total = grand_paid = cash_total = mpesa_total =  0
@@ -116,5 +116,5 @@ class Bills():
             cash_total = cash_total + bill.cash
             mpesa_total = mpesa_total + bill.mpesa
             
-        return render_template('pos/bills.html', page_title='POS > Bills', bills=bills, current_date=current_date, 
+        return render_template('pos/bills.html', page_title='POS > Bills', bills=bills, current_date=current_date, bill_status=bill_status, report_date=report_date,
                                grand_total=grand_total, grand_paid=grand_paid, cash_total=cash_total, mpesa_total=mpesa_total )

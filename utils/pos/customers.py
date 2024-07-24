@@ -87,4 +87,4 @@ class Customers():
         prev_page = page-1 if page>1 else 0
         next_page = page+1 if len(products)==30 else 0
         return render_template('pos/customers.html', product_categories=product_categories, products=products, 
-                               page_title='POS > Customers', search=search, category_id=category_id, page=page, prev_page=prev_page, next_page=next_page )
+                               page_title='Customers', search=search, category_id=category_id, page=page, prev_page=prev_page, next_page=next_page )

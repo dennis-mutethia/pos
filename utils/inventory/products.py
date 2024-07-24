@@ -97,17 +97,17 @@ class Products():
                 name = request.form['name']    
                 purchase_price = request.form['purchase_price']
                 selling_price = request.form['selling_price']    
-                category_id = request.form['category_id_new']    
-                self.add(name, purchase_price, selling_price, category_id)
+                category_id_new = request.form['category_id_new']    
+                self.add(name, purchase_price, selling_price, category_id_new)
                 StockTake(self.db).load(datetime.now().strftime('%Y-%m-%d'))
             
             elif request.form['action'] == 'update':
                 id = request.form['id']
-                category_id = request.form['category_id']
+                category_id_new = request.form['category_id']
                 name = request.form['name']    
                 purchase_price = request.form['purchase_price']
                 selling_price = request.form['selling_price']    
-                self.update(id, name, category_id, purchase_price, selling_price)
+                self.update(id, name, category_id_new, purchase_price, selling_price)
                 return 'success'
                 
             elif request.form['action'] == 'delete':

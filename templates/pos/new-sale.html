@@ -105,7 +105,7 @@
                 <input type="hidden" id="category_id_new" name="category_id_new" />
                 <input type="hidden" id="customer_id" name="customer_id" />
                 <div class="modal-header text-center">
-                    <h5 class="text-center">Submit Customer Bill</h5>
+                    <h5 class="text-center">Submit Customer Bill & Receive Payment</h5>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
@@ -122,10 +122,11 @@
                     <div class="form-group row">
                         <div class="col-sm-12">
                             <input type="hidden" name="total_bill_amount" id="total_bill_amount" />
-                            <input type="number" name="amount_paid" id="amount_paid" min="0"
+                            <input onkeyup="DiplayBalance()" type="number" name="amount_paid" id="amount_paid" min="0" required
                                 class="form-control input-sm" placeholder="Enter Amount Paid" />
                         </div>
                     </div>
+                    <span id="display_balance"></span>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -244,8 +245,16 @@
         let amt = document.getElementById("grand_total").innerHTML;
         document.getElementById("bill_amount").innerHTML = amt;
         document.getElementById("total_bill_amount").value = amt.replaceAll(',', '');
-        document.getElementById("amount_paid").value = amt.replaceAll(',', '');
+        //document.getElementById("amount_paid").value = amt.replaceAll(',', '');
         $("#customer_id").val($("#temp_customer_id").val());
+    }
+
+    function DiplayBalance(){
+        let total_bill_amount = parseFloat($("#total_bill_amount").val());
+        let amount_paid = parseFloat($("#amount_paid").val());
+        let bal = total_bill_amount - amount_paid
+        display = bal<0 ? '<b style="color: green">EXCESS: ' + Math.abs(bal) + '<b/>' : bal>0 ? '<b style="color: red">BALANCE: ' + Math.abs(bal) + '<b/>' : '';
+        $("#display_balance").html(display)
     }
 
     function Print(id) {

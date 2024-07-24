@@ -8,7 +8,7 @@
         content="Matrix POS System is light, powerful and clean admin dashboard for inventory management" />
     <meta name="robots" content="noindex, nofollow" />
     <meta name="author" content="Dennis Muga - Tipspesa Systems" />
-    <title>Matrix POS</title>
+    <title>{{ current_user.shop.name if current_user.shop else '' }} Matrix POS</title>
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon.png') }}">
 

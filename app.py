@@ -15,6 +15,7 @@ from utils.inventory.stock_take import StockTake
 from utils.login import Login
 from utils.pos.bill_entries import BillEntries
 from utils.pos.new_sale import NewSale
+from utils.pos.print import Print
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000  # One year in seconds
@@ -130,6 +131,11 @@ def posBillEntries():
 @login_required
 def posBillEntriesUpdate():
     return BillEntries(db)()
+
+@app.route('/pos-print', methods=['GET'])
+@login_required
+def posPrint():
+    return Print(db)()
 
 if __name__ == '__main__':
     debug_mode = os.getenv('IS_DEBUG', 'False').lower() in ['true', '1', 't']

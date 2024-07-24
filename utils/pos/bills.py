@@ -1,9 +1,9 @@
 from flask import render_template, request
 from flask_login import current_user
 
-from utils.entities import BillEntry
+from utils.entities import Bill, BillEntry
 
-class BillEntries():
+class Bills():
     def __init__(self, db): 
         self.db = db
             
@@ -11,54 +11,44 @@ class BillEntries():
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
-            SELECT id, bill_id, stock_id, item_name, price, qty
-            FROM bill_entries
-            WHERE shop_id=%s AND bill_id=%s
-            ORDER BY id
+            SELECT id, customer_id, total, paid, created_at, created_by
+            FROM bills
+            WHERE id = %s
             """
-            params = [current_user.shop.id, bill_id]
+            params = [bill_id]
             
             cursor.execute(query, tuple(params))
-            data = cursor.fetchall()
-            bill_entries = []
-            for bill_entry in data:
-                bill_entries.append(BillEntry(bill_entry[0], bill_entry[1], bill_entry[2], bill_entry[3], bill_entry[4], bill_entry[5]))
-
-            return bill_entries
-            
-    def add(self, bill_id, stock_id, item_name, price, qty):
-        self.db.ensure_connection()
-        
+            data = cursor.fetchone()
+            if data:
+                user = self.db.get_user_by_id(data[5])
+                return Bill(data[0], data[1], data[2], data[3], data[4], user)
+            else:
+                return None    
+      
+    def add(self, customer_id, amount_paid):
+        self.db.ensure_connection()            
         query = """
-        INSERT INTO bill_entries(bill_id, stock_id, item_name, price, qty, shop_id, created_at, created_by) 
-        VALUES (%s, %s, %s, %s, %s, %s, NOW(), %s) 
-        ON CONFLICT (bill_id, stock_id, created_by) DO UPDATE 
-        SET qty = EXCLUDED.qty, updated_at = NOW(), updated_by = %s
+        WITH temp_bill AS(
+            SELECT %s AS customer_id, SUM(price*qty) AS total, %s AS paid, %s AS shop_id, NOW() AS created_at, %s AS created_by
+            FROM bill_entries
+            WHERE shop_id = %s AND bill_id=0 AND created_by = %s
+        )
+        INSERT INTO bills(customer_id, total, paid, shop_id, created_at, created_by) 
+        SELECT * FROM temp_bill
         RETURNING id
         """
 
-        params = (bill_id, stock_id, item_name.upper(), price, qty, current_user.shop.id, current_user.id, current_user.id)
-
+        params = (customer_id, amount_paid, current_user.shop.id, current_user.id, current_user.shop.id, current_user.id)
         try:
             with self.db.conn.cursor() as cursor:
-                cursor.execute(query, params)
+                cursor.execute(query, tuple(params))
                 self.db.conn.commit()
                 row_id = cursor.fetchone()[0]
                 return row_id
         except Exception as e:
             self.db.conn.rollback()
             raise e
-            
-    def clear(self):
-        self.db.ensure_connection()
-        with self.db.conn.cursor() as cursor:
-            query = """
-            DELETE FROM bill_entries
-            WHERE bill_id=0 AND shop_id=%s AND created_by=%s
-            """
-            cursor.execute(query, (current_user.shop.id, current_user.id))
-            self.db.conn.commit()
-    
+        
     def __call__(self):
         if request.method == 'POST':       
             if request.form['action'] == 'add':

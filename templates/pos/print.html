@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+    <title id="title0"> {{ current_user.shop.name }} Customer Bill - {{ bill_id }} </title>
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-4.1.1.min.css') }}" id="bootstrap-css">
+    <style>
+        .color-palette {
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+        }
+
+        .color-palette-set {
+            margin-bottom: 15px;
+        }
+
+        .color-palette span {
+            display: none;
+        }
+
+        .color-palette:hover span {
+            display: block;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: 3%;
+        }
+
+        small {
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        hr {
+            border-top: 1px dotted black;
+        }
+
+        body {
+            font-family: monospace;
+        }
+
+        printer-header {
+            margin-top: 0;
+        }
+
+        table,
+        thead,
+        tbody,
+        tr,
+        td,
+        th {
+            color: black;
+        }
+    </style>
+</head>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<body class="skin-blue layout-boxed">
+    <div class="content">
+        <div class="">
+            <div class="col-md-2">
+                <!-- Block buttons -->
+                <div class="box">
+                    <div class="box-header text-center text-black text-bold printer-header">
+                        <small class="text-black text-bold">{{ current_user.shop.name }}</small><br />
+                        <small class="text-black">{{ current_user.shop.location }}</small><br />
+                        {% if current_user.shop.phone_1 %}
+                        <small class="text-black"> {{ current_user.shop.phone_1 }}</small><br />
+                        {% endif %}
+                        {% if current_user.shop.phone_2 %}
+                        <small class="text-black"> {{ current_user.shop.phone_2 }}</small><br />
+                        {% endif %}
+                        <small class="text-black">Customer Name: {{ customer.name }}</small><br />
+                        <small class="text-black">Customer Phone: {{ customer.phone }}</small><br />
+                        {% if current_user.shop.till_no %}
+                        <small class="text-black text-bold">
+                            MPESA BUY GOODS TILL: {{ current_user.shop.till_no }}
+                        </small><br />
+                        {% endif %}
+                        {% if current_user.shop.paybill %}
+                        <small class="text-black text-bold">
+                            MPESA PAYBILL: {{ current_user.shop.paybill }} <br />
+                            ACCOUNT NO.: {{ current_user.shop.account_no }}
+                        </small><br />
+                        {% endif %}
+                    </div>
+                    <div id="selected-items" class="box-body row text-left">
+                        <table margin="1%" width="99%" class="table table-condensed">
+                            <thead>
+                                <tr>
+                                    <th width="50%"><small>ITEM</small></th>
+                                    <th width="10%"><small>QTY</small></th>
+                                    <th width="20%"><small>PRICE</small></th>
+                                    <th width="20%" class="text-right"><small>TTL</small></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for bill_entry in bill_entries %}
+                                <tr>
+                                    <td width="50%"><small class="text-black">{{ bill_entry.item_name }}</small></td>
+                                    <td width="10%"><small class="text-black">{{ bill_entry.qty }}</small></td>
+                                    <td width="20%"><small class="text-black">{{ bill_entry.price }}</small></td>
+                                    <td width="20%" class="text-right"><small class="text-black">{{ bill_entry.qty*bill_entry.price
+                                            }}</small></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <thead>
+                                <tr>
+                                    <td colspan="2"><b><small>TOTAL PAYABLE</small></b></td>
+                                    <td colspan="2" class="text-right"><small><b><u>{{ bill.total }}</u></b></small></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><b><small>TOTAL PAID</small></b></td>
+                                    <td colspan="2" class="text-right"><small><b>{{ bill.paid }}</b></small></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><b><small>BALANCE</small></b></td>
+                                    <td colspan="2" class="text-right"><small><b><u>{{ bill.total - bill.paid }}</u></b></small></td>
+                                </tr>
+                            </thead>
+
+                            {% if bill.paid > 0 %}
+                            <thead>
+                                <tr>
+                                    <th class="text-center" colspan="4"><small>Payment Details</small></th>
+                                </tr>
+                                <tr>
+                                    <th colspan="2"><small>DATETIME</small></th>
+                                    <th><small>MODE</small></th>
+                                    <th class="text-right"><small>AMOUNT</small></th>
+                                </tr>
+                            </thead>
+                            <tbody style="color: black;">
+                                {% for payment in payments %}
+                                <tr style="color: black;">
+                                    <td colspan="2"><small>{{ payment.created_at }}</small></td>
+                                    <td><small>{{ payment.payment_mode.name }}</small></td>
+                                    <td class="text-right"><small>{{ payment.amount }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            {% endif %}
+
+                            {% if show_vat == 1 and bill.paid > 0 %}
+                            <thead>
+                                <tr>
+                                    <td colspan="2"><b><small>VATABLE AMOUNT</small></b></td>
+                                    <td colspan="2" class="text-right"><small>{{'%0.2f' % (bill.total / 1.16)|float}}</small></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><b><small>VAT @ 16%</small></b></td>
+                                    <td colspan="2" class="text-right"><small>{{'%0.2f' % (0.16 * bill.total / 1.16)|float}}</small></td>
+                                </tr>
+                            </thead>
+                            {% endif %}
+                        </table>
+                    </div>
+                    <div id="bill-footer" class="box-footer text-center">
+                        <small>
+                            Bill No: {{ bill.id }}<br />
+                            Bill Created On: {{ bill.created_at }}<br />
+                            Served By: {{ bill.user.name }}<br />
+                            WELCOME!!!<br />
+                        </small>
+                    </div>
+                    {% if show_vat == 1 and bill.paid > 0 %}
+                    <div style="display: flex; justify-content: center;">
+                        <div id="qr_code"></div>
+                    </div>
+                    <script type="text/javascript">
+                        setInterval(function () {
+                            window.close();
+                        }, 10000);
+                        let kra = 'https://itax.kra.go.ke/KRA-Portal/invoiceChk.htm?actionCode=loadPage&invoiceNo=' + Date.now();
+
+                        var bill_details = '{{ current_user.shop.name }} - {{ current_user.shop.location }}\n' +
+                            'BILL NO: {{ bill.id }}\n' +
+                            'BILL AMOUNT: {{ bill.total }}\n' +
+                            'BILL CREATED ON: {{ bill.created_at }}\n' +
+                            'SERVED BY: {{ bill.user.name }}\n';
+
+                        var qrcode = new QRCode(document.getElementById("qr_code"), {
+                            //text: bill_details,
+                            text: kra,
+                            width: 100,
+                            height: 100
+                        });
+                    </script>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

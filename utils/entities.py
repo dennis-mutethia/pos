@@ -97,7 +97,7 @@ class Customer():
     def __init__(self, id, name, phone):
         self.id = id    
         self.name = name     
-        self.selling_price = phone    
+        self.phone = phone    
 
 class BillEntry():
     def __init__(self, id, bill_id, stock_id, item_name, price, qty):
@@ -112,6 +112,29 @@ class PaymentMode():
     def __init__(self, id, name, account):
         self.id = id    
         self.name = name     
-        self.account = account    
+        self.account = account
+          
+class Payment():
+    def __init__(self, id, bill_id, amount, payment_mode, created_at, user ):
+        self.id = id    
+        self.bill_id = bill_id   
+        self.amount = amount     
+        self.payment_mode = payment_mode   
+        self.created_at = created_at   
+        self.user = user   
+          
+class Bill():
+    def __init__(self, id, customer_id, total, paid, created_at, user ):
+        self.id = id    
+        self.customer_id = customer_id   
+        self.total = total     
+        self.paid = paid     
+        self.created_at = created_at   
+        self.user = user   
+        
+        
+        
+        
+          
         
         

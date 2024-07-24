@@ -298,3 +298,18 @@ class Db():
                 payment_modes.append(PaymentMode(payment_mode[0], payment_mode[1], payment_mode[2]))
                 
             return payment_modes
+          
+    def get_payment_mode_by_id(self, id):
+        self.ensure_connection()
+        with self.conn.cursor() as cursor:
+            query = """
+            SELECT id, name, account
+            FROM payment_modes 
+            WHERE id = %s 
+            """
+            cursor.execute(query, (id,))
+            data = cursor.fetchone()
+            if data:
+                return PaymentMode(data[0], data[1], data[2])
+            else:
+                return None       

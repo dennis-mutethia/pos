@@ -5,8 +5,10 @@ from flask_login import current_user
 from utils.entities import InStock
 from utils.inventory.products_categories import ProductsCategories
 from utils.inventory.stock_take import StockTake
+from utils.pos.bills import Bills
 from utils.pos.bill_entries import BillEntries
 from utils.pos.customers import Customers
+from utils.pos.payments import Payments
 
 class NewSale():
     def __init__(self, db): 
@@ -45,30 +47,6 @@ class NewSale():
 
             return stocks
     
-    def save_bill(self, customer_id, amount_paid):
-        self.db.ensure_connection()            
-        query = """
-        WITH temp_bill AS(
-            SELECT %s AS customer_id, SUM(price*qty) AS total, %s AS paid, %s AS shop_id, NOW() AS created_at, %s AS created_by
-            FROM bill_entries
-            WHERE shop_id = %s AND bill_id=0 AND created_by = %s
-        )
-        INSERT INTO bills(customer_id, total, paid, shop_id, created_at, created_by) 
-        SELECT * FROM temp_bill
-        RETURNING id
-        """
-
-        params = (customer_id, amount_paid, current_user.shop.id, current_user.id, current_user.shop.id, current_user.id)
-        try:
-            with self.db.conn.cursor() as cursor:
-                cursor.execute(query, tuple(params))
-                self.db.conn.commit()
-                row_id = cursor.fetchone()[0]
-                return row_id
-        except Exception as e:
-            self.db.conn.rollback()
-            raise e
-    
     def update_bill_entries(self, bill_id):
         self.db.ensure_connection()
         
@@ -82,31 +60,14 @@ class NewSale():
         with self.db.conn.cursor() as cursor:
             cursor.execute(query, params)
             self.db.conn.commit()
-            
-    def save_payment(self, bill_id, amount, payment_mode_id):
-        self.db.ensure_connection()
-        with self.db.conn.cursor() as cursor:              
-            query = """
-            INSERT INTO payments(bill_id, amount, payment_mode_id, shop_id, created_at, created_by) 
-            VALUES(%s, %s, %s, %s, NOW(), %s) 
-            RETURNING id
-            """
-            params = (bill_id, amount, payment_mode_id, current_user.shop.id, current_user.id)
-            try:
-                with self.db.conn.cursor() as cursor:
-                    cursor.execute(query, params)
-                    self.db.conn.commit()
-                    row_id = cursor.fetchone()[0]
-                    return row_id
-            except Exception as e:
-                self.db.conn.rollback()
-                raise e
               
     def __call__(self):
         search = ''
         category_id = 0  
         page = 1   
         in_stock = 0
+        bill_id = 0 
+        
         if request.method == 'GET':   
             try:    
                 search = request.args.get('search', '')
@@ -139,10 +100,10 @@ class NewSale():
                 customer_id = int(request.form['customer_id'])
                 amount_paid = float(request.form['amount_paid'])
                 payment_mode_id = request.form['payment_mode_id'] 
-                bill_id = self.save_bill(customer_id, amount_paid)
+                bill_id = Bills(self.db).add(customer_id, amount_paid)
                 self.update_bill_entries(bill_id)
                 if amount_paid>0:
-                    self.save_payment(bill_id, amount_paid, payment_mode_id)
+                    Payments(self.db).add(bill_id, amount_paid, payment_mode_id)
 
             elif request.form['action'] == 'clear':
                 BillEntries(self.db).clear()
@@ -159,5 +120,5 @@ class NewSale():
             grandtotal = grandtotal + (bill_entry.price * bill_entry.qty) 
             
         return render_template('pos/new-sale.html', product_categories=product_categories, products=products, customers=customers, in_stock=in_stock,
-                               bill_entries=bill_entries, grandtotal=grandtotal, payment_modes=payment_modes,
+                               bill_entries=bill_entries, grandtotal=grandtotal, payment_modes=payment_modes, bill_id=bill_id, 
                                page_title='POS > New Sale', search=search, category_id=category_id, page=page, prev_page=prev_page, next_page=next_page )

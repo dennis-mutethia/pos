@@ -250,7 +250,7 @@
 
     function Print(id) {
         var show_vat = 1; //document.getElementById('show_vat').checked ? 1 : 0;
-        var win = window.open("print.php?show_vat=" + show_vat + "&bill_id=" + id, "_blank", "scrollbars=yes,resizable=yes,top=200,left=500,width=400,height=500");
+        var win = window.open("{{ url_for('posPrint') }}?show_vat=" + show_vat + "&bill_id=" + id, "_blank", "scrollbars=yes,resizable=yes,top=200,left=500,width=400,height=500");
         var document_focus = false;
         $(document).ready(function () {
             win.window.print();
@@ -259,10 +259,13 @@
         setInterval(function () {
             if (document_focus === true) {
                 win.window.close();
-                //window.location.reload();
             }
         }, 10000);
     }
+
+    {% if bill_id>0 %}
+        Print({{ bill_id }});
+    {% endif %}
 
 </script>
 

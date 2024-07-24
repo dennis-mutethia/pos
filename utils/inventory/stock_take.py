@@ -1,6 +1,6 @@
+from datetime import datetime
 from flask import render_template, request
 from flask_login import current_user
-from datetime import datetime
 
 from utils.entities import Stock
 from utils.inventory.products_categories import ProductsCategories
@@ -12,19 +12,23 @@ class StockTake():
     def load(self, stock_date):
         self.db.ensure_connection()
         
-        # Ensure current_user is accessible and properly imported or passed
-        from flask_login import current_user
-        
         with self.db.conn.cursor() as cursor:
-            query = """
-            WITH p AS (
+            query = """         
+            WITH sales AS(
+                SELECT stock_id, SUM(qty) sold
+                FROM bill_entries
+                WHERE shop_id = %s
+                GROUP BY stock_id
+            ),
+            p AS (
                 SELECT id, name, category_id, purchase_price, selling_price
                 FROM products 
                 WHERE shop_id = %s
             ),
             yesterday AS (
-                SELECT product_id, name, category_id, purchase_price, selling_price, opening, additions, (opening+additions) AS closing
+                SELECT product_id, name, category_id, purchase_price, selling_price, opening, additions, COALESCE(sold, 0) AS sold
                 FROM stock
+                LEFT JOIN sales ON sales.stock_id = stock.id
                 WHERE DATE(stock_date) = DATE(%s) - 1
             ),
             today AS (
@@ -34,7 +38,7 @@ class StockTake():
                     COALESCE(yesterday.category_id, p.category_id) AS category_id,
                     COALESCE(yesterday.purchase_price, p.purchase_price) AS purchase_price,
                     COALESCE(yesterday.selling_price, p.selling_price) AS selling_price,
-                    COALESCE(yesterday.closing, 0) AS opening,
+                    COALESCE((yesterday.opening+yesterday.additions-yesterday.sold), 0) AS opening,
                     0 AS additions,
                     %s AS shop_id, NOW() AS created_at, %s AS created_by              
                 FROM p
@@ -45,7 +49,7 @@ class StockTake():
             ON CONFLICT (stock_date, product_id, shop_id) DO NOTHING
             RETURNING id
             """
-            params = [current_user.shop.id, stock_date, stock_date, current_user.shop.id, current_user.id]
+            params = [current_user.shop.id, current_user.shop.id, stock_date, stock_date, current_user.shop.id, current_user.id]
             
             try:
                 cursor.execute(query, tuple(params))

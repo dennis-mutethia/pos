@@ -75,23 +75,18 @@ class Product():
         self.category_id = category_id   
 
 class Stock():
-    def __init__(self, id, product_id, name, category_name, yesterday, opening, additions, sold):
+    def __init__(self, id, product_id, name, category_name, yesterday_opening, yesterday_additions, yesterday_sold, opening, additions, sold, selling_price):
         self.id = id 
         self.product_id = product_id   
         self.name = name     
         self.category_name = category_name   
-        self.yesterday = yesterday 
+        self.yesterday_opening = yesterday_opening 
+        self.yesterday_additions = yesterday_additions 
+        self.yesterday_sold = yesterday_sold
         self.opening = opening   
         self.additions = additions     
         self.sold = sold  
-
-class InStock():
-    def __init__(self, id, name, selling_price, actual, temp_qty):
-        self.id = id    
-        self.name = name     
-        self.selling_price = selling_price   
-        self.actual = actual 
-        self.temp_qty = temp_qty     
+        self.selling_price = selling_price
 
 class Customer():
     def __init__(self, id, name, phone):

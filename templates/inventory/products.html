@@ -7,12 +7,11 @@
 <div class="container-fluid table-responsive">
     <form id="filter-frm" method="GET" class="row">
         <div class="col-6">
-            <input onkeyup="applyFilter()" style="height: 25px" type="text" id="search" name="search"
-                required="required" value="{{ search }}" placeholder="Search Item" autofocus
+            <input onkeyup="onchange()" style="height: 25px" type="text" id="search" name="search" value="{{ search }}" placeholder="Search Item" autofocus
                 onfocus="this.value = this.value;" />
         </div>
         <div class="col-6">
-            <select onchange="applyFilter2()" name="category_id" id="category_id" style="width: 100%;">
+            <select onchange="applyFilter()" name="category_id" id="category_id" style="width: 100%;">
                 <option value="0">Filter by Category</option>
                 {% for product_category in product_categories %}
                 <option value="{{ product_category.id }}" {% if product_category.id == category_id %} selected {% endif %}>{{ product_category.name }}</option>
@@ -159,11 +158,7 @@
         toastr.success($toastr_message);
 
     function applyFilter() {
-        if ($("#search").val().length > 3)
-            $("#filter-frm").submit();
-    }
-    function applyFilter2() {
-        document.getElementById('filter-frm').submit();
+        $("#filter-frm").submit();
     }
 
     function updateProduct(id) {

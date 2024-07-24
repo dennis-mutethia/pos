@@ -57,33 +57,40 @@ class StockTake():
                 print(f"Error loading stock: {e}")
                 return None
     
-    def fetch(self, stock_date, search, category_id):
+    def fetch(self, stock_date, search, category_id, in_stock=0):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             #id, product_id, name, category_name, yesterday, opening, additions, sold
             query = """
-            WITH all_stock AS(
-                SELECT id, stock_date, product_id, name, category_id, opening, additions
-                FROM stock 
+            WITH sales AS(
+                SELECT stock_id, SUM(qty) sold
+                FROM bill_entries
                 WHERE shop_id = %s
+                GROUP BY stock_id
             ),
+            all_stock AS(
+                SELECT id, stock_date, product_id, name, category_id, opening, additions, COALESCE(sold, 0) AS sold, selling_price
+                FROM stock 
+                LEFT JOIN sales ON sales.stock_id = stock.id
+                WHERE shop_id = %s
+            ),  
             yesterday AS (
-                SELECT product_id, opening
+                SELECT product_id, opening, additions, sold
                 FROM all_stock
                 WHERE DATE(stock_date) = DATE(%s) - 1
             ), 
             today AS(
-                SELECT id, product_id, name, category_id, opening, additions
+                SELECT id, product_id, name, category_id, opening, additions, sold, selling_price
                 FROM all_stock
                 WHERE DATE(stock_date) = DATE(%s)
             )
-            SELECT today.id, today.product_id, today.name, product_categories.name, COALESCE(yesterday.opening,0), today.opening, today.additions, 0 AS sold
+            SELECT today.id, today.product_id, today.name, product_categories.name, COALESCE(yesterday.opening,0), COALESCE(yesterday.additions,0), COALESCE(yesterday.sold,0), today.opening, today.additions, today.sold, today.selling_price
             FROM today
             INNER JOIN product_categories ON product_categories.id = today.category_id
-            LEFT JOIN yesterday ON yesterday.product_id = today.product_id
-            WHERE today.id > 0
+            LEFT JOIN yesterday ON yesterday.product_id = today.product_id            
+            WHERE (today.opening + today.additions) >= %s
             """
-            params = [current_user.shop.id, stock_date, stock_date]
+            params = [current_user.shop.id, current_user.shop.id, stock_date, stock_date, in_stock]
 
             if search:
                 query += " AND today.name LIKE %s"
@@ -97,7 +104,7 @@ class StockTake():
             data = cursor.fetchall()
             stocks = []
             for stock in data:
-                stocks.append(Stock(stock[0], stock[1], stock[2], stock[3], stock[4], stock[5], stock[6], stock[7]))
+                stocks.append(Stock(stock[0], stock[1], stock[2], stock[3], stock[4], stock[5], stock[6], stock[7], stock[8], stock[9], stock[10]))
 
             return stocks
             
@@ -111,6 +118,16 @@ class StockTake():
             """
             params = [opening, additions, current_user.id, id]
             cursor.execute(query, tuple(params))
+            self.db.conn.commit()
+            
+    def delete(self, product_id):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:
+            query = """
+            DELETE FROM stock
+            WHERE product_id=%s AND stock_date=CURRENT_DATE
+            """
+            cursor.execute(query, (product_id,))
             self.db.conn.commit()
              
     def __call__(self):

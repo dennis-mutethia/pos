@@ -33,7 +33,7 @@
                 </form><br />
 
                 <!-- Products-->
-                {% for product in products %}
+                {% for stock in stocks %}
                 <style>
                     button {
                         margin-top: 16px;
@@ -41,14 +41,14 @@
                     }
                 </style>
                 <button type="button"
-                    class="btn btn-outline-{{ 'success' if product.actual >= 10 else 'warning' if product.actual > 0 else 'danger' }} {{ '' if product.actual > 0 else 'disabled' }}"
-                    id="product_{{ product.id }}" name="{{ product.name}}" value="{{ product.selling_price }}"
-                    onclick="AddBillEntry({{ product.id }})">
-                    <small class="font-light">KSh. {{ product.selling_price }}/= </small>
-                    <h6 class="mb-0 mt-1"> {{ product.name}} </h6>
-                    <small class="font-light">[<span id="stock_{{ product.id }}">{{ product.actual - product.temp_qty}}
+                    class="btn btn-outline-{{ 'success' if (stock.opening+stock.additions) >= 10 else 'warning' if (stock.opening+stock.additions) > 0 else 'danger' }} {{ '' if (stock.opening+stock.additions) > 0 else 'disabled' }}"
+                    id="product_{{ stock.id }}" name="{{ stock.name}}" value="{{ stock.selling_price }}"
+                    onclick="AddBillEntry({{ stock.id }})">
+                    <small class="font-light">KSh. {{ stock.selling_price }}/= </small>
+                    <h6 class="mb-0 mt-1"> {{ stock.name}} </h6>
+                    <small class="font-light">[<span id="stock_{{ stock.id }}">{{ stock.opening + stock.additions - stock.sold}}
                         </span> in stock]</small>
-                    <span id="stocko_{{ product.id }}" style="display: none">{{ product.actual }}</span>
+                    <span id="stocko_{{ stock.id }}" style="display: none">{{ stock.opening+stock.additions }}</span>
                 </button>
                 {% endfor %}
                 <!-- End Products-->

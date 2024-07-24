@@ -106,6 +106,7 @@ class Products():
             elif request.form['action'] == 'delete':
                 id = request.form['item_id']
                 self.delete(id) 
+                StockTake(self.db).delete(id) 
         
         product_categories = ProductsCategories(self.db).fetch()
         products = self.fetch(search, category_id)

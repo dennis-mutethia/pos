@@ -30,7 +30,7 @@ class ProductsCategories():
     
     def add(self, name):
         self.db.ensure_connection()
-        with self.conn.cursor() as cursor:
+        with self.db.conn.cursor() as cursor:
             query = """
             INSERT INTO product_categories(name, shop_id, created_at, created_by) 
             VALUES(%s, %s, NOW(), %s) 
@@ -50,18 +50,17 @@ class ProductsCategories():
             SET name=%s, updated_at=NOW(), updated_by=%s
             WHERE id=%s
             """
-            params = [name.upper(), current_user.shop.id, current_user.id]
+            params = [name.upper(), current_user.shop.id, id]
             cursor.execute(query, tuple(params))
             self.db.conn.commit()
             
     def delete(self, id):
         self.db.ensure_connection()
-        with self.conn.cursor() as cursor:
+        with self.db.conn.cursor() as cursor:
             query = """
             DELETE FROM product_categories
             WHERE id=%s
             """
-            print(query)
             cursor.execute(query, (id,))
             self.db.conn.commit()
             

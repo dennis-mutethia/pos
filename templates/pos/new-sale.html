@@ -14,9 +14,9 @@
                     <div class="col-{{'12' if user_agent.is_mobile else '6' }}">
                         <input onchange="applyFilter(1)" style="height: 25px" type="text" id="search" name="search"
                             value="{{ search }}" placeholder="Search Item" autofocus
-                            onfocus="this.value = this.value;" />
+                            onfocus="this.value = this.value;" /><br />
                     </div>
-                    <div class="col-{{'12 pb-4' if user_agent.is_mobile else '3' }}">
+                    <div class="col-{{'12' if user_agent.is_mobile else '3' }}">
                         <select onchange="applyFilter(1)" name="category_id" id="category_id" style="width: 100%;">
                             <option value="0">Filter by Category</option>
                             {% for product_category in product_categories %}
@@ -26,7 +26,7 @@
                         </select>
                     </div>
                     <div class="col-1"></div>
-                    <div class="col-{{'12 pb-4' if user_agent.is_mobile else '2' }}">
+                    <div class="col-{{'11' if user_agent.is_mobile else '2' }}">
                         <input onchange="applyFilter(1)" class="form-check-input" type="checkbox" id="in_stock" name="in_stock" value="1" {{ 'checked' if in_stock == 1 else '' }} />
                         <label for="in_stock" style="color: lime;">Filter In Stock Only</label>&nbsp;                        
                     </div>

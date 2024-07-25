@@ -13,6 +13,7 @@ from utils.inventory.purchases import Purchases
 from utils.inventory.stock_adjustment import StockAdjustment
 from utils.inventory.stock_take import StockTake
 from utils.login import Login
+from utils.pos.bill_details import BillDetails
 from utils.pos.bill_entries import BillEntries
 from utils.pos.bills import Bills
 from utils.pos.new_sale import NewSale
@@ -142,6 +143,11 @@ def posPrint():
 @login_required
 def posBills():
     return Bills(db)()
+
+@app.route('/pos-details', methods=['GET'])
+@login_required
+def posBillDetails():
+    return BillDetails(db)()
 
 if __name__ == '__main__':
     debug_mode = os.getenv('IS_DEBUG', 'False').lower() in ['true', '1', 't']

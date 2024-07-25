@@ -7,14 +7,15 @@
 <div class="container-fluid card table-responsive">
     <form id="filter-frm" method="GET" class="row">
         <div class="col-6">
-            <input onchange="applyFilter()" style="height: 25px" type="date" id="report_date" name="report_date" required="required" value="{{ report_date }}" max="{{ current_date }}" />
+            <input onchange="applyFilter()" style="height: 25px" type="date" id="report_date" name="report_date"
+                required="required" value="{{ report_date }}" max="{{ current_date }}" />
         </div>
         <div class="col-6">
             <select onchange="applyFilter()" name="bill_status" id="bill_status" style="width: 100%;">
                 <option value="0">All Bills</option>
-                <option {% if bill_status == 1 %} selected {% endif %} value="1">Paid Bills
+                <option {% if bill_status==1 %} selected {% endif %} value="1">Paid Bills
                 </option>
-                <option {% if bill_status == 2 %} selected {% endif %} value="2">Not Paid
+                <option {% if bill_status==2 %} selected {% endif %} value="2">Not Paid
                 </option>
             </select>
         </div>
@@ -43,7 +44,7 @@
                 <td class="text-center">{{ bill.created_at }}</td>
                 <td>
                     {% if bill.customer %}
-                        {{ bill.customer.name }}
+                    {{ bill.customer.name }}
                     {% else %}
                     <a href="#" data-toggle="modal" data-target="#assignCustomerModal"
                         onclick="assignCustomerBill({{ bill.id }})">Assign Customer</a>
@@ -53,7 +54,7 @@
                 <td class="text-right">{{ bill.total }}</td>
                 <td class="text-right text-warning">{{ bill.cash }}</td>
                 <td class="text-right text-success">{{ bill.mpesa }}</td>
-                <td class="text-right text-danger">{{ (bill.total-bill.paid) if bill.total > bill.paid else ''  }}</td>
+                <td class="text-right text-danger">{{ (bill.total-bill.paid) if bill.total > bill.paid else '' }}</td>
                 <td class="text-center">
                     {% if bill.total > bill.paid %}
                     <button class="btn btn-success btn-xs text-white" data-toggle="modal" data-target="#newModal"
@@ -68,7 +69,7 @@
                 </td>
                 <td class="text-center">
                     <a href="#" class="text-primary mdi mdi-eye" title="View Bill" data-toggle="modal"
-                        data-target="#paymentsModal" onclick="fetchPayments({{ bill.id }});">View</a>
+                        data-target="#paymentsModal" onclick="fetch_bill_details({{ bill.id }});">View</a>
                 </td>
             </tr>
             {% endfor %}
@@ -147,16 +148,18 @@ SQL;
     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form method="POST">
-                <input type="hidden" id="item_id" name="item_id" />
-                <div class="modal-header">
-                    <h5 class="modal-title text-center" id="customerName">Customer Bill</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="card" id="paymentsTable"></div>
-            </form>
+            <input type="hidden" id="printable_bill_id" name="printable_bill_id" />
+            <div class="modal-header">
+                <h5 class="modal-title text-center" id="customer_name">Customer Bill</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body text-black" id="bill_details"></div>
+            <div class="modal-footer">
+                <button class="btn btn-warning btn-xs text-white mdi mdi-printer" onclick="Print();" data-dismiss="modal"> PRINT THIS
+                    BILL</button>
+            </div>
         </div>
     </div>
 </div>
@@ -191,7 +194,7 @@ SQL;
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form method="POST" class="form-horizontal">
-                <input type="hidden" id="assign_customer_bill_id" name="assign_customer_bill_id" />
+                <input type="hidden" id="assign_customer_bill_id" name="bill_id" />
                 <div class="modal-header text-center">
                     <h5 class="text-center">Assign Customer This Bill</h5>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -199,39 +202,22 @@ SQL;
                 <div class="modal-body">
                     <div class="form-group row">
                         <div class="col-sm-12">
-                            <select name="assign_customer_id" id="assign_customer_id" style="width: 100%;">
+                            <select name="customer_id" id="assign_customer_id" style="width: 100%;">
                                 <option value="0">-- Select Customer --</option>
-                                <?php
-                                            $customers = $_SESSION['stock_app_inventory_logged_user']->shop_id . '_customers';
-                                            $sql = <<<SQL
-                                                        SELECT `id`,`name`
-                                                        FROM `$customers`
-                                                        ORDER BY `name`
-SQL;
-                                            if ($stmt = $mysqli->prepare($sql)) {
-                                                $stmt->execute();
-                                                $stmt->bind_result($id, $name);
-                                                while ($stmt->fetch()) {
-                                            ?>
-                                <option value="<?php echo $id; ?>">
-                                    <?php echo $name; ?>
-                                </option>
-                                <?php
-                                                }
-                                                $stmt->close();
-                                            }
-                                            ?>
+                                {% for customer in customers %}
+                                <option value="{{ customer.id }}">{{ customer.name }} - {{ customer.phone }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    <button type="submit" id="submit_assign_customer_bill" name="submit_assign_customer_bill"
-                        value="submit_assign_customer_bill" class="btn btn-success">Assign Selected Customer Below
+                    <button type="submit" id="assign_customer_bill" name="action" value="assign_customer_bill"
+                        class="btn btn-success">Assign Selected Customer Below
                         Bill</button>
 
-                    <div class="card" id="paymentsTable2"></div>
+                    <div class="card" id="bill_details_2"></div>
                 </div>
             </form>
         </div>
@@ -245,9 +231,9 @@ SQL;
     }
 
     function updateBillAmount(bill_id, balance) {
-        document.getElementById("bill_amount").innerHTML = balance.toLocaleString();
-        document.getElementById("bill_id").value = bill_id;
-        document.getElementById("amount_paid").value = balance;
+        $('#bill_amount').htmls(balance.toLocaleString());
+        $('#bill_id').val(bill_id);
+        $('#amount_paid').val(balance);
         document.getElementById("amount_paid").max = balance;
     }
 
@@ -257,12 +243,13 @@ SQL;
 
     function assignCustomerBill(id) {
         $('#assign_customer_bill_id').val(id);
-        fetchPayments2(id)
+        fetch_bill_details(id)
     }
 
     function Print(id) {
-        var show_vat = document.getElementById('show_vat').checked ? 1 : 0;
-        var win = window.open("print.php?show_vat=" + show_vat + "&bill_id=" + id, "_blank", "scrollbars=yes,resizable=yes,top=200,left=500,width=400,height=500");
+        bill_id = $('#printable_bill_id').val()
+        var show_vat = 1; //document.getElementById('show_vat').checked ? 1 : 0;
+        var win = window.open("{{ url_for('posPrint') }}?show_vat=" + show_vat + "&bill_id=" + bill_id, "_blank", "scrollbars=yes,resizable=yes,top=200,left=500,width=400,height=500");
         var document_focus = false;
         $(document).ready(function () {
             win.window.print();
@@ -271,37 +258,18 @@ SQL;
         setInterval(function () {
             if (document_focus === true) {
                 win.window.close();
-                //window.location.reload();
             }
         }, 10000);
     }
 
-    function fetchPayments(id) {
+    function fetch_bill_details(id) {
         $.ajax({
-            type: 'post',
-            url: 'pos-payments-get',
-            data: {
-                get_bill_payments: true,
-                bill_id: id
-            },
+            type: 'get',
+            url: '{{ url_for('posBillDetails') }}?bill_id='+id,
             success: function (data) {
-                document.getElementById("paymentsTable").innerHTML = data;
-                document.getElementById("customerName").innerHTML = document.getElementById("customerName").innerHTML + ' - ' + $customerName;
-            }
-        });
-
-    }
-
-    function fetchPayments2(id) {
-        $.ajax({
-            type: 'post',
-            url: 'pos-payments-get',
-            data: {
-                get_bill_payments: true,
-                bill_id: id
-            },
-            success: function (data) {
-                document.getElementById("paymentsTable2").innerHTML = data;
+                $('#printable_bill_id').val(id);
+                $('#bill_details').html(data);
+                $('#bill_details_2').html(data);
             }
         });
 

@@ -62,6 +62,10 @@
                     <input type="number" id="product_selling_{{ product.id }}" name="product_selling_{{ product.id }}"
                         value="{{ product.selling_price }}" onchange="updateProduct({{ product.id }});" min="0" style="width: 100%;" />
                 </td>
+                <td>
+                    <input type="number" id="product_in_stock_{{ product.id }}" name="product_in_stock_{{ product.id }}"
+                        value="{{ product.opening+product.additions }}" onchange="updateProduct({{ product.id }});" min="0" style="width: 100%;" />
+                </td>
                 <td class="text-center">
                     <a href="#" onclick="deleteItem({{ product.id }})" data-toggle="modal" data-target="#deleteModal"><i
                             class="mdi mdi-delete" style="color: red" title="Delete Item"></i></a>
@@ -114,6 +118,12 @@
                         <div class="col-sm-12">
                             <input required="required" type="number" name="selling_price" id="selling_price"
                                 class="form-control input-sm" placeholder="Enter Selling Price">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <input required="required" type="number" name="in_stock" id="in_stock"
+                                class="form-control input-sm" placeholder="Enter Items in Stock">
                         </div>
                     </div>
                 </div>
@@ -178,6 +188,7 @@
         let category_id = $("#product_category_id_" + id).val();        
         let purchase_price = parseFloat($("#product_purchase_" + id).val());
         let selling_price = parseFloat($("#product_selling_" + id).val());
+        let in_stock = parseFloat($("#product_in_stock_" + id).val());
         let from = $("#from").val();
         $.ajax({
             type: 'post',
@@ -188,6 +199,7 @@
                 name: name,
                 purchase_price: purchase_price,
                 selling_price: selling_price,
+                in_stock: in_stock,
                 action: 'update'
             },
             success: function (data) {

@@ -64,7 +64,7 @@ class StockTake():
             GROUP BY stock_id
         ),
         all_stock AS(
-            SELECT id, stock_date, product_id, name, category_id, opening, additions, COALESCE(sold, 0) AS sold, selling_price
+            SELECT id, stock_date, product_id, name, category_id, opening, additions, COALESCE(sold, 0) AS sold, selling_price, purchase_price
             FROM stock 
             LEFT JOIN sales ON sales.stock_id = stock.id
             WHERE shop_id = %s
@@ -75,11 +75,12 @@ class StockTake():
             WHERE DATE(stock_date) = DATE(%s) - 1
         ), 
         today AS(
-            SELECT id, product_id, name, category_id, opening, additions, sold, selling_price
+            SELECT id, product_id, name, category_id, opening, additions, sold, selling_price, purchase_price
             FROM all_stock
             WHERE DATE(stock_date) = DATE(%s)
         )
-        SELECT today.id, today.product_id, today.name, product_categories.name, COALESCE(yesterday.opening,0), COALESCE(yesterday.additions,0), COALESCE(yesterday.sold,0), today.opening, today.additions, today.sold, today.selling_price
+        SELECT today.id, today.product_id, today.name, product_categories.name, COALESCE(yesterday.opening,0), COALESCE(yesterday.additions,0), COALESCE(yesterday.sold,0), 
+            today.opening, today.additions, today.sold, today.selling_price, today.purchase_price
         FROM today
         INNER JOIN product_categories ON product_categories.id = today.category_id
         LEFT JOIN yesterday ON yesterday.product_id = today.product_id            
@@ -106,7 +107,7 @@ class StockTake():
             data = cursor.fetchall()
             stocks = []
             for stock in data:
-                stocks.append(Stock(stock[0], stock[1], stock[2], stock[3], stock[4], stock[5], stock[6], stock[7], stock[8], stock[9], stock[10]))
+                stocks.append(Stock(stock[0], stock[1], stock[2], stock[3], stock[4], stock[5], stock[6], stock[7], stock[8], stock[9], stock[10], stock[11]))
 
             return stocks
             

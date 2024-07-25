@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import render_template, request
 from flask_login import current_user
+import user_agents
 
 from utils.inventory.products_categories import ProductsCategories
 from utils.inventory.stock_take import StockTake
@@ -72,4 +73,5 @@ class NewSale():
             
         return render_template('pos/new-sale.html', product_categories=product_categories, stocks=stocks, customers=customers, in_stock=in_stock,
                                bill_entries=bill_entries, grandtotal=grandtotal, payment_modes=payment_modes, bill_id=bill_id, 
-                               page_title='POS > New Sale', search=search, category_id=category_id, page=page, prev_page=prev_page, next_page=next_page )
+                               page_title='POS > New Sale', search=search, category_id=category_id, page=page, prev_page=prev_page, next_page=next_page,
+                               user_agent=user_agents.parse(request.headers.get('User-Agent')) )

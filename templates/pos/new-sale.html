@@ -11,12 +11,12 @@
             <div class="card-body">
                 <form id="filter-frm" method="GET" class="row">
                     <input type="hidden" id="page" name="page" value="{{ page }}" />
-                    <div class="col-6">
+                    <div class="col-{{'12' if user_agent.is_mobile else '6' }}">
                         <input onchange="applyFilter(1)" style="height: 25px" type="text" id="search" name="search"
                             value="{{ search }}" placeholder="Search Item" autofocus
                             onfocus="this.value = this.value;" />
                     </div>
-                    <div class="col-3">
+                    <div class="col-{{'12' if user_agent.is_mobile else '3' }}">
                         <select onchange="applyFilter(1)" name="category_id" id="category_id" style="width: 100%;">
                             <option value="0">Filter by Category</option>
                             {% for product_category in product_categories %}
@@ -26,7 +26,7 @@
                         </select>
                     </div>
                     <div class="col-1"></div>
-                    <div class="col-2">
+                    <div class="col-{{'11' if user_agent.is_mobile else '2' }}">
                         <input onchange="applyFilter(1)" class="form-check-input" type="checkbox" id="in_stock" name="in_stock" value="1" {{ 'checked' if in_stock == 1 else '' }} />
                         <label for="in_stock" style="color: lime;">Filter In Stock Only</label>&nbsp;                        
                     </div>
@@ -56,14 +56,21 @@
             <!-- End -->
             <!--Pagination-->
             <div class="row">
-                <div class="col-md-4"></div>
-                <div class="col-md-4 text-center">
+                
+                <div class="col-md-{{'12' if user_agent.is_mobile else '4' }} text-center">
                     <nav aria-label="Page navigation example" class="text-center">
                         <ul class="pagination" class="text-center">
                             <li class="page-item {{ '' if prev_page > 0 else 'disabled' }}">
                                 <button class="page-link" id="prev_page"
                                     onclick="applyFilter({{ prev_page }})">Previous</button>
                             </li>
+                        </ul>
+                    </nav>
+                </div>   
+                <div class="col-md-4"></div>             
+                <div class="col-md-{{'12' if user_agent.is_mobile else '4' }} text-center">
+                    <nav aria-label="Page navigation example" class="text-center">
+                        <ul class="pagination" class="text-center">
                             <li class="page-item {{ '' if next_page > 0 else 'disabled' }}">
                                 <button class="page-link" id="next_page"
                                     onclick="applyFilter({{ next_page }})">Next</button>
@@ -76,7 +83,7 @@
         </div>
 
         <!-- bill entries -->
-        <div class="col-4">
+        <div class="col-{{'12' if user_agent.is_mobile else '4' }}">
             <div class="col-12">
                 <select name="temp_customer_id" id="temp_customer_id" style="width: 100%;" class="text-center">
                     <option value="0">----- Select Customer -----</option>

@@ -1,10 +1,13 @@
+from datetime import datetime
 from flask import redirect, render_template, request, url_for
 from flask_login import login_user
+
+from utils.inventory.stock_take import StockTake
 
 class Login():
     def __init__(self, db): 
         self.db = db
-        
+           
     def login(self):  
         if request.method == 'POST':
             if request.form['action'] == 'login':
@@ -12,13 +15,14 @@ class Login():
                 password = request.form['password']   
                 user = self.db.authenticate_user(phone, password)
                 
-                if user: 
+                if user:        
                     login_user(user)
+                    StockTake(self.db).load(datetime.now().strftime('%Y-%m-%d'))
                     return redirect(url_for('dashboard'))
                 else: 
                     error = 'Login failed! Phone & Password do not match or Phone does not exist.'
                     shop_types = self.db.fetch_shop_types()
-                    return render_template('login.html', shop=None, shop_types=shop_types, error=error)
+                    return render_template('login.html', shop_types=shop_types, error=error)
     
     def register(self):           
         company_name = request.form['company_name']
@@ -40,8 +44,9 @@ class Login():
             user = self.db.get_user_by_id(user_id)
         else:
             self.db.update_user(user.id, user_name, user_password, shop_id)
-        
+                    
         login_user(user)
+        StockTake(self.db).load(datetime.now().strftime('%Y-%m-%d'))                
         return redirect(url_for('dashboard'))
       
     def __call__(self):

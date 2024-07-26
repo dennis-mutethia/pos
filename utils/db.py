@@ -1,8 +1,7 @@
 from flask_login import current_user
-import sqlite3, hashlib, os, uuid, psycopg2
-from flask import current_app
+import hashlib, os, uuid, psycopg2
 
-from utils.entities import Company, License, Package, ProductCategories, Products, Shop, ShopType, User
+from utils.entities import Company, License, Package, PaymentMode, Shop, ShopType, User, UserLevel
 
 class Db():
     def __init__(self):
@@ -37,12 +36,20 @@ class Db():
         return hash_object.hexdigest()
     
     def create_base_tables(self):
-        self.ensure_connection()
-        # Creates new tables in the pos.db database if they do not already exist.
-        with current_app.open_resource("pos.sql") as f:
-            with self.conn.cursor() as cursor:
-                cursor.executescript(f.read().decode("utf8"))
-                self.conn.commit()
+        try:
+            self.ensure_connection()  # Ensure your connection to PostgreSQL is established
+            
+            # Read the SQL script file
+            with open("pos.sql", "r") as f:
+                sql_script = f.read()
+                
+                # Execute the SQL script
+                with self.conn.cursor() as cursor:
+                    cursor.execute(sql_script)
+                    self.conn.commit()
+                
+        except psycopg2.Error as e:
+            print(f"Error executing SQL script: {e}")
     
     def load_shop_template_data(self, shop_id):        
         self.ensure_connection()
@@ -70,7 +77,7 @@ class Db():
             for shop_type in data:
                 shop_types.append(ShopType(shop_type[0], shop_type[1], shop_type[2]))
                 
-            return shop_types    
+            return shop_types
     
     def get_user_by_id(self, id):
         self.ensure_connection()
@@ -83,7 +90,11 @@ class Db():
             cursor.execute(query, (id,))
             data = cursor.fetchone()
             if data:
-                return User(data[0], data[1], data[2], data[3], data[4])
+                user_level = self.get_user_level_id(data[3])
+                shop = self.get_shop_by_id(data[4]) 
+                company = self.get_company_by_id(shop.company_id)
+                license = self.get_license_id(company.license_id)   
+                return User(data[0], data[1], data[2], user_level, shop, company, license)
             else:
                 return None      
     
@@ -98,7 +109,11 @@ class Db():
             cursor.execute(query, (phone,))
             data = cursor.fetchone()
             if data:
-                return User(data[0], data[1], data[2], data[3], data[4])
+                user_level = self.get_user_level_id(data[3])
+                shop = self.get_shop_by_id(data[4]) 
+                company = self.get_company_by_id(shop.company_id)
+                license = self.get_license_id(company.license_id)   
+                return User(data[0], data[1], data[2], user_level, shop, company, license)
             else:
                 return None    
            
@@ -113,7 +128,11 @@ class Db():
             cursor.execute(query, (phone, self.hash_password(password)))
             data = cursor.fetchone()
             if data:
-                return User(data[0], data[1], data[2], data[3], data[4])
+                user_level = self.get_user_level_id(data[3])
+                shop = self.get_shop_by_id(data[4]) 
+                company = self.get_company_by_id(shop.company_id)
+                license = self.get_license_id(company.license_id)   
+                return User(data[0], data[1], data[2], user_level, shop, company, license)
             else:
                 return None 
     
@@ -182,14 +201,6 @@ class Db():
             self.conn.commit()
             shop_id = cursor.fetchone()[0]
             return shop_id
-    
-    def delete_website(self, website_id):
-        self.ensure_connection()
-        conn = sqlite3.connect('database.db')
-        cursor = conn.cursor()
-        cursor.execute(f'DELETE FROM websites WHERE id = %s', (website_id,))
-        conn.commit()
-        conn.close() 
       
     def get_license_id(self, id):
         self.ensure_connection()
@@ -234,6 +245,21 @@ class Db():
             if data:
                 return Shop(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9])
             else:
+                return None       
+      
+    def get_user_level_id(self, id):
+        self.ensure_connection()
+        with self.conn.cursor() as cursor:
+            query = """
+            SELECT id, name, level, description
+            FROM user_levels 
+            WHERE id = %s 
+            """
+            cursor.execute(query, (id,))
+            data = cursor.fetchone()
+            if data:
+                return UserLevel(data[0], data[1], data[2], data[3])
+            else:
                 return None    
         
     def get_package_by_id(self, id):
@@ -261,125 +287,29 @@ class Db():
             """
             cursor.execute(query, (name.upper(), self.hash_password(password), shop_id, user_id, user_id))
             self.conn.commit()
-    
-    def fetch_product_categories(self):
+            
+    def fetch_payment_modes(self):
         self.ensure_connection() 
         with self.conn.cursor() as cursor:
-            query = """
-            WITH p AS(
-                SELECT shop_id, category_id, COUNT(*) counts FROM products GROUP BY shop_id, category_id
-            )
-            SELECT id, name, COALESCE(counts, 0)
-            FROM product_categories 
-            LEFT JOIN p ON p.category_id = product_categories.id AND p.shop_id = product_categories.shop_id
-            WHERE product_categories.shop_id = %s
-            ORDER BY name
-            """
-            cursor.execute(query, (current_user.shop_id,))
+            cursor.execute("SELECT id, name, account FROM payment_modes")
             data = cursor.fetchall()
-            product_categories = []
-            for shop_type in data:
-                product_categories.append(ProductCategories(shop_type[0], shop_type[1], shop_type[2]))
+            payment_modes = []
+            for payment_mode in data:
+                payment_modes.append(PaymentMode(payment_mode[0], payment_mode[1], payment_mode[2]))
                 
-            return product_categories 
-    
-    def save_product_category(self, name):
+            return payment_modes
+          
+    def get_payment_mode_by_id(self, id):
         self.ensure_connection()
         with self.conn.cursor() as cursor:
             query = """
-            INSERT INTO product_categories(name, shop_id, created_at, created_by) 
-            VALUES(%s, %s, NOW(), %s) 
-            ON CONFLICT (name, shop_id) DO NOTHING
-            RETURNING id
-            """
-            cursor.execute(query, (name.upper(), current_user.shop_id, current_user.id))
-            self.conn.commit()
-            id = cursor.fetchone()[0]
-            return id   
-            
-    def update_product_category(self, id, name):
-        self.ensure_connection()
-        with self.conn.cursor() as cursor:
-            query = """
-            UPDATE product_categories
-            SET name=%s, updated_at=NOW(), updated_by=%s
-            WHERE id=%s
-            """
-            params = [name.upper(), current_user.shop_id, current_user.id]
-            cursor.execute(query, tuple(params))
-            self.conn.commit()
-            
-    def delete_product_category(self, id):
-        self.ensure_connection()
-        with self.conn.cursor() as cursor:
-            query = """
-            DELETE FROM product_categories
-            WHERE id=%s
-            """
-            print(query)
-            cursor.execute(query, (id,))
-            self.conn.commit()
-    
-    def fetch_products(self, search, category_id):
-        self.ensure_connection()
-        with self.conn.cursor() as cursor:
-            query = """
-            SELECT id, name, purchase_price, selling_price, category_id
-            FROM products
-            WHERE shop_id = %s
-            """
-            params = [current_user.shop_id]
-
-            if search:
-                query += " AND name LIKE %s"
-                params.append(f"%{search.upper()}%")
-            if int(category_id) > 0:
-                query += " AND category_id = %s"
-                params.append(category_id)
-            
-            query = query + " ORDER BY category_id, name"
-            cursor.execute(query, tuple(params))
-            data = cursor.fetchall()
-            products = []
-            for product in data:
-                products.append(Products(product[0], product[1], product[2], product[3], product[4]))
-
-            return products
-                    
-    def save_product(self, name, purchase_price, selling_price, category_id):
-        self.ensure_connection()
-        with self.conn.cursor() as cursor:
-            query = """
-            INSERT INTO products(name, purchase_price, selling_price, category_id, shop_id, created_at, created_by) 
-            VALUES(%s, %s, %s, %s, %s, NOW(), %s) 
-            ON CONFLICT (name, shop_id) DO NOTHING
-            RETURNING id
-            """
-            params = [name.upper(), purchase_price, selling_price, category_id, current_user.shop_id, current_user.id]
-            cursor.execute(query, tuple(params))
-            self.conn.commit()
-            id = cursor.fetchone()[0]
-            return id   
-            
-    def update_product(self, id, name, purchase_price, selling_price):
-        self.ensure_connection()
-        with self.conn.cursor() as cursor:
-            query = """
-            UPDATE products
-            SET name=%s, purchase_price=%s, selling_price=%s, updated_at=NOW(), updated_by=%s
-            WHERE id=%s
-            """
-            params = [name.upper(), purchase_price, selling_price, current_user.id, id]
-            cursor.execute(query, tuple(params))
-            self.conn.commit()
-            
-    def delete_product(self, id):
-        self.ensure_connection()
-        with self.conn.cursor() as cursor:
-            query = """
-            DELETE FROM products
-            WHERE id=%s
+            SELECT id, name, account
+            FROM payment_modes 
+            WHERE id = %s 
             """
             cursor.execute(query, (id,))
-            self.conn.commit()
-        
+            data = cursor.fetchone()
+            if data:
+                return PaymentMode(data[0], data[1], data[2])
+            else:
+                return None       

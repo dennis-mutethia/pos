@@ -1,13 +1,22 @@
 from flask_login import UserMixin
 
 class User(UserMixin):
-    def __init__(self, id, name, phone, user_level_id, shop_id):  
+    def __init__(self, id, name, phone, user_level, shop, company, license):  
         self.id = id
         self.name = name
         self.phone = phone
-        self.user_level_id = user_level_id
-        self.shop_id = shop_id
-    
+        self.user_level = user_level
+        self.shop = shop 
+        self.company = company 
+        self.license = license
+
+class UserLevel():
+    def __init__(self, id, name, level, description):
+        self.id = id
+        self.name = name
+        self.name = level
+        self.description = description 
+        
 class ShopType():
     def __init__(self, id, name, description):
         self.id = id
@@ -51,17 +60,85 @@ class Package():
         self.color = color
         self.validity = validity
 
-class ProductCategories():
+class ProductCategory():
     def __init__(self, id, name, products_count):
         self.id = id
         self.name = name    
         self.products_count = products_count   
 
-class Products():
+class Product():
     def __init__(self, id, name, purchase_price, selling_price, category_id):
         self.id = id
         self.name = name    
         self.purchase_price = purchase_price   
         self.selling_price = selling_price    
         self.category_id = category_id   
+
+class Stock():
+    def __init__(self, id, product_id, name, category_name, yesterday_opening, yesterday_additions, yesterday_sold, opening, additions, sold, selling_price, purchase_price):
+        self.id = id 
+        self.product_id = product_id   
+        self.name = name     
+        self.category_name = category_name   
+        self.yesterday_opening = yesterday_opening 
+        self.yesterday_additions = yesterday_additions 
+        self.yesterday_sold = yesterday_sold
+        self.opening = opening   
+        self.additions = additions     
+        self.sold = sold  
+        self.selling_price = selling_price
+        self.purchase_price = purchase_price
+
+class Customer():
+    def __init__(self, id, name, phone):
+        self.id = id    
+        self.name = name     
+        self.phone = phone    
+
+class BillEntry():
+    def __init__(self, id, bill_id, stock_id, item_name, price, qty):
+        self.id = id    
+        self.bill_id = bill_id     
+        self.stock_id = stock_id   
+        self.item_name = item_name     
+        self.price = price   
+        self.qty = qty 
+          
+class PaymentMode():
+    def __init__(self, id, name, account):
+        self.id = id    
+        self.name = name     
+        self.account = account
+          
+class Payment():
+    def __init__(self, id, bill_id, amount, created_at, user, payment_mode ):
+        self.id = id    
+        self.bill_id = bill_id   
+        self.amount = amount     
+        self.created_at = created_at   
+        self.user = user   
+        self.payment_mode = payment_mode   
+          
+class Bill():
+    def __init__(self, id, total, paid, created_at, customer, user, payments):
+        self.id = id    
+        self.total = total     
+        self.paid = paid     
+        self.created_at = created_at  
+        self.customer = customer    
+        self.user = user   
+        self.payments = payments
+        self.cash = 0 
+        self.mpesa = 0
+        for payment in payments:
+            if payment.payment_mode.name == 'CASH':
+                self.cash = self.cash + payment.amount
+            elif payment.payment_mode.name == 'MPESA':
+                self.mpesa = self.mpesa + payment.amount
+        
+        
+        
+        
+          
+        
         

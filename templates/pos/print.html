@@ -79,8 +79,8 @@
                         {% if current_user.shop.phone_2 %}
                         <small class="text-black"> {{ current_user.shop.phone_2 }}</small><br />
                         {% endif %}
-                        <small class="text-black">Customer Name: {{ customer.name }}</small><br />
-                        <small class="text-black">Customer Phone: {{ customer.phone }}</small><br />
+                        <small class="text-black">Customer Name: {{ bill.customer.name }}</small><br />
+                        <small class="text-black">Customer Phone: {{ bill.customer.phone }}</small><br />
                         {% if current_user.shop.till_no %}
                         <small class="text-black text-bold">
                             MPESA BUY GOODS TILL: {{ current_user.shop.till_no }}

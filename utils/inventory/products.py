@@ -67,8 +67,6 @@ class Products():
             RETURNING id
             """
             params = [product_id, name.upper(), category_id, purchase_price, selling_price, in_stock, current_user.shop.id, current_user.id]
-            print(query)
-            print(params)
             
             try:
                 cursor.execute(query, tuple(params))

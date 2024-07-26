@@ -3,11 +3,11 @@ from flask import render_template, request
 from flask_login import current_user
 import user_agents
 
+from utils.customers.customers import Customers
 from utils.inventory.products_categories import ProductsCategories
 from utils.inventory.stock_take import StockTake
 from utils.pos.bills import Bills
 from utils.pos.bill_entries import BillEntries
-from utils.pos.customers import Customers
 from utils.pos.payments import Payments
 
 class NewSale():

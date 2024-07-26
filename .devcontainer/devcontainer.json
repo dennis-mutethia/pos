@@ -1,5 +1,5 @@
 {
-    "name": "SOCCER-PREDICTIONS",
+    "name": "POS",
     "dockerFile": "Dockerfile",
     "customizations": {
         "vscode": {

@@ -27,6 +27,7 @@
                 <th width="40%">PRODUCT CATEGORY</th>
                 <th class="text-center">BUYING PRICE</th>
                 <th class="text-center">SELLING PRICE</th>
+                <th class="text-center">IN STOCK</th>
                 <th class="text-center">
                     <a href="#" class="btn btn-xs btn-primary btn-flat" data-toggle="modal" data-target="#newModal">Add
                         New Product</a>
@@ -98,7 +99,7 @@
                     <div class="form-group row">
                         <div class="col-sm-12">
                             <select class="form-control input-sm" name="category_id_new" id="category_id_new" required>
-                                <option value="0">Select Category</option>
+                                <option value="0" disabled>Select Category</option>
                                 {% for product_category in product_categories %}
                                 <option value="{{ product_category.id }}" {% if product_category.id==category_id %}
                                     selected {% endif %}>{{ product_category.name }}</option>

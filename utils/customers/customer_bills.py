@@ -2,11 +2,11 @@ from datetime import datetime
 from flask import render_template, request
 from flask_login import current_user
 
-from utils.customers.customers import Customers
 from utils.entities import Bill
+from utils.pos.customers import Customers
 from utils.pos.payments import Payments
 
-class Bills():
+class CustomerBills():
     def __init__(self, db): 
         self.db = db
             

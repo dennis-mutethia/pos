@@ -1,11 +1,11 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for
-from flask_login import LoginManager, current_user, login_user, logout_user, login_required
+from flask import Flask, redirect, url_for
+from flask_login import LoginManager, logout_user, login_required
 from dotenv import load_dotenv
 from flask_session import Session
 from redis import Redis
 
-from utils.customers import CustomerBills
+from utils.customers.customer_bills import CustomerBills
 from utils.customers.customers import Customers
 from utils.dashboard import Dashboard
 from utils.db import Db
@@ -153,12 +153,17 @@ def posBillDetails():
 
 @app.route('/customers', methods=['GET', 'POST'])
 @login_required
-def posBills():
+def customers():
+    return Customers(db)()
+
+@app.route('/customer-update', methods=['POST'])
+@login_required
+def customerUpdate():
     return Customers(db)()
 
 @app.route('/customer-bills', methods=['GET', 'POST'])
 @login_required
-def posBills():
+def customerBills():
     return CustomerBills(db)()
 
 if __name__ == '__main__':

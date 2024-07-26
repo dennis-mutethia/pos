@@ -34,10 +34,10 @@
                     <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-account-multiple"></i><span class="hide-menu">Customers</span></a>
                     <ul aria-expanded="false" class="collapse first-level">
                         <li class="sidebar-item">
-                            <a href="customers" class="sidebar-link"><i class="mdi mdi-account-multiple-plus"></i><span class="hide-menu"> My Customers </span></a>
+                            <a href="{{ url_for('customers') }}" class="sidebar-link"><i class="mdi mdi-account-multiple-plus"></i><span class="hide-menu"> My Customers </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="customers-bills" class="sidebar-link"><i class="mdi mdi-cash-multiple"></i><span class="hide-menu"> Customer Bills </span></a>
+                            <a href="{{ url_for('customerBills') }}" class="sidebar-link"><i class="mdi mdi-cash-multiple"></i><span class="hide-menu"> Customer Bills </span></a>
                         </li>
                     </ul>
                 </li>

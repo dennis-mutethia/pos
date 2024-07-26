@@ -46,45 +46,61 @@ class Customers():
                 customers.append(Customer(datum[0], datum[1], datum[2]))
 
             return customers
+    
+    def add(self, name, phone):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:
+            query = """
+            INSERT INTO customers(name, phone, shop_id, created_at, created_by) 
+            VALUES(%s, %s, %s, NOW(), %s) 
+            ON CONFLICT (phone, shop_id) DO NOTHING
+            RETURNING id
+            """
+            cursor.execute(query, (name.upper(), phone, current_user.shop.id, current_user.id))
+            self.db.conn.commit()
+            id = cursor.fetchone()[0]
+            return id   
+            
+    def update(self, id, name, phone):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:
+            query = """
+            UPDATE customers
+            SET name=%s, phone=%s, updated_at=NOW(), updated_by=%s
+            WHERE id=%s
+            """
+            params = [name.upper(), phone, current_user.shop.id, id]
+            cursor.execute(query, tuple(params))
+            self.db.conn.commit()
+            
+    def delete(self, id):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:
+            query = """
+            DELETE FROM customers
+            WHERE id=%s
+            """
+            cursor.execute(query, (id,))
+            self.db.conn.commit()
         
-    def __call__(self):
-        search = ''
-        category_id = 0  
-        page = 1   
-        if request.method == 'GET':   
-            try:    
-                search = request.args.get('search', '')
-                category_id = int(request.args.get('category_id', 0))
-                page = int(request.args.get('page', 1))
-            except ValueError as e:
-                print(f"Error converting category_id: {e}")
-            except Exception as e:
-                print(f"An error occurred: {e}")
-        
+            
+    def __call__(self):        
         if request.method == 'POST':       
             if request.form['action'] == 'add':
-                name = request.form['name']    
-                purchase_price = request.form['purchase_price']
-                selling_price = request.form['selling_price']    
-                category_id = request.form['category_id_new']    
-                self.add(name, purchase_price, selling_price, category_id)
-                StockTake(self.db).load(datetime.now().strftime('%Y-%m-%d'))
-            
+                name = request.form['name']
+                phone = request.form['phone']
+                self.add(name, phone)   
+                
             elif request.form['action'] == 'update':
                 id = request.form['id']
-                name = request.form['name']    
-                purchase_price = request.form['purchase_price']
-                selling_price = request.form['selling_price']    
-                self.update(id, name, purchase_price, selling_price)
+                name = request.form['name']
+                phone = request.form['phone'] 
+                self.update(id, name, phone)
                 return 'success'
-                
+                   
             elif request.form['action'] == 'delete':
                 id = request.form['item_id']
                 self.delete(id) 
         
-        product_categories = ProductsCategories(self.db).fetch()
-        products = self.fetch(search, category_id, page)
-        prev_page = page-1 if page>1 else 0
-        next_page = page+1 if len(products)==30 else 0
-        return render_template('pos/customers.html', product_categories=product_categories, products=products, 
-                               page_title='Customers', search=search, category_id=category_id, page=page, prev_page=prev_page, next_page=next_page )
+        customers = self.fetch()
+        return render_template('customers/index.html', customers=customers, page_title='Customers')

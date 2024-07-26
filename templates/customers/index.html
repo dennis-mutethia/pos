@@ -8,25 +8,29 @@
     <table class="table-bordered table-striped">
         <thead>
             <tr>
-                <th>CATEGORY NAME</th>
-                <th class="text-center">PRODUCTS</th>
+                <th>CUSTOMER NAME</th>
+                <th class="text-center">PHONE</th>
                 <th class="text-center">
-                    <a href="#" class="btn btn-xs btn-primary btn-flat" data-toggle="modal" data-target="#newModal">Add
-                        New Category</a>
+                    <a href="#" class="btn btn-xs btn-primary btn-flat" style="width: 100%" data-toggle="modal"
+                        data-target="#newModal">Add
+                        New Customer</a>
                 </th>
             </tr>
         </thead>
         <tbody>
-            {% for product_category in product_categories %}
+            {% for customer in customers %}
             <tr>
                 <td>
-                    <input type="text" id="category_name_{{ product_category.id }}"
-                        name="category_name_{{ product_category.id }}" value="{{ product_category.name }}"
-                        onchange="updateCategory({{ product_category.id }});" style="width: 100%" />
+                    <input type="text" id="customer_name_{{ customer.id }}" name="customer_name_{{ customer.id }}"
+                        value="{{ customer.name }}" onchange="updateCustomer({{ customer.id }});" style="width: 100%" />
                 </td>
-                <td class="text-center">{{ product_category.products_count }}</td>
+                <td>
+                    <input type="text" id="customer_phone_{{ customer.id }}" name="customer_phone_{{ customer.id }}"
+                        value="{{ customer.phone }}" onchange="updateCustomer({{ customer.id }});"
+                        style="width: 100%" />
+                </td>
                 <td class="text-center">
-                    <a href="#" onclick="deleteItem({{ product_category.id }})" data-toggle="modal"
+                    <a href="#" onclick="deleteItem({{ customer.id }})" data-toggle="modal"
                         data-target="#deleteModal"><i class="mdi mdi-delete" style="color: red"
                             title="Delete Item"></i></a>
                 </td>
@@ -45,22 +49,27 @@
         <div class="modal-content">
             <form method="POST" class="form-horizontal">
                 <div class="modal-header text-center">
-                    <h5 class="text-center">Add New Product Category</h5>
+                    <h5 class="text-center">Add New Customer</h5>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group row">
                         <div class="col-sm-12">
                             <input required="required" type="text" name="name" id="name" class="form-control input-sm"
-                                placeholder="Enter Product Category Name">
+                                placeholder="Enter Customer Name">
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    <button type="submit" id="action" name="action" value="add"
-                        class="btn btn-success">Save Product Category</button>
-                </div>
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <input name="phone" id="phone" type="number" class="form-control input-sm"
+                                placeholder="Enter Customer Phone" required min="100000000" max="799999999" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        <button type="submit" id="action" name="action" value="add" class="btn btn-success">Save
+                            Customer</button>
+                    </div>
             </form>
         </div>
     </div>
@@ -73,13 +82,13 @@
             <form method="POST">
                 <input type="hidden" id="item_id" name="item_id" />
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Are you Sure You want to Delete this Product?</h5>
+                    <h5 class="modal-title" id="deleteModalLabel">Are you Sure You want to Delete this Customer?</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div style="color: black" class="modal-body">Select "Confirm Delete" below if you want to delete this
-                    Product from the System.
+                    Customer from the System.
                     <p style="color: red">This action is not reversible!!</p>
                 </div>
                 <div class="modal-footer">
@@ -95,19 +104,21 @@
 <script>
     if ($toastr_message) toastr.success($toastr_message);
 
-    function updateCategory(id) {
-        let name = $("#category_name_" + id).val();
+    function updateCustomer(id) {
+        let name = $("#customer_name_" + id).val();
+        let phone = $("#customer_phone_" + id).val();
         $.ajax({
             type: 'post',
-            url: '{{ url_for('inventoryProductsCategoriesUpdate') }}',
+            url: '{{ url_for('customerUpdate') }}',
             data: {
                 id: id,
                 name: name,
+                phone: phone,
                 action: 'update'
             },
             success: function (data) {
                 toastr.success("Updated " + name);
-                $("#category_name_" + id).val(name.toUpperCase());
+                $("#customer_name_" + id).val(name.toUpperCase());
             }
         });
     }

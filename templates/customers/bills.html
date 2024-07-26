@@ -6,17 +6,35 @@
 <!-- ============================================================== -->
 <div class="container-fluid card table-responsive">
     <form id="filter-frm" method="GET" class="row">
-        <div class="col-6">
-            <input onchange="applyFilter()" style="height: 25px" type="date" id="report_date" name="report_date"
-                required="required" value="{{ report_date }}" max="{{ current_date }}" />
+        <div class="col-1 text-right">
+            <label class="text-white">FROM:</label>
         </div>
-        <div class="col-6">
+        <div class="col-2">
+            <input onchange="applyFilter()" style="height: 25px" type="date" id="from_date" name="from_date"
+                required="required" value="{{ from_date }}" max="{{ current_date }}" />
+        </div>
+        <div class="col-1 text-right">
+            <label class="text-white">TO:</label>
+        </div>
+        <div class="col-2">
+            <input onchange="applyFilter()" style="height: 25px" type="date" id="to_date" name="to_date"
+                required="required" value="{{ to_date }}" max="{{ current_date }}" />
+        </div>
+        <div class="col-3">
             <select onchange="applyFilter()" name="bill_status" id="bill_status" style="width: 100%;">
                 <option value="0">All Bills</option>
                 <option {% if bill_status==1 %} selected {% endif %} value="1">Paid Bills
                 </option>
                 <option {% if bill_status==2 %} selected {% endif %} value="2">Not Paid
                 </option>
+            </select>
+        </div>
+        <div class="col-3">
+            <select class="text-center" onchange="applyFilter()" name="customer_id" id="customer_id" style="width: 100%;">
+                <option value="0">All Customers</option>
+            {% for customer in customers %}
+            <option value="{{ customer.id }}" {{ 'selected' if customer_id==customer.id else '' }}>{{ customer.name }} - {{ customer.phone }}</option>
+            {% endfor %}
             </select>
         </div>
     </form><br />
@@ -104,39 +122,23 @@
                         <div class="col-sm-12">
                             <h5 class="text-center">Unpaid Bill Amount: <b id="bill_amount"></b></h5>
                             <select name="payment_mode_id" id="payment_mode_id" style="width: 100%;">
-                                <?php
-                                            $payment_modes = $_SESSION['stock_app_inventory_logged_user']->shop_id . '_payment_modes';
-                                            $sql = <<<SQL
-      SELECT `id`,`name`
-      FROM `$payment_modes` 
-SQL;
-                                            if ($stmt = $mysqli->prepare($sql)) {
-                                                $stmt->execute();
-                                                $stmt->bind_result($id, $name);
-                                                while ($stmt->fetch()) {
-                                            ?>
-                                <option value="<?php echo $id; ?>">
-                                    <?php echo $name; ?>
-                                </option>
-                                <?php
-                                                }
-                                                $stmt->close();
-                                            }
-                                            ?>
+                                {% for payment_mode in payment_modes %}
+                                <option value="{{ payment_mode.id }}">{{ payment_mode.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
                     <div class="form-group row">
                         <div class="col-sm-12">
                             <input type="hidden" name="bill_id" id="bill_id" />
-                            <input type="number" name="amount_paid" id="amount_paid" min="0"
+                            <input type="number" name="amount_paid" id="amount_paid" min="0" required
                                 class="form-control input-sm" placeholder="Enter Amount Paid" />
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    <button type="submit" id="submit_payment" name="submit_payment" value="submit_payment"
+                    <button type="submit" id="submit_payment" name="action" value="submit_payment"
                         class="btn btn-success">Receive Payment</button>
                 </div>
             </form>
@@ -230,9 +232,8 @@ SQL;
     }
 
     function updateBillAmount(bill_id, balance) {
-        $('#bill_amount').htmls(balance.toLocaleString());
+        $('#bill_amount').html(balance.toLocaleString());
         $('#bill_id').val(bill_id);
-        $('#amount_paid').val(balance);
         document.getElementById("amount_paid").max = balance;
     }
 

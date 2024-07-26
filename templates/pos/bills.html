@@ -104,39 +104,23 @@
                         <div class="col-sm-12">
                             <h5 class="text-center">Unpaid Bill Amount: <b id="bill_amount"></b></h5>
                             <select name="payment_mode_id" id="payment_mode_id" style="width: 100%;">
-                                <?php
-                                            $payment_modes = $_SESSION['stock_app_inventory_logged_user']->shop_id . '_payment_modes';
-                                            $sql = <<<SQL
-      SELECT `id`,`name`
-      FROM `$payment_modes` 
-SQL;
-                                            if ($stmt = $mysqli->prepare($sql)) {
-                                                $stmt->execute();
-                                                $stmt->bind_result($id, $name);
-                                                while ($stmt->fetch()) {
-                                            ?>
-                                <option value="<?php echo $id; ?>">
-                                    <?php echo $name; ?>
-                                </option>
-                                <?php
-                                                }
-                                                $stmt->close();
-                                            }
-                                            ?>
+                                {% for payment_mode in payment_modes %}
+                                <option value="{{ payment_mode.id }}">{{ payment_mode.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
                     <div class="form-group row">
                         <div class="col-sm-12">
                             <input type="hidden" name="bill_id" id="bill_id" />
-                            <input type="number" name="amount_paid" id="amount_paid" min="0"
+                            <input type="number" name="amount_paid" id="amount_paid" min="0" required
                                 class="form-control input-sm" placeholder="Enter Amount Paid" />
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    <button type="submit" id="submit_payment" name="submit_payment" value="submit_payment"
+                    <button type="submit" id="submit_payment" name="action" value="submit_payment"
                         class="btn btn-success">Receive Payment</button>
                 </div>
             </form>
@@ -230,9 +214,8 @@ SQL;
     }
 
     function updateBillAmount(bill_id, balance) {
-        $('#bill_amount').htmls(balance.toLocaleString());
+        $('#bill_amount').html(balance.toLocaleString());
         $('#bill_id').val(bill_id);
-        $('#amount_paid').val(balance);
         document.getElementById("amount_paid").max = balance;
     }
 

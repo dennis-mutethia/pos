@@ -49,7 +49,7 @@
                 <td>
                     <select onchange="updateProduct({{ product.id }});" id="product_category_id_{{ product.id }}" name="product_category_id_{{ product.id }}" style="width: 100%;">
                         {% for product_category in product_categories %}
-                        <option value="{{ product_category.id }}" {% if product_category.id==product.category_id %} selected {%
+                        <option value="{{ product_category.id }}" {% if product_category.name==product.category_name %} selected {%
                             endif %}>{{ product_category.name }}</option>
                         {% endfor %}
                     </select>

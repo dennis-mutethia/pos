@@ -24,10 +24,10 @@
     <table class="table-bordered table-striped">
         <thead>
             <tr>
-                <th>DATE</th>
-                <th>EXPENSE</th>
-                <th>CREATED BY</th>
-                <th class="text-right">AMOUNT</th>
+                <th class="text-center">DATE</th>
+                <th class="text-center">EXPENSE</th>
+                <th class="text-center">CREATED BY</th>
+                <th class="text-center">AMOUNT</th>
                 <th class="text-center">
                     <a href="#" class="btn btn-xs btn-primary btn-flat" style="width: 100%" data-toggle="modal"
                         data-target="#newModal">Add
@@ -36,12 +36,14 @@
             </tr>
         </thead>
         <tbody>
+            {% set ns = namespace(total=0) %}
             {% for expense in expenses %}
+            {% set ns.total = ns.total + expense.amount %}
             <tr>
-                <td class="text-right">{{ expense.date }}</td>
-                <td class="text-center">{{ expense.name }}</td>
-                <td class="text-center">{{ expense.user.name }}</td>
-                <td class="text-center">{{ expense.amount }}</td>
+                <td>{{ expense.date }}</td>
+                <td>{{ expense.name }}</td>
+                <td>{{ expense.user.name }}</td>
+                <td class="text-right">{{ expense.amount }}</td>
                 <td class="text-center">
                     <a href="#" onclick="deleteItem({{ expense.id }})" data-toggle="modal"
                         data-target="#deleteModal"><i class="mdi mdi-delete" style="color: red"
@@ -53,7 +55,8 @@
         <tfoot>
             <tr>
                 <th class="text-right" colspan="3"><b><u>TOTAL EXPENSES</u></b></th>
-                <th class="text-center" colspan="2"><b><u>{{ total }}</u></b></th>
+                <th class="text-right"><b><u>{{ ns.total }}</u></b></th>
+                <th></th>
             </tr>
         </tfoot>
     </table>

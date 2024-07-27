@@ -9,6 +9,7 @@ from utils.customers.customer_bills import CustomerBills
 from utils.customers.customers import Customers
 from utils.dashboard import Dashboard
 from utils.db import Db
+from utils.expenses import Expenses
 from utils.inventory.products import Products
 from utils.inventory.products_categories import ProductsCategories
 from utils.inventory.purchases import Purchases
@@ -165,6 +166,11 @@ def customerUpdate():
 @login_required
 def customerBills():
     return CustomerBills(db)()
+
+@app.route('/expenses', methods=['GET', 'POST'])
+@login_required
+def expenses():
+    return Expenses(db)()
 
 if __name__ == '__main__':
     debug_mode = os.getenv('IS_DEBUG', 'False').lower() in ['true', '1', 't']

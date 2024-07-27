@@ -135,8 +135,14 @@ class Bill():
                 self.cash = self.cash + payment.amount
             elif payment.payment_mode.name == 'MPESA':
                 self.mpesa = self.mpesa + payment.amount
-        
-        
+         
+class Expense():
+    def __init__(self, id, date, name, amount, user):
+        self.id = id    
+        self.date = date  
+        self.name = name 
+        self.amount = amount     
+        self.user = user   
         
         
           

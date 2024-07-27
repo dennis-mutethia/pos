@@ -5,13 +5,13 @@
 <!-- Container fluid  -->
 <!-- ============================================================== -->
 <div class="container-fluid table-responsive">
-    <form id="filter-frm" method="POST" class="row">
+    <form id="filter-frm" method="GET" class="row">
         <div class="col-6 text-right">
             <label class="text-white">ON THIS DATE (filter)</label>
         </div>
         <div class="col-6">
-            <input onchange="applyFilter()" style="height: 25px" type="date" id="filter_date" name="filter_date" required="required"
-                value="{{ filter_date }}" />
+            <input onchange="applyFilter()" style="height: 25px" type="date" id="report_date" name="report_date"
+                required="required" value="{{ report_date }}" />
         </div>
     </form>
 
@@ -24,10 +24,16 @@
     {% include 'dashboard/stock-investment.html' %}
 
     {% include 'dashboard/line-chart-2.html' %}
- 
+
 </div>
 <!-- ============================================================== -->
 <!-- End Container fluid  -->
 <!-- ============================================================== -->
+
+<script>
+    function applyFilter() {
+        $("#filter-frm").submit();
+    }
+</script>
 
 {% endblock %}

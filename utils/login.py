@@ -32,6 +32,7 @@ class Login():
         user_name = request.form['user_name']    
         user_phone = request.form['user_phone']
         user_password = request.form['user_password'] 
+        current_date = datetime.now().strftime('%Y-%m-%d')
         
         package = self.db.get_package_by_id(1)
         payment_id = self.db.save_payment(0, 0, 4)
@@ -46,7 +47,7 @@ class Login():
             self.db.update_user(user.id, user_name, user_password, shop_id)
                     
         login_user(user)
-        StockTake(self.db).load(datetime.now().strftime('%Y-%m-%d'))                
+        StockTake(self.db).load(current_date)                
         return redirect(url_for('dashboard'))
       
     def __call__(self):

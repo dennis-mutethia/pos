@@ -13,7 +13,7 @@ class BillEntries():
             query = """
             SELECT id, bill_id, stock_id, item_name, price, qty
             FROM bill_entries
-            WHERE shop_id=%s AND bill_id=%s
+            WHERE shop_id=%s AND bill_id=%s AND qty>0
             ORDER BY id
             """
             params = [current_user.shop.id, bill_id]
@@ -25,6 +25,37 @@ class BillEntries():
                 bill_entries.append(BillEntry(bill_entry[0], bill_entry[1], bill_entry[2], bill_entry[3], bill_entry[4], bill_entry[5]))
 
             return bill_entries
+         
+    def get_total(self, report_date):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:
+            query = """
+            WITH b AS(
+                SELECT id FROM bills
+                WHERE DATE(created_at) = DATE(%s) AND shop_id = %s AND id>0
+            ),
+            bps AS(
+                SELECT id, purchase_price
+                FROM stock 
+                WHERE DATE(stock_date) = DATE(%s) AND shop_id = %s
+            ),
+            be AS(
+                SELECT purchase_price*qty AS bp, price*qty AS sp
+                FROM bill_entries
+                INNER JOIN b ON b.id = bill_entries.bill_id
+                INNER JOIN bps ON bps.id = bill_entries.stock_id
+                WHERE qty>0
+            )
+            SELECT SUM(bp) cost, SUM(sp) AS sales FROM be
+            """
+            params = [report_date, current_user.shop.id, report_date, current_user.shop.id]
+            
+            cursor.execute(query, tuple(params))
+            data = cursor.fetchone()
+            if data:
+                return data[0], data[1]
+            else:
+                return None
             
     def add(self, bill_id, stock_id, item_name, price, qty):
         self.db.ensure_connection()

@@ -48,6 +48,8 @@ class StockTake():
         ON CONFLICT (stock_date, product_id, shop_id) DO NOTHING
         """
         params = [current_user.shop.id, current_user.shop.id, stock_date, stock_date, current_user.shop.id, current_user.id]
+        
+        print(query)
 
         with self.db.conn.cursor() as cursor:           
             cursor.execute(query, tuple(params))
@@ -75,7 +77,7 @@ class StockTake():
             WHERE DATE(stock_date) = DATE(%s) - 1
         ), 
         today AS(
-            SELECT id, product_id, name, category_id, opening, additions, sold, selling_price, purchase_price
+            SELECT id, product_id, name, category_id, COALESCE(opening, 0) AS opening, COALESCE(additions,0) AS additions, sold, selling_price, purchase_price
             FROM all_stock
             WHERE DATE(stock_date) = DATE(%s)
         )
@@ -110,6 +112,35 @@ class StockTake():
                 stocks.append(Stock(stock[0], stock[1], stock[2], stock[3], stock[4], stock[5], stock[6], stock[7], stock[8], stock[9], stock[10], stock[11]))
 
             return stocks
+        
+    def get_total(self, report_date):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:
+            query = """
+            WITH sales AS(
+                SELECT stock_id, SUM(qty) sold
+                FROM bill_entries
+                WHERE DATE(created_at) = DATE(%s) AND shop_id = %s
+                GROUP BY stock_id
+            ),
+            all_stock AS(
+                SELECT (COALESCE(opening, 0) + COALESCE(additions, 0)  - COALESCE(sold, 0)) AS in_stock, purchase_price, selling_price
+                FROM stock 
+                LEFT JOIN sales ON sales.stock_id = stock.id
+                WHERE stock_date=%s AND shop_id = %s
+            )        
+        
+            SELECT SUM(in_stock * purchase_price) capital, SUM(in_stock * selling_price) AS stock_amount 
+            FROM all_stock
+            """
+            params = [report_date, current_user.shop.id, report_date, current_user.shop.id]
+            
+            cursor.execute(query, tuple(params))
+            data = cursor.fetchone()
+            if data:
+                return data[0], data[1]
+            else:
+                return None
             
     def update(self, id, opening, additions):
         self.db.ensure_connection()

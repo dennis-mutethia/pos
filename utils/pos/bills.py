@@ -16,7 +16,7 @@ class Bills():
             query = """
             SELECT id, total, paid, created_at, customer_id, created_by
             FROM bills
-            WHERE DATE(created_at) >= DATE(%s) AND DATE(created_at) <= DATE(%s) AND shop_id = %s
+            WHERE (DATE(created_at) BETWEEN DATE(%s) AND DATE(%s)) AND shop_id = %s
             """
             params = [from_date, to_date, current_user.shop.id]
             
@@ -58,8 +58,25 @@ class Bills():
                 payments = Payments(self.db).fetch_by_bill_id(data[0])
                 return Bill(data[0], data[1], data[2], data[3], customer, user, payments)
             else:
-                return None    
-      
+                return None   
+        
+    def get_total_unpaid_bills(self):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:
+            query = """
+            SELECT SUM(total - paid) AS total_debts
+            FROM bills
+            WHERE shop_id = %s
+            """
+            params = [current_user.shop.id]
+            
+            cursor.execute(query, tuple(params))
+            data = cursor.fetchone()
+            if data:
+                return data[0]
+            else:
+                return None
+            
     def add(self, customer_id, amount_paid):
         self.db.ensure_connection()            
         query = """

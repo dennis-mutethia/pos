@@ -59,6 +59,23 @@ class Bills():
                 return Bill(data[0], data[1], data[2], data[3], customer, user, payments)
             else:
                 return None   
+        
+    def get_total_unpaid_bills(self):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:
+            query = """
+            SELECT total - paid AS total_debts
+            FROM bills
+            WHERE shop_id = %s
+            """
+            params = [current_user.shop.id]
+            
+            cursor.execute(query, tuple(params))
+            data = cursor.fetchone()
+            if data:
+                return data[0]
+            else:
+                return None
             
     def add(self, customer_id, amount_paid):
         self.db.ensure_connection()            

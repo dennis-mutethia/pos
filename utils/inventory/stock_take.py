@@ -110,6 +110,35 @@ class StockTake():
                 stocks.append(Stock(stock[0], stock[1], stock[2], stock[3], stock[4], stock[5], stock[6], stock[7], stock[8], stock[9], stock[10], stock[11]))
 
             return stocks
+        
+    def get_total(self, report_date):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:
+            query = """
+            WITH sales AS(
+                SELECT stock_id, SUM(qty) sold
+                FROM bill_entries
+                WHERE DATE(created_at) = DATE(%s) AND shop_id = %s
+                GROUP BY stock_id
+            ),
+            all_stock AS(
+                SELECT (opening + additions - COALESCE(sold, 0)) AS in_stock, purchase_price, selling_price
+                FROM stock 
+                LEFT JOIN sales ON sales.stock_id = stock.id
+                WHERE stock_date=%s AND shop_id = %s
+            )        
+        
+            SELECT SUM(in_stock * purchase_price) capital, SUM(in_stock * selling_price) AS stock_amount 
+            FROM all_stock
+            """
+            params = [report_date, current_user.shop.id, report_date, current_user.shop.id]
+            
+            cursor.execute(query, tuple(params))
+            data = cursor.fetchone()
+            if data:
+                return data[0], data[1]
+            else:
+                return None
             
     def update(self, id, opening, additions):
         self.db.ensure_connection()

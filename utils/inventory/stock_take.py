@@ -48,6 +48,8 @@ class StockTake():
         ON CONFLICT (stock_date, product_id, shop_id) DO NOTHING
         """
         params = [current_user.shop.id, current_user.shop.id, stock_date, stock_date, current_user.shop.id, current_user.id]
+        
+        print(query)
 
         with self.db.conn.cursor() as cursor:           
             cursor.execute(query, tuple(params))
@@ -75,7 +77,7 @@ class StockTake():
             WHERE DATE(stock_date) = DATE(%s) - 1
         ), 
         today AS(
-            SELECT id, product_id, name, category_id, opening, additions, sold, selling_price, purchase_price
+            SELECT id, product_id, name, category_id, COALESCE(opening, 0) AS opening, COALESCE(additions,0) AS additions, sold, selling_price, purchase_price
             FROM all_stock
             WHERE DATE(stock_date) = DATE(%s)
         )

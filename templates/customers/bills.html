@@ -263,6 +263,8 @@
     }
 
     function fetch_bill_details(id) {
+        $('#bill_details').html('');
+        $('#bill_details_2').html('');
         $.ajax({
             type: 'get',
             url: '{{ url_for('posBillDetails') }}?bill_id='+id,

@@ -58,8 +58,8 @@ class Bills():
                 payments = Payments(self.db).fetch_by_bill_id(data[0])
                 return Bill(data[0], data[1], data[2], data[3], customer, user, payments)
             else:
-                return None    
-      
+                return None   
+            
     def add(self, customer_id, amount_paid):
         self.db.ensure_connection()            
         query = """

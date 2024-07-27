@@ -26,7 +26,24 @@ class Expenses():
                 expenses.append(Expense(datum[0], datum[1], datum[2], datum[3], user))
 
             return expenses 
-      
+           
+    def get_total(self, report_date):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:
+            query = """
+            SELECT SUM(amount)
+            FROM expenses
+            WHERE DATE(date) = DATE(%s) AND shop_id = %s
+            """
+            params = [report_date, current_user.shop.id]
+            
+            cursor.execute(query, tuple(params))
+            data = cursor.fetchone()
+            if data:
+                return data[0]
+            else:
+                return None
+        
     def add(self, name, amount):
         self.db.ensure_connection()            
         query = """

@@ -34,33 +34,21 @@
             </form><br />
 
             <!-- Products-->
-            <table>
-                <tbody>
-                    <tr>
-                        {% for stock in stocks %}
-                        {% if loop.index0 % 4 == 0 and not loop.first %}
-                    </tr>
-                    <tr>
-                        {% endif %}
-                        <td>
-                            <button type="button" style="margin-top: 8px"
-                                class="btn btn-outline-{{ 'success' if (stock.opening+stock.additions) >= 10 else 'warning' if (stock.opening+stock.additions) > 0 else 'danger' }} {{ '' if (stock.opening+stock.additions) > 0 else 'disabled' }}"
-                                id="product_{{ stock.id }}" name="{{ stock.name}}" value="{{ stock.selling_price }}"
-                                onclick="AddBillEntry({{ stock.id }})">
-                                <small class="font-light">KSh. {{ stock.selling_price }}/= </small>
-                                <h6 class="mb-0 mt-1"> {{ stock.name}} </h6>
-                                <small class="font-light">[<span id="stock_{{ stock.id }}">{{ stock.opening +
-                                        stock.additions -
-                                        stock.sold}}
-                                    </span> in stock]</small>
-                                <span id="stocko_{{ stock.id }}" style="display: none">{{ stock.opening+stock.additions
-                                    }}</span>
-                            </button>
-                        </td>
-                        {% endfor %}
-                    </tr>
-                </tbody>
-            </table>
+            {% for stock in stocks %}
+                <button type="button" style="margin-top: 12px; margin-right: 12px"
+                    class="btn btn-outline-{{ 'success' if (stock.opening+stock.additions) >= 10 else 'warning' if (stock.opening+stock.additions) > 0 else 'danger' }} {{ '' if (stock.opening+stock.additions) > 0 else 'disabled' }}"
+                    id="product_{{ stock.id }}" name="{{ stock.name}}" value="{{ stock.selling_price }}"
+                    onclick="AddBillEntry({{ stock.id }})">
+                    <small class="font-light">KSh. {{ stock.selling_price }}/= </small>
+                    <h6 class="mb-0 mt-1"> {{ stock.name}} </h6>
+                    <small class="font-light">[<span id="stock_{{ stock.id }}">{{ stock.opening +
+                            stock.additions -
+                            stock.sold}}
+                        </span> in stock]</small>
+                    <span id="stocko_{{ stock.id }}" style="display: none">{{ stock.opening+stock.additions
+                        }}</span>
+                </button>
+            {% endfor %}
             <!-- End Products-->
         </div>
         <!-- End -->

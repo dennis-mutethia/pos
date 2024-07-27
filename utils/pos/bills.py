@@ -64,7 +64,7 @@ class Bills():
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
-            SELECT total - paid AS total_debts
+            SELECT SUM(total - paid) AS total_debts
             FROM bills
             WHERE shop_id = %s
             """

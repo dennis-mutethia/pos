@@ -124,7 +124,7 @@ class StockTake():
                 GROUP BY stock_id
             ),
             all_stock AS(
-                SELECT (opening + additions - COALESCE(sold, 0)) AS in_stock, purchase_price, selling_price
+                SELECT (COALESCE(opening, 0) + COALESCE(additions, 0)  - COALESCE(sold, 0)) AS in_stock, purchase_price, selling_price
                 FROM stock 
                 LEFT JOIN sales ON sales.stock_id = stock.id
                 WHERE stock_date=%s AND shop_id = %s

@@ -14,3 +14,10 @@ class Helper():
             else:
                 return f"{number:.2f}"
         return number
+
+    # Custom filter function
+    def format_number_with_commas(self, value):
+        if isinstance(value, (int, float)):
+            return "{:,}".format(value)
+        else:
+            return value

@@ -31,7 +31,7 @@
             onchange="UpdateBillEntry({{ bill_entry.stock_id }});" min="0" />
           <input id="oqt_{{ bill_entry.stock_id }}" type="hidden" value="{{ helper.format_number(bill_entry.qty) }}" />
         </td>
-        <td class="text-right" id="st_{{ bill_entry.stock_id }}">{{ helper.format_number(bill_entry.price * bill_entry.qty) }}</td>
+        <td class="text-right" id="st_{{ bill_entry.stock_id }}">{{ helper.format_number_with_commas(helper.format_number(bill_entry.price * bill_entry.qty)) }}</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -43,7 +43,7 @@
       </tr>
       <tr>
         <th scope="col" colspan="3" class="text-center">Total:</th>
-        <th scope="col" class="text-right" id="grand_total">{{ helper.format_number(grandtotal) }}</th>
+        <th scope="col" class="text-right" id="grand_total">{{ helper.format_number_with_commas(helper.format_number(grandtotal)) }}</th>
       </tr>
     </tfoot>
   </table>

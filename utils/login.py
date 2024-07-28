@@ -47,8 +47,11 @@ class Login():
             self.db.update_user(user.id, user_name, user_password, shop_id)
                     
         login_user(user)
-        StockTake(self.db).load(current_date)                
-        return redirect(url_for('dashboard'))
+        StockTake(self.db).load(current_date) 
+        if user.user_level.id in [0, 1]:               
+            return redirect(url_for('dashboard'))
+        else:
+            return redirect(url_for('posNewSale'))            
       
     def __call__(self):
         if request.method == 'POST':

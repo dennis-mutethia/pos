@@ -55,7 +55,7 @@
                 <td class="text-right">{{ bill.total | int | format(',') }}</td>
                 <td class="text-right text-warning">{{ bill.cash | int | format(',') }}</td>
                 <td class="text-right text-success">{{ bill.mpesa | int | format(',') }}</td>
-                <td class="text-right text-danger">{{ (bill.total-bill.paid) | int | format(',' if bill.total > bill.paid else '' }}</td>
+                <td class="text-right text-danger">{{ (bill.total-bill.paid) | int | format(',') if bill.total > bill.paid else '' }}</td>
                 <td class="text-center">
                     {% if bill.total > bill.paid %}
                     <button class="btn btn-success btn-xs text-white" data-toggle="modal" data-target="#newModal"

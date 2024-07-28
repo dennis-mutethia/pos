@@ -18,7 +18,10 @@ class Login():
                 if user:        
                     login_user(user)
                     StockTake(self.db).load(datetime.now().strftime('%Y-%m-%d'))
-                    return redirect(url_for('dashboard'))
+                    if user.user_level.id in [0, 1]:               
+                        return redirect(url_for('dashboard'))
+                    else:
+                        return redirect(url_for('posNewSale')) 
                 else: 
                     error = 'Login failed! Phone & Password do not match or Phone does not exist.'
                     shop_types = self.db.fetch_shop_types()
@@ -48,10 +51,7 @@ class Login():
                     
         login_user(user)
         StockTake(self.db).load(current_date) 
-        if user.user_level.id in [0, 1]:               
-            return redirect(url_for('dashboard'))
-        else:
-            return redirect(url_for('posNewSale'))            
+        return redirect(url_for('dashboard'))         
       
     def __call__(self):
         if request.method == 'POST':

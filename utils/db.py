@@ -1,7 +1,8 @@
 from flask_login import current_user
-import hashlib, os, uuid, psycopg2
+import os, uuid, psycopg2
 
 from utils.entities import Company, License, Package, PaymentMode, Shop, ShopType, User, UserLevel
+from utils.helper import Helper
 
 class Db():
     def __init__(self):
@@ -29,12 +30,7 @@ class Db():
         except Exception as e:
             # Reconnect if the connection is invalid
             self.conn = psycopg2.connect(**self.conn_params)
-               
-    def hash_password(self, password):
-        password_bytes = password.encode('utf-8')
-        hash_object = hashlib.sha256(password_bytes)
-        return hash_object.hexdigest()
-    
+                   
     def create_base_tables(self):
         try:
             self.ensure_connection()  # Ensure your connection to PostgreSQL is established
@@ -125,7 +121,7 @@ class Db():
             FROM users 
             WHERE phone = %s AND password = %s 
             """
-            cursor.execute(query, (phone, self.hash_password(password)))
+            cursor.execute(query, (phone, Helper().hash_password(password)))
             data = cursor.fetchone()
             if data:
                 user_level = self.get_user_level_id(data[3])
@@ -144,7 +140,7 @@ class Db():
             VALUES(%s, %s, %s, %s, %s, NOW(), 0)
             RETURNING id
             """
-            cursor.execute(query, (name.upper(), phone, user_level_id, shop_id, self.hash_password(password)))
+            cursor.execute(query, (name.upper(), phone, user_level_id, shop_id, Helper().hash_password(password)))
             self.conn.commit()
             user_id = cursor.fetchone()[0]
             return user_id   
@@ -285,7 +281,7 @@ class Db():
             SET name = %s, password = %s, shop_id = %s, updated_by=%s, updated_at=NOW() 
             WHERE id=%s
             """
-            cursor.execute(query, (name.upper(), self.hash_password(password), shop_id, user_id, user_id))
+            cursor.execute(query, (name.upper(), Helper().hash_password(password), shop_id, user_id, user_id))
             self.conn.commit()
             
     def fetch_payment_modes(self):

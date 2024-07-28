@@ -28,6 +28,7 @@ class Dashboard():
         total_capital, total_stock = StockTake(self.db).get_total(report_date)
         total_unpaid_bills = Bills(self.db).get_total_unpaid_bills()
          
-        return render_template('dashboard/index.html', page_title='Dashboard', report_date=report_date, helper=Helper(),
+        return render_template('dashboard/index.html', page_title='Dashboard', helper=Helper(),
+                               report_date=report_date,
                                total_cost=total_cost, total_sales=total_sales, total_expenses=total_expenses,
                                total_capital=total_capital, total_stock=total_stock, total_unpaid_bills=total_unpaid_bills )

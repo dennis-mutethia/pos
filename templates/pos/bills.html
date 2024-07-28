@@ -235,9 +235,9 @@
     }
 
     function updateBillAmount(bill_id, balance) {
-        $('#bill_amount').html(balance.toLocaleString());
+        $('#bill_amount').html(balance.replaceAll(',', ''));
         $('#bill_id').val(bill_id);
-        document.getElementById("amount_paid").max = balance;
+        document.getElementById("amount_paid").max = balance.replaceAll(',', '');
     }
 
     function editBill(id) {

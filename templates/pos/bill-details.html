@@ -40,7 +40,7 @@
             </tr>
             <tr>
                 <td colspan="2"><b><small>BALANCE</small></b></td>
-                <td colspan="2" class="text-right"><small><b><u>{{ helper.format_number(bill.total - bill.paid) }}</u></b></small></td>
+                <td colspan="2" class="text-right"><small><b><u>{{ helper.format_number_with_commas(helper.format_number(bill.total - bill.paid)) }}</u></b></small></td>
             </tr>
         </thead>
 

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import render_template, request
 from flask_login import current_user
 
@@ -12,7 +12,7 @@ class CustomerBills():
         
     def __call__(self):
         current_date = datetime.now().strftime('%Y-%m-%d')
-        from_date = datetime(datetime.now().year, 1, 1).strftime('%Y-%m-%d')
+        from_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d') #datetime(datetime.now().year, 1, 1).strftime('%Y-%m-%d')
         to_date = current_date
         bill_status = 0
         customer_id = 0
@@ -20,7 +20,7 @@ class CustomerBills():
         
         if request.method == 'GET':   
             try:    
-                from_date = request.args.get('from_date', current_date)
+                from_date = request.args.get('from_date', from_date)
                 to_date = request.args.get('to_date', current_date)
                 bill_status = int(request.args.get('bill_status', 0))
                 customer_id = int(request.args.get('customer_id', 0))

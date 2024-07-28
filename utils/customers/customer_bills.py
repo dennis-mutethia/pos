@@ -14,16 +14,16 @@ class CustomerBills():
         current_date = datetime.now().strftime('%Y-%m-%d')
         from_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d') #datetime(datetime.now().year, 1, 1).strftime('%Y-%m-%d')
         to_date = current_date
-        bill_status = 0
+        bill_status = 1
         customer_id = 0
         page = 1
         
         if request.method == 'GET':   
             try:    
                 from_date = request.args.get('from_date', from_date)
-                to_date = request.args.get('to_date', current_date)
-                bill_status = int(request.args.get('bill_status', 0))
-                customer_id = int(request.args.get('customer_id', 0))
+                to_date = request.args.get('to_date', to_date)
+                bill_status = int(request.args.get('bill_status', bill_status))
+                customer_id = int(request.args.get('customer_id', customer_id))
                 page = int(request.args.get('page', 1))
             except ValueError as e:
                 print(f"Error converting bill_status: {e}")

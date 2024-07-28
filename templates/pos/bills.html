@@ -52,10 +52,10 @@
                     {% endif %}
                 </td>
                 <td>{{ bill.user.name }} </td>
-                <td class="text-right">{{ bill.total | int | format(',') }}</td>
-                <td class="text-right text-warning">{{ bill.cash | int | format(',') }}</td>
-                <td class="text-right text-success">{{ bill.mpesa | int | format(',') }}</td>
-                <td class="text-right text-danger">{{ (bill.total-bill.paid) | int | format(',' if bill.total > bill.paid else '' }}</td>
+                <td class="text-right">{{ bill.total }}</td>
+                <td class="text-right text-warning">{{ bill.cash }}</td>
+                <td class="text-right text-success">{{ bill.mpesa }}</td>
+                <td class="text-right text-danger">{{ (bill.total-bill.paid) if bill.total > bill.paid else '' }}</td>
                 <td class="text-center">
                     {% if bill.total > bill.paid %}
                     <button class="btn btn-success btn-xs text-white" data-toggle="modal" data-target="#newModal"
@@ -78,10 +78,10 @@
         <tfoot>
             <tr>
                 <th class="text-right" colspan="4"><b><u>TOTAL BILLS</u></b></th>
-                <th class="text-right"><b><u>{{ grand_total | int | format(',') }}</u></b></th>
-                <th class="text-right text-warning"><b><u>{{ cash_total | int | format(',') }}</u></b></th>
-                <th class="text-right text-success"><b><u>{{ mpesa_total | int | format(',') }}</u></b></th>
-                <th class="text-right text-danger"><b><u>{{ (grand_total - grand_paid) | int | format(',') }}</u></b></th>
+                <th class="text-right"><b><u>{{ grand_total }}</u></b></th>
+                <th class="text-right text-warning"><b><u>{{ cash_total }}</u></b></th>
+                <th class="text-right text-success"><b><u>{{ mpesa_total }}</u></b></th>
+                <th class="text-right text-danger"><b><u>{{ grand_total - grand_paid }}</u></b></th>
                 <th colspan="3"></th>
             </tr>
         </tfoot>

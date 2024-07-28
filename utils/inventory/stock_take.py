@@ -49,8 +49,6 @@ class StockTake():
         ON CONFLICT (stock_date, product_id, shop_id) DO NOTHING
         """
         params = [current_user.shop.id, current_user.shop.id, stock_date, stock_date, current_user.shop.id, current_user.id]
-        
-        print(query)
 
         with self.db.conn.cursor() as cursor:           
             cursor.execute(query, tuple(params))

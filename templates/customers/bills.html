@@ -31,11 +31,13 @@
             </select>
         </div>
         <div class="col-3">
-            <select class="text-center" onchange="applyFilter()" name="customer_id" id="customer_id" style="width: 100%;">
+            <select class="text-center" onchange="applyFilter()" name="customer_id" id="customer_id"
+                style="width: 100%;">
                 <option value="0">All Customers</option>
-            {% for customer in customers %}
-            <option value="{{ customer.id }}" {{ 'selected' if customer_id==customer.id else '' }}>{{ customer.name }} - {{ customer.phone }}</option>
-            {% endfor %}
+                {% for customer in customers %}
+                <option value="{{ customer.id }}" {{ 'selected' if customer_id==customer.id else '' }}>{{ customer.name
+                    }} - {{ customer.phone }}</option>
+                {% endfor %}
             </select>
         </div>
     </form><br />
@@ -73,7 +75,8 @@
                 <td class="text-right">{{ helper.format_number(bill.total) }}</td>
                 <td class="text-right text-warning">{{ helper.format_number(bill.cash) }}</td>
                 <td class="text-right text-success">{{ helper.format_number(bill.mpesa) }}</td>
-                <td class="text-right text-danger">{{ helper.format_number(bill.total-bill.paid) if bill.total > bill.paid else '' }}</td>
+                <td class="text-right text-danger">{{ helper.format_number(bill.total-bill.paid) if bill.total >
+                    bill.paid else '' }}</td>
                 <td class="text-center">
                     {% if bill.total > bill.paid %}
                     <button class="btn btn-success btn-xs text-white" data-toggle="modal" data-target="#newModal"
@@ -99,7 +102,8 @@
                 <th class="text-right"><b><u>{{ helper.format_number(grand_total) }}</u></b></th>
                 <th class="text-right text-warning"><b><u>{{ helper.format_number(cash_total) }}</u></b></th>
                 <th class="text-right text-success"><b><u>{{ helper.format_number(mpesa_total) }}</u></b></th>
-                <th class="text-right text-danger"><b><u>{{ helper.format_number(grand_total - grand_paid) }}</u></b></th>
+                <th class="text-right text-danger"><b><u>{{ helper.format_number(grand_total - grand_paid) }}</u></b>
+                </th>
                 <th colspan="3"></th>
             </tr>
         </tfoot>
@@ -172,17 +176,14 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <input type="hidden" id="printable_bill_id" name="printable_bill_id" />
-            <div class="modal-header">
-                <h5 class="modal-title text-center" id="customer_name">Customer Bill</h5>
+            <div class="modal-header text-center">
+                <button class="btn btn-primary btn-xs text-white mdi mdi-printer float-end" onclick="Print();"
+                    data-dismiss="modal"> PRINT THIS BILL</button>
                 <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
             <div class="modal-body" id="bill_details"></div>
-            <div class="modal-footer">
-                <button class="btn btn-warning btn-xs text-white mdi mdi-printer" onclick="Print();" data-dismiss="modal"> PRINT THIS
-                    BILL</button>
-            </div>
         </div>
     </div>
 </div>

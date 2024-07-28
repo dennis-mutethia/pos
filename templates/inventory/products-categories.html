@@ -24,7 +24,7 @@
                         name="category_name_{{ product_category.id }}" value="{{ product_category.name }}"
                         onchange="updateCategory({{ product_category.id }});" style="width: 100%" />
                 </td>
-                <td class="text-center">{{ product_category.products_count }}</td>
+                <td class="text-center">{{ helper.format_number(product_category.products_count) }}</td>
                 <td class="text-center">
                     <a href="#" onclick="deleteItem({{ product_category.id }})" data-toggle="modal"
                         data-target="#deleteModal"><i class="mdi mdi-delete" style="color: red"

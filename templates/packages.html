@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- ============================================================== -->
+<!-- Container fluid  -->
+<!-- ============================================================== -->
+<div class="container-fluid table-responsive">
+    <div class="row">
+        <style>
+            table,
+            tr,
+            th,
+            td {
+                color: inherit;
+            }
+        </style>
+        <div class="col-12">
+            <div class="alert alert-primary" role="alert">
+                <h4 class="alert-heading text-center">Your Current License Details</h4>
+                <table class="table-bordered table-condensed">
+                    <tbody>
+                        <tr>
+                            <th>COMPANY NAME:</th>
+                            <td>{{ current_user.company.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>CURRENT SHOP:</th>
+                            <td>{{ current_user.shop.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>LICENSE KEY:</th>
+                            <td>{{ current_user.license.key }}</td>
+                        </tr>
+                        <tr>
+                            <th>PACKAGE:</th>
+                            <td>
+                                <?php echo $package_name; ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>DESCRIPTION:</th>
+                            <td>
+                                <?php echo $package_description; ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>AMOUNT:</th>
+                            <td>
+                                <?php echo number_format($package_amount); ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>EXPIRES ON:</th>
+                            <td>{{ current_user.license.expires_at }}</td>
+                        </tr>
+                        <tr>
+                            <th>VALIDITY:</th>
+                            <td style="color: <?php
+                                                echo $_SESSION['stock_app_inventory_logged_user']->company_valid > 7 ? 'green' :
+                                                        ($_SESSION['stock_app_inventory_logged_user']->company_valid > 3 ? 'blue' : 'red');
+                                                ?>">
+                                <?php echo $_SESSION['stock_app_inventory_logged_user']->company_valid; ?> DAYS
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <h3 class="col-12 text-center">Our Packages</h3>
+    <div class="row">
+        <?php
+$sql = <<<SQL
+SELECT `id`,`name`,`amount`,`pay`,`description`,`offer`,`color`
+FROM `packages` 
+WHERE `id`>1
+SQL;
+
+if ($stmt = $mysqli->prepare($sql)) {
+$stmt->execute();
+$stmt->bind_result($id,$name,$amount,$pay,$description,$offer,$color);
+while ($stmt->fetch()) { ?>
+        <div class="col-4">
+            <div class="alert alert-<?php echo $color; ?>" role="alert">
+                <h4 class="alert-heading">
+                    <?php echo ucwords($name); ?>
+                </h4>
+                <p>
+                    <?php echo ucwords($description); ?>
+                </p>
+                <hr />
+                <p class="mb-0">
+                    Ksh.<s>
+                        <?php echo number_format_custom($amount>$pay ? $amount : ''); ?>
+                    </s>
+                    <?php echo number_format_custom($pay); ?>
+                </p>
+                <hr />
+                <p class="mb-0">
+                    <?php echo ucwords($offer); ?>
+                </p>
+            </div>
+        </div>
+        <?php   }
+$stmt->close();
+}
+?>
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End Container fluid  -->
+<!-- ============================================================== -->
+
+{% endblock %}

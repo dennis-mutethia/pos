@@ -1,6 +1,7 @@
 from flask import render_template, request
 from datetime import datetime
 
+from utils.helper import Helper
 from utils.inventory.products_categories import ProductsCategories
 from utils.inventory.stock_take import StockTake
 
@@ -33,5 +34,6 @@ class Purchases():
         
         product_categories = ProductsCategories(self.db).fetch()
         stocks = StockTake(self.db).fetch(stock_date, search, category_id)
-        return render_template('inventory/purchases.html', product_categories=product_categories, stocks=stocks, 
+        return render_template('inventory/purchases.html', helper=Helper(), 
+                               product_categories=product_categories, stocks=stocks, 
                                page_title='Purchases', stock_date=stock_date, current_date=current_date, search=search, category_id=category_id)

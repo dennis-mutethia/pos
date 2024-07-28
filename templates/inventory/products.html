@@ -57,15 +57,15 @@
                 </td>
                 <td>
                     <input type="number" id="product_purchase_{{ product.id }}" name="product_purchase_{{ product.id }}"
-                        value="{{ product.purchase_price }}" onchange="updateProduct({{ product.id }});" min="0" style="width: 100%;" />
+                        value="{{ helper.format_number(product.purchase_price) }}" onchange="updateProduct({{ product.id }});" min="0" style="width: 100%;" />
                 </td>
                 <td>
                     <input type="number" id="product_selling_{{ product.id }}" name="product_selling_{{ product.id }}"
-                        value="{{ product.selling_price }}" onchange="updateProduct({{ product.id }});" min="0" style="width: 100%;" />
+                        value="{{ helper.format_number(product.selling_price) }}" onchange="updateProduct({{ product.id }});" min="0" style="width: 100%;" />
                 </td>
                 <td>
                     <input type="number" id="product_in_stock_{{ product.id }}" name="product_in_stock_{{ product.id }}"
-                        value="{{ product.opening+product.additions }}" onchange="updateProduct({{ product.id }});" min="0" style="width: 100%;" />
+                        value="{{ helper.format_number(product.opening+product.additions) }}" onchange="updateProduct({{ product.id }});" min="0" style="width: 100%;" />
                 </td>
                 <td class="text-center">
                     <a href="#" onclick="deleteItem({{ product.id }})" data-toggle="modal" data-target="#deleteModal"><i

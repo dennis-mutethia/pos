@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import render_template, request
 from flask_login import current_user
 
+from utils.helper import Helper
 from utils.entities import Product
 from utils.inventory.products_categories import ProductsCategories
 from utils.inventory.stock_take import StockTake
@@ -157,5 +158,6 @@ class Products():
         
         product_categories = ProductsCategories(self.db).fetch()
         products = StockTake(self.db).fetch(current_date, search, category_id)
-        return render_template('inventory/products.html', product_categories=product_categories, products=products, 
+        return render_template('inventory/products.html', helper=Helper(), 
+                               product_categories=product_categories, products=products, 
                                page_title='Product Categories', search=search, category_id=category_id)

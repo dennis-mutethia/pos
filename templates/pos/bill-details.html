@@ -22,9 +22,9 @@
             {% for bill_entry in bill_entries %}
             <tr>
                 <td width="50%"><small class="text-black">{{ bill_entry.item_name }}</small></td>
-                <td width="10%"><small class="text-black">{{ bill_entry.qty }}</small></td>
-                <td width="20%"><small class="text-black">{{ bill_entry.price }}</small></td>
-                <td width="20%" class="text-right"><small class="text-black">{{ bill_entry.qty*bill_entry.price
+                <td width="10%"><small class="text-black">{{ helper.format_number(bill_entry.qty) }}</small></td>
+                <td width="20%"><small class="text-black">{{ helper.format_number(bill_entry.price) }}</small></td>
+                <td width="20%" class="text-right"><small class="text-black">{{ helper.format_number(bill_entry.qty*bill_entry.price)
                         }}</small></td>
             </tr>
             {% endfor %}
@@ -32,15 +32,15 @@
         <thead>
             <tr>
                 <td colspan="2"><b><small>TOTAL PAYABLE</small></b></td>
-                <td colspan="2" class="text-right"><small><b><u>{{ bill.total }}</u></b></small></td>
+                <td colspan="2" class="text-right"><small><b><u>{{ helper.format_number(bill.total) }}</u></b></small></td>
             </tr>
             <tr>
                 <td colspan="2"><b><small>TOTAL PAID</small></b></td>
-                <td colspan="2" class="text-right"><small><b>{{ bill.paid }}</b></small></td>
+                <td colspan="2" class="text-right"><small><b>{{ helper.format_number(bill.paid) }}</b></small></td>
             </tr>
             <tr>
                 <td colspan="2"><b><small>BALANCE</small></b></td>
-                <td colspan="2" class="text-right"><small><b><u>{{ bill.total - bill.paid }}</u></b></small></td>
+                <td colspan="2" class="text-right"><small><b><u>{{ helper.format_number(bill.total - bill.paid) }}</u></b></small></td>
             </tr>
         </thead>
 
@@ -60,7 +60,7 @@
             <tr style="color: black;">
                 <td colspan="2"><small>{{ payment.created_at }}</small></td>
                 <td><small>{{ payment.payment_mode.name }}</small></td>
-                <td class="text-right"><small>{{ payment.amount }}</td>
+                <td class="text-right"><small>{{ helper.format_number(payment.amount) }}</td>
             </tr>
             {% endfor %}
         </tbody>

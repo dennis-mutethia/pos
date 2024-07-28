@@ -3,6 +3,7 @@ from flask import render_template, request
 from flask_login import current_user
 
 from utils.entities import Stock
+from utils.helper import Helper
 from utils.inventory.products_categories import ProductsCategories
 
 class StockTake():
@@ -48,8 +49,6 @@ class StockTake():
         ON CONFLICT (stock_date, product_id, shop_id) DO NOTHING
         """
         params = [current_user.shop.id, current_user.shop.id, stock_date, stock_date, current_user.shop.id, current_user.id]
-        
-        print(query)
 
         with self.db.conn.cursor() as cursor:           
             cursor.execute(query, tuple(params))
@@ -193,5 +192,6 @@ class StockTake():
              
         product_categories = ProductsCategories(self.db).fetch()
         stocks = self.fetch(stock_date, search, category_id)
-        return render_template('inventory/stock-take.html', product_categories=product_categories, stocks=stocks, 
+        return render_template('inventory/stock-take.html', helper=Helper(), 
+                               product_categories=product_categories, stocks=stocks, 
                                page_title='Stock Take', stock_date=stock_date, current_date=current_date, search=search, category_id=category_id)

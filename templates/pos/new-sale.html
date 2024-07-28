@@ -37,13 +37,13 @@
             {% for stock in stocks %}
                 <button type="button" style="margin-top: 12px; margin-right: 12px"
                     class="btn btn-outline-{{ 'success' if (stock.opening+stock.additions) >= 10 else 'warning' if (stock.opening+stock.additions) > 0 else 'danger' }} {{ '' if (stock.opening+stock.additions) > 0 else 'disabled' }}"
-                    id="product_{{ stock.id }}" name="{{ stock.name}}" value="{{ helper.format_number(stock.selling_price) }}"
+                    id="product_{{ stock.id }}" name="{{ stock.name}}" value="{{ helper.format_number_with_commas(helper.format_number(stock.selling_price)) }}"
                     onclick="AddBillEntry({{ stock.id }})">
-                    <small class="font-light">KSh. {{ helper.format_number(stock.selling_price) }}/= </small>
+                    <small class="font-light">KSh. {{ helper.format_number_with_commas(helper.format_number(stock.selling_price)) }}/= </small>
                     <h6 class="mb-0 mt-1"> {{ stock.name}} </h6>
-                    <small class="font-light">[<span id="stock_{{ stock.id }}">{{ helper.format_number(stock.opening + stock.additions - stock.sold) }}
+                    <small class="font-light">[<span id="stock_{{ stock.id }}">{{ helper.format_number_with_commas(helper.format_number(stock.opening + stock.additions - stock.sold)) }}
                         </span> in stock]</small>
-                    <span id="stocko_{{ stock.id }}" style="display: none">{{ helper.format_number(stock.opening+stock.additions) }}</span>
+                    <span id="stocko_{{ stock.id }}" style="display: none">{{ helper.format_number_with_commas(helper.format_number(stock.opening+stock.additions)) }}</span>
                 </button>
             {% endfor %}
             <!-- End Products-->

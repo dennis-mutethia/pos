@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 from flask_session import Session
 from redis import Redis
 
+from utils.packages import Packages
+from utils.accountProfile import AccountProfile
 from utils.customers.customer_bills import CustomerBills
 from utils.customers.customers import Customers
 from utils.dashboard import Dashboard
@@ -171,6 +173,16 @@ def customerBills():
 @login_required
 def expenses():
     return Expenses(db)()
+
+@app.route('/account-profile', methods=['GET', 'POST'])
+@login_required
+def accountProfile():
+    return AccountProfile(db)()
+
+@app.route('/packages', methods=['GET', 'POST'])
+@login_required
+def packages():
+    return Packages(db)()
 
 if __name__ == '__main__':
     debug_mode = os.getenv('IS_DEBUG', 'False').lower() in ['true', '1', 't']

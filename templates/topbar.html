@@ -70,11 +70,9 @@
                     <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark pro-pic" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <img src="{{ url_for('static', filename='images/users/1.jpg') }}" alt="user" class="rounded-circle" width="31" /></a>
                     <ul class="dropdown-menu dropdown-menu-end user-dd animated" aria-labelledby="navbarDropdown">
-                        <h6 class="dropdown-item" href="account-profile">Welcome {{ current_user.name }}</h6>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="account-profile"><i class="mdi mdi-account me-1 ms-1"></i> My Profile</a>
-                        <div class="dropdown-divider"></div>
+                        <h6 class="dropdown-item">Welcome {{ current_user.name }}</h6>
                         <div class="ps-4 p-10">
+                            <a href="account-profile" class="btn btn-sm btn-success btn-rounded text-white" ><i class="mdi mdi-account me-1 ms-1"></i> My Profile </a>
                             <a href="{{ url_for('logout') }}" class="btn btn-sm btn-danger btn-rounded text-white float-end" ><i class="fa fa-power-off me-1 ms-1"></i> Logout </a>
                         </div>
                     </ul>

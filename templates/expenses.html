@@ -43,7 +43,7 @@
                 <td>{{ expense.date }}</td>
                 <td>{{ expense.name }}</td>
                 <td>{{ expense.user.name }}</td>
-                <td class="text-right">{{ expense.amount }}</td>
+                <td class="text-right">{{ helper.format_number(expense.amount) }}</td>
                 <td class="text-center">
                     <a href="#" onclick="deleteItem({{ expense.id }})" data-toggle="modal"
                         data-target="#deleteModal"><i class="mdi mdi-delete" style="color: red"
@@ -55,7 +55,7 @@
         <tfoot>
             <tr>
                 <th class="text-right" colspan="3"><b><u>TOTAL EXPENSES</u></b></th>
-                <th class="text-right"><b><u>{{ ns.total }}</u></b></th>
+                <th class="text-right"><b><u>{{ helper.format_number(ns.total) }}</u></b></th>
                 <th></th>
             </tr>
         </tfoot>

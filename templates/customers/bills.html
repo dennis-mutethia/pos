@@ -70,7 +70,7 @@
                     {% endif %}
                 </td>
                 <td>{{ bill.user.name }} </td>
-                <td class="text-right">{{ bill.total }}</td>
+                <td class="text-right">{{ helper.format_number(bill.total) }}</td>
                 <td class="text-right text-warning">{{ helper.format_number(bill.cash) }}</td>
                 <td class="text-right text-success">{{ helper.format_number(bill.mpesa) }}</td>
                 <td class="text-right text-danger">{{ helper.format_number(bill.total-bill.paid) if bill.total > bill.paid else '' }}</td>

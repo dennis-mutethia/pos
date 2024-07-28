@@ -80,7 +80,7 @@
                 <td class="text-center">
                     {% if bill.total > bill.paid %}
                     <button class="btn btn-success btn-xs text-white" data-toggle="modal" data-target="#newModal"
-                        onclick="updateBillAmount({{ bill.id }},{{ helper.format_number_with_commas(helper.format_number(bill.total-bill.paid)) }});">Pay</button>
+                        onclick="updateBillAmount({{ bill.id }},{{ helper.format_number(bill.total-bill.paid) }});">Pay</button>
                     {% endif %}
                 </td>
                 <td class="text-center">
@@ -255,9 +255,9 @@
     }
 
     function updateBillAmount(bill_id, balance) {
-        $('#bill_amount').html(balance.replaceAll(',', ''));
+        $('#bill_amount').html(balance.toLocaleString());
         $('#bill_id').val(bill_id);
-        document.getElementById("amount_paid").max = balance.replaceAll(',', '');
+        document.getElementById("amount_paid").max = balance;
     }
 
     function editBill(id) {

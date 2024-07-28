@@ -163,7 +163,7 @@ class Bills():
         
         customers = Customers(self.db).fetch()
         payment_modes = self.db.fetch_payment_modes()
-        bills = self.fetch(report_date, report_date, bill_status, page) 
+        bills = self.fetch(report_date, report_date, bill_status, 0, page)
         prev_page = page-1 if page>1 else 0
         next_page = page+1 if len(bills)==50 else 0
         grand_total = grand_paid = cash_total = mpesa_total =  0

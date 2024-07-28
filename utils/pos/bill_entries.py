@@ -14,9 +14,14 @@ class BillEntries():
             SELECT id, bill_id, stock_id, item_name, price, qty
             FROM bill_entries
             WHERE shop_id=%s AND bill_id=%s AND qty>0
-            ORDER BY id
             """
             params = [current_user.shop.id, bill_id]
+            
+            if bill_id==0:
+                query = query + " AND created_by=%s"
+                params.append(current_user.id)
+                
+            query = query + " ORDER BY id"
             
             cursor.execute(query, tuple(params))
             data = cursor.fetchall()

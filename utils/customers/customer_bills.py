@@ -12,7 +12,8 @@ class CustomerBills():
         
     def __call__(self):
         current_date = datetime.now().strftime('%Y-%m-%d')
-        from_date = to_date = current_date
+        from_date = datetime(datetime.now().year, 1, 1).strftime('%Y-%m-%d')
+        to_date = current_date
         bill_status = 0
         customer_id = 0
         page = 1

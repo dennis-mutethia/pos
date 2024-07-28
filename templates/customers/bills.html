@@ -6,22 +6,23 @@
 <!-- ============================================================== -->
 <div class="container-fluid card table-responsive">
     <form id="filter-frm" method="GET" class="row">
+        <input type="hidden" id="page" name="page" value="{{ page }}" />
         <div class="col-1 text-right">
             <label class="text-white">FROM:</label>
         </div>
         <div class="col-2">
-            <input onchange="applyFilter()" style="height: 25px" type="date" id="from_date" name="from_date"
+            <input onchange="applyFilter(1)" style="height: 25px" type="date" id="from_date" name="from_date"
                 required="required" value="{{ from_date }}" max="{{ current_date }}" />
         </div>
         <div class="col-1 text-right">
             <label class="text-white">TO:</label>
         </div>
         <div class="col-2">
-            <input onchange="applyFilter()" style="height: 25px" type="date" id="to_date" name="to_date"
+            <input onchange="applyFilter(1)" style="height: 25px" type="date" id="to_date" name="to_date"
                 required="required" value="{{ to_date }}" max="{{ current_date }}" />
         </div>
         <div class="col-3">
-            <select onchange="applyFilter()" name="bill_status" id="bill_status" style="width: 100%;">
+            <select onchange="applyFilter(1)" name="bill_status" id="bill_status" style="width: 100%;">
                 <option value="0">All Bills</option>
                 <option {% if bill_status==1 %} selected {% endif %} value="1">Paid Bills
                 </option>
@@ -102,7 +103,27 @@
                 <th colspan="3"></th>
             </tr>
         </tfoot>
-    </table>
+    </table><br />
+
+    <!--Pagination-->
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4 text-center">
+            <nav aria-label="Page navigation example" class="text-center">
+                <ul class="pagination" class="text-center">
+                    <li class="page-item {{ '' if prev_page > 0 else 'disabled' }}">
+                        <button class="page-link" id="prev_page"
+                            onclick="applyFilter({{ prev_page }})">Previous</button>
+                    </li>
+                    <li class="page-item {{ '' if next_page > 0 else 'disabled' }}">
+                        <button class="page-link" id="next_page" onclick="applyFilter({{ next_page }})">Next</button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+    </div>
+    <!-- End Pagination-->
 </div>
 <!-- ============================================================== -->
 <!-- End Container fluid  -->
@@ -227,7 +248,8 @@
 
 
 <script>
-    function applyFilter() {
+    function applyFilter(page) {
+        $("#page").val(page);
         $("#filter-frm").submit();
     }
 

@@ -10,7 +10,7 @@ class Bills():
     def __init__(self, db): 
         self.db = db
             
-    def fetch(self, from_date, to_date, bill_status, customer_id=0):
+    def fetch(self, from_date, to_date, bill_status, customer_id=0, page=0):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
@@ -28,6 +28,13 @@ class Bills():
             if customer_id>0:
                 query = query + " AND customer_id=%s"
                 params.append(customer_id)
+            
+            if page>0:
+                query = query + """
+                ORDER BY id DESC
+                LIMIT 50 OFFSET %s
+                """
+                params.append((page - 1)*50)
             
             cursor.execute(query, tuple(params))
             data = cursor.fetchall()
@@ -129,11 +136,13 @@ class Bills():
         current_date = datetime.now().strftime('%Y-%m-%d')
         report_date = current_date
         bill_status = 0 
+        page = 1
         
         if request.method == 'GET':   
             try:    
                 report_date = request.args.get('report_date', current_date)
                 bill_status = int(request.args.get('bill_status', 0))
+                page = int(request.args.get('page', 1))
             except ValueError as e:
                 print(f"Error converting bill_status: {e}")
             except Exception as e:
@@ -154,7 +163,9 @@ class Bills():
         
         customers = Customers(self.db).fetch()
         payment_modes = self.db.fetch_payment_modes()
-        bills = self.fetch(report_date, report_date, bill_status) 
+        bills = self.fetch(report_date, report_date, bill_status, 0, page)
+        prev_page = page-1 if page>1 else 0
+        next_page = page+1 if len(bills)==50 else 0
         grand_total = grand_paid = cash_total = mpesa_total =  0
         for bill in bills:
             grand_total = grand_total + bill.total
@@ -164,4 +175,5 @@ class Bills():
             
         return render_template('pos/bills.html', page_title='POS > Bills', 
                                customers=customers, payment_modes=payment_modes, bills=bills, current_date=current_date, bill_status=bill_status, report_date=report_date,
-                               grand_total=grand_total, grand_paid=grand_paid, cash_total=cash_total, mpesa_total=mpesa_total )
+                               grand_total=grand_total, grand_paid=grand_paid, cash_total=cash_total, mpesa_total=mpesa_total,
+                               page=page, prev_page=prev_page, next_page=next_page)

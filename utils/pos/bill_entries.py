@@ -2,6 +2,7 @@ from flask import render_template, request
 from flask_login import current_user
 
 from utils.entities import BillEntry
+from utils.helper import Helper
 
 class BillEntries():
     def __init__(self, db): 
@@ -115,4 +116,5 @@ class BillEntries():
         for bill_entry in bill_entries:
             grandtotal = grandtotal + (bill_entry.price * bill_entry.qty) 
             
-        return render_template('pos/bill-entries.html', bill_entries=bill_entries, grandtotal=grandtotal )
+        return render_template('pos/bill-entries.html', helper=Helper(), 
+                               bill_entries=bill_entries, grandtotal=grandtotal )

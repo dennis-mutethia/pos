@@ -3,6 +3,7 @@ from flask import render_template, request
 from flask_login import current_user
 
 from utils.entities import Expense
+from utils.helper import Helper
 
 class Expenses():
     def __init__(self, db): 
@@ -98,5 +99,5 @@ class Expenses():
                 
         expenses = self.fetch(from_date, to_date) 
             
-        return render_template('expenses.html', page_title='Expenses > [Do not include Purchases]', 
+        return render_template('expenses.html', page_title='Expenses > [Do not include Purchases]', helper=Helper(),
                                expenses=expenses, from_date=from_date, to_date=to_date, current_date=current_date )

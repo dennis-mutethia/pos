@@ -1,6 +1,7 @@
 from flask import render_template, request
 from flask_login import current_user
 
+from utils.helper import Helper
 from utils.entities import ProductCategory
 
 class ProductsCategories():
@@ -81,4 +82,5 @@ class ProductsCategories():
                 self.delete(id) 
         
         product_categories = self.fetch()
-        return render_template('inventory/products-categories.html', product_categories=product_categories, page_title='Product Categories')
+        return render_template('inventory/products-categories.html', helper=Helper(), 
+                               product_categories=product_categories, page_title='Product Categories')

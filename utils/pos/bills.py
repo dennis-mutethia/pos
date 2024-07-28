@@ -4,6 +4,7 @@ from flask_login import current_user
 
 from utils.customers.customers import Customers
 from utils.entities import Bill
+from utils.helper import Helper
 from utils.pos.payments import Payments
 
 class Bills():
@@ -173,7 +174,7 @@ class Bills():
             cash_total = cash_total + bill.cash
             mpesa_total = mpesa_total + bill.mpesa
             
-        return render_template('pos/bills.html', page_title='POS > Bills', 
+        return render_template('pos/bills.html', page_title='POS > Bills', helper=Helper(),
                                customers=customers, payment_modes=payment_modes, bills=bills, current_date=current_date, bill_status=bill_status, report_date=report_date,
                                grand_total=grand_total, grand_paid=grand_paid, cash_total=cash_total, mpesa_total=mpesa_total,
                                page=page, prev_page=prev_page, next_page=next_page)

@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import render_template, request
 from flask_login import current_user
 
+from utils.helper import Helper
 from utils.entities import Customer
 from utils.inventory.products_categories import ProductsCategories
 from utils.inventory.stock_take import StockTake
@@ -103,4 +104,5 @@ class Customers():
                 self.delete(id) 
         
         customers = self.fetch()
-        return render_template('customers/index.html', customers=customers, page_title='Customers')
+        return render_template('customers/index.html', helper=Helper(), 
+                               customers=customers, page_title='Customers')

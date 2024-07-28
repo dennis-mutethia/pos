@@ -22,16 +22,16 @@
       <tr>
         <td>{{ bill_entry.item_name }}</td>
         <td class="text-center">
-          <input id="pr_{{ bill_entry.stock_id }}" type="number" value="{{ bill_entry.price }}"
+          <input id="pr_{{ bill_entry.stock_id }}" type="number" value="{{ helper.format_number(bill_entry.price) }}"
             onchange="UpdateBillEntry({{ bill_entry.stock_id }});" min="0" />
 
         </td>
         <td class="text-center">
-          <input id="qt_{{ bill_entry.stock_id }}" type="number" value="{{ bill_entry.qty}}"
+          <input id="qt_{{ bill_entry.stock_id }}" type="number" value="{{ helper.format_number(bill_entry.qty) }}"
             onchange="UpdateBillEntry({{ bill_entry.stock_id }});" min="0" />
-          <input id="oqt_{{ bill_entry.stock_id }}" type="hidden" value="{{ bill_entry.qty}}" />
+          <input id="oqt_{{ bill_entry.stock_id }}" type="hidden" value="{{ helper.format_number(bill_entry.qty) }}" />
         </td>
-        <td class="text-right" id="st_{{ bill_entry.stock_id }}">{{ bill_entry.price * bill_entry.qty }}</td>
+        <td class="text-right" id="st_{{ bill_entry.stock_id }}">{{ helper.format_number(bill_entry.price * bill_entry.qty) }}</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -43,7 +43,7 @@
       </tr>
       <tr>
         <th scope="col" colspan="3" class="text-center">Total:</th>
-        <th scope="col" class="text-right" id="grand_total">{{ grandtotal }}</th>
+        <th scope="col" class="text-right" id="grand_total">{{ helper.format_number(grandtotal) }}</th>
       </tr>
     </tfoot>
   </table>

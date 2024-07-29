@@ -10,7 +10,33 @@ from utils.pos.payments import Payments
 class CustomerBills():
     def __init__(self, db): 
         self.db = db
-        
+    
+    def get_bills_to_pay(self, customer_id, paid):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:
+            query = """
+            SELECT id, total-paid bal
+            FROM bills
+            WHERE total>paid AND customer_id=%s
+            ORDER BY id
+            """
+            params = [customer_id]
+            
+            cursor.execute(query, tuple(params))
+            data = cursor.fetchall()
+            bills = []
+            for datum in data: 
+                pay_amount = datum[1] if paid>datum[1] else paid
+                if pay_amount > 0:
+                    bill = {
+                        'id' : datum[0],
+                        'pay_amount' : pay_amount
+                    }
+                    bills.append(bill)
+                paid = paid - pay_amount
+                
+            return bills
+               
     def __call__(self):
         current_date = datetime.now().strftime('%Y-%m-%d')
         from_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d') #datetime(datetime.now().year, 1, 1).strftime('%Y-%m-%d')
@@ -33,16 +59,25 @@ class CustomerBills():
                 
         if request.method == 'POST':       
             if request.form['action'] == 'assign_customer_bill':
-                bill_id = request.form['bill_id']
-                customer_id = request.form['customer_id']                
+                bill_id = int(request.form['bill_id'])
+                customer_id = int(request.form['customer_id'])              
                 Bills(self.db).assign_customer(bill_id, customer_id)                     
                 
             elif request.form['action'] == 'submit_payment':
-                bill_id = request.form['bill_id']
-                amount_paid = request.form['amount_paid']                
-                payment_mode_id = request.form['payment_mode_id'] 
-                Payments(self.db).add(bill_id, amount_paid, payment_mode_id)                    
-                Bills(self.db).pay(bill_id, amount_paid) 
+                bill_id = int(request.form['bill_id'])
+                amount_paid = float(request.form['amount_paid'])           
+                payment_mode_id = int(request.form['payment_mode_id'])
+                
+                if bill_id> 0:
+                    Payments(self.db).add(bill_id, amount_paid, payment_mode_id)                    
+                    Bills(self.db).pay(bill_id, amount_paid) 
+                    
+                else:
+                    customer_id = int(request.args.get('customer_id', customer_id))
+                    for bill in self.get_bills_to_pay(customer_id, amount_paid):   
+                        Payments(self.db).add(bill['id'], bill['pay_amount'], payment_mode_id)                    
+                        Bills(self.db).pay(bill['id'], bill['pay_amount']) 
+                    
         
         customers = Customers(self.db).fetch()
         payment_modes = self.db.fetch_payment_modes()

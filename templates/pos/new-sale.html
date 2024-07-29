@@ -11,8 +11,8 @@
             <form id="filter-frm" method="GET" class="row">
                 <input type="hidden" id="page" name="page" value="{{ page }}" />
                 <div class="col-{{'4' if user_agent.is_mobile else '6' }}">
-                    <input onchange="applyFilter(1)" style="width: 100%; height: 25px" type="text" id="search"
-                        name="search" value="{{ search }}" placeholder="Search Item" autofocus
+                    <input onchange="applyFilter(1)" style="width: 100%; height: 25px" type="text" id="search" name="search"
+                        value="{{ search }}" placeholder="Search Item" autofocus
                         onfocus="this.value = this.value;" /><br />
                 </div>
                 <div class="col-{{'4' if user_agent.is_mobile else '3' }}">
@@ -27,7 +27,7 @@
                 <div class="col-{{'3' if user_agent.is_mobile else '2' }} text-right">
                     <label for="in_stock" style="color: lime;">Filter In Stock Only</label>&nbsp; &nbsp;
                 </div>
-                <div class="col-1">
+                <div class="col-1">                    
                     <input onchange="applyFilter(1)" class="form-check-input" type="checkbox" id="in_stock"
                         name="in_stock" value="1" {{ 'checked' if in_stock==1 else '' }} />
                 </div>
@@ -35,28 +35,23 @@
 
             <!-- Products-->
             {% for stock in stocks %}
-            <button type="button" style="margin-top: 12px; margin-right: 12px"
-                class="btn btn-outline-{{ 'success' if (stock.opening+stock.additions) >= 10 else 'warning' if (stock.opening+stock.additions) > 0 else 'danger' }} {{ '' if (stock.opening+stock.additions) > 0 else 'disabled' }}"
-                id="product_{{ stock.id }}" name="{{ stock.name}}"
-                value="{{ helper.format_number_with_commas(helper.format_number(stock.selling_price)) }}"
-                onclick="AddBillEntry({{ stock.id }})">
-                <small class="font-light">KSh. {{
-                    helper.format_number_with_commas(helper.format_number(stock.selling_price)) }}/= </small>
-                <h6 class="mb-0 mt-1"> {{ stock.name}} </h6>
-                <small class="font-light">[<span id="stock_{{ stock.id }}">{{
-                        helper.format_number_with_commas(helper.format_number(stock.opening + stock.additions -
-                        stock.sold)) }}
-                    </span> in stock]</small>
-                <span id="stocko_{{ stock.id }}" style="display: none">{{
-                    helper.format_number_with_commas(helper.format_number(stock.opening+stock.additions)) }}</span>
-            </button>
+                <button type="button" style="margin-top: 12px; margin-right: 12px"
+                    class="btn btn-outline-{{ 'success' if (stock.opening+stock.additions) >= 10 else 'warning' if (stock.opening+stock.additions) > 0 else 'danger' }} {{ '' if (stock.opening+stock.additions) > 0 else 'disabled' }}"
+                    id="product_{{ stock.id }}" name="{{ stock.name}}" value="{{ helper.format_number_with_commas(helper.format_number(stock.selling_price)) }}"
+                    onclick="AddBillEntry({{ stock.id }})">
+                    <small class="font-light">KSh. {{ helper.format_number_with_commas(helper.format_number(stock.selling_price)) }}/= </small>
+                    <h6 class="mb-0 mt-1"> {{ stock.name}} </h6>
+                    <small class="font-light">[<span id="stock_{{ stock.id }}">{{ helper.format_number_with_commas(helper.format_number(stock.opening + stock.additions - stock.sold)) }}
+                        </span> in stock]</small>
+                    <span id="stocko_{{ stock.id }}" style="display: none">{{ helper.format_number_with_commas(helper.format_number(stock.opening+stock.additions)) }}</span>
+                </button>
             {% endfor %}
             <!-- End Products-->
         </div>
         <!-- End -->
         <!--Pagination-->
         <div class="row">
-            <div class="col-md-5"></div>
+            <div class="col-md-4"></div>
             <div class="col-md-4 text-center">
                 <nav aria-label="Page navigation example" class="text-center">
                     <ul class="pagination" class="text-center">
@@ -128,17 +123,9 @@
                     <span id="display_balance"></span>
                 </div>
                 <div class="modal-footer">
-                    <div class="col-4">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    </div>
-                    <div class="col-4">
-                        <input class="form-check-input" type="checkbox" id="show_vat" name="show_vat" value="1"
-                            checked />&nbsp; Show VAT on Receipt
-                    </div>
-                    <div class="col-4 text-right">
-                        <button type="submit" id="submit_bill" name="action" value="submit_bill"
-                            class="btn btn-success">Save & Print</button>
-                    </div>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="submit" id="submit_bill" name="action" value="submit_bill"
+                        class="btn btn-success">Save & Print</button>
                 </div>
             </form>
         </div>
@@ -265,7 +252,7 @@
     }
 
     function Print(id) {
-        var show_vat = document.getElementById('show_vat').checked ? 1 : 0;
+        var show_vat = 1; //document.getElementById('show_vat').checked ? 1 : 0;
         var win = window.open("{{ url_for('posPrint') }}?show_vat=" + show_vat + "&bill_id=" + id, "_blank", "scrollbars=yes,resizable=yes,top=200,left=500,width=400,height=500");
         var document_focus = false;
         $(document).ready(function () {

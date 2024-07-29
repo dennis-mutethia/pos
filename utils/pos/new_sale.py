@@ -51,7 +51,7 @@ class NewSale():
             if request.form['action'] == 'submit_bill':
                 customer_id = int(request.form['customer_id'])
                 amount_paid = float(request.form['amount_paid'])
-                payment_mode_id = request.form['payment_mode_id'] 
+                payment_mode_id = int(request.form['payment_mode_id'])
                 bill_id = Bills(self.db).add(customer_id, amount_paid)
                 self.update_bill_entries(bill_id)
                 if amount_paid>0:

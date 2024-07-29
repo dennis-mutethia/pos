@@ -3,28 +3,36 @@
     <div class="col-12 mt-3">
         <div class="bg-dark p-10 text-white text-center">
             <canvas id="myChart" style="width:100%;"></canvas>
-            <?php
-                            $sql = 'SELECT DATE(be.`created_at`),SUM(be.`qty`*be.`price`),COALESCE(exp.total,0)
-                                FROM `' . $bill_entries . '` be
-                                LEFT JOIN (SELECT `date`,SUM(`amount`) total FROM `' . $table_expenses . '` GROUP BY `date`) exp ON exp.`date`=DATE(be.`created_at`)
-                                WHERE MONTH(be.`created_at`) = MONTH(?) AND YEAR(be.`created_at`) = YEAR(?)
-                                AND be.`bill_id`>0 AND be.`qty`>0
-                                GROUP BY DATE(be.`created_at`)';
-
-                            if ($stmt = $mysqli->prepare($sql)) {
-                                $stmt->bind_param("ss", $to, $to);
-                                $stmt->execute();
-                                $dates = $sales_all = $expenses_all = $debts = array();
-                                $stmt->bind_result($date, $sale, $expense);
-                                while ($stmt->fetch()) {
-                                    $dates[] = "'" . $date . "'";
-                                    $sales_all[] = $sale;
-                                    $expenses_all[] = $expense;
-                                }
-                                $stmt->close();
-                            }
-                            ?>
         </div>
     </div>
 </div>
 <!-- End Line Charts -->
+
+<script>
+    new Chart("myChart", {
+                type: "line",
+                data: {
+                    labels: [{{ dates | join(',') | safe }}],
+                    datasets: [{
+                            data: [{{ expenses_all | join(',') | safe }}],
+                            borderColor: "red",
+                            fill: false,
+                            label: 'Expenses'
+                        }, {
+                            data: [{{ sales_all | join(',') | safe }}],
+                            borderColor: "green",
+                            fill: false,
+                            label: 'Sales'
+                        }]
+                },
+                options: {
+                    legend: {
+                        display: true
+                    },
+                    title: {
+                        display: true,
+                        text: "Monthly Sales vs Expenses Trend"
+                    }
+                }
+            });
+</script>

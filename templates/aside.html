@@ -15,59 +15,80 @@
                 {% if current_user.license.is_valid %}
                 {% if current_user.user_level.id in [0, 1] %}
                 <li class="sidebar-item">
-                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{ url_for('dashboard') }}" aria-expanded="false"><i class="mdi mdi-apps"></i><span class="hide-menu">Dashboard</span></a>
+                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{ url_for('dashboard') }}"
+                        aria-expanded="false"><i class="mdi mdi-apps"></i><span class="hide-menu">Dashboard</span></a>
                 </li>
                 {% endif %}
                 {% if current_user.user_level.id in [0, 1, 2, 3] %}
                 <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-gift"></i><span class="hide-menu">POS </span></a>
+                    <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)"
+                        aria-expanded="false"><i class="mdi mdi-gift"></i><span class="hide-menu">POS </span></a>
                     <ul aria-expanded="false" class="collapse first-level">
                         <li class="sidebar-item">
-                            <a href="{{ url_for('posNewSale') }}" class="sidebar-link"><i class="mdi mdi-shopping"></i><span class="hide-menu"> New Sale </span></a>
+                            <a href="{{ url_for('posNewSale') }}" class="sidebar-link"><i
+                                    class="mdi mdi-shopping"></i><span class="hide-menu"> New Sale </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="{{ url_for('posBills') }}" class="sidebar-link"><i class="mdi mdi-calendar"></i><span class="hide-menu"> Today Bills </span></a>
+                            <a href="{{ url_for('posBills') }}" class="sidebar-link"><i
+                                    class="mdi mdi-calendar"></i><span class="hide-menu"> Today Bills </span></a>
                         </li>
                     </ul>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-account-multiple"></i><span class="hide-menu">Customers</span></a>
+                    <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)"
+                        aria-expanded="false"><i class="mdi mdi-account-multiple"></i><span
+                            class="hide-menu">Customers</span></a>
                     <ul aria-expanded="false" class="collapse first-level">
                         <li class="sidebar-item">
-                            <a href="{{ url_for('customers') }}" class="sidebar-link"><i class="mdi mdi-account-multiple-plus"></i><span class="hide-menu"> My Customers </span></a>
+                            <a href="{{ url_for('customers') }}" class="sidebar-link"><i
+                                    class="mdi mdi-account-multiple-plus"></i><span class="hide-menu"> My Customers
+                                </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="{{ url_for('customerBills') }}" class="sidebar-link"><i class="mdi mdi-cash-multiple"></i><span class="hide-menu"> Customer Bills </span></a>
+                            <a href="{{ url_for('customerBills') }}" class="sidebar-link"><i
+                                    class="mdi mdi-cash-multiple"></i><span class="hide-menu"> Customer Bills
+                                </span></a>
                         </li>
                     </ul>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{ url_for('expenses') }}" aria-expanded="false"><i class="mdi mdi-gas-station"></i><span class="hide-menu">Expenses</span></a>
+                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{ url_for('expenses') }}"
+                        aria-expanded="false"><i class="mdi mdi-gas-station"></i><span
+                            class="hide-menu">Expenses</span></a>
                 </li>
                 {% endif %}
                 {% if current_user.user_level.id in [0, 1, 2] %}
                 <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="mdi mdi-file-multiple"></i><span class="hide-menu">Inventory</span></a>
+                    <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)"
+                        aria-expanded="false"><i class="mdi mdi-file-multiple"></i><span
+                            class="hide-menu">Inventory</span></a>
                     <ul aria-expanded="false" class="collapse first-level">
                         <li class="sidebar-item">
-                            <a href="{{ url_for('inventoryProductsCategories') }}" class="sidebar-link"><i class="mdi mdi-cart"></i><span class="hide-menu"> Product Categories </span></a>
+                            <a href="{{ url_for('inventoryProductsCategories') }}" class="sidebar-link"><i
+                                    class="mdi mdi-cart"></i><span class="hide-menu"> Product Categories </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="{{ url_for('inventoryProducts') }}" class="sidebar-link"><i class="mdi mdi-shopping"></i><span class="hide-menu"> Products Price List </span></a>
+                            <a href="{{ url_for('inventoryProducts') }}" class="sidebar-link"><i
+                                    class="mdi mdi-shopping"></i><span class="hide-menu"> Products Price List
+                                </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="{{ url_for('inventoryStockTake') }}" class="sidebar-link"><i class="mdi mdi-table-edit"></i><span class="hide-menu"> Stock Take </span></a>
+                            <a href="{{ url_for('inventoryStockTake') }}" class="sidebar-link"><i
+                                    class="mdi mdi-table-edit"></i><span class="hide-menu"> Stock Take </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="{{ url_for('inventoryPurchases') }}" class="sidebar-link"><i class="mdi mdi-truck-delivery"></i><span class="hide-menu"> Purchases </span></a>
+                            <a href="{{ url_for('inventoryPurchases') }}" class="sidebar-link"><i
+                                    class="mdi mdi-truck-delivery"></i><span class="hide-menu"> Purchases </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="{{ url_for('inventoryStockAdjustment') }}" class="sidebar-link"><i class="mdi mdi-calendar"></i><span class="hide-menu"> Stock Adjustment </span></a>
+                            <a href="{{ url_for('inventoryStockAdjustment') }}" class="sidebar-link"><i
+                                    class="mdi mdi-calendar"></i><span class="hide-menu"> Stock Adjustment </span></a>
                         </li>
                     </ul>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="cashbox" aria-expanded="false"><i class="mdi mdi-cash-multiple"></i><span class="hide-menu">CashBox</span></a>
+                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="cashbox" aria-expanded="false"><i
+                            class="mdi mdi-cash-multiple"></i><span class="hide-menu">CashBox</span></a>
                 </li>
                 {% endif %}
                 {% if current_user.user_level.id in [0, 1, 4] %}
@@ -85,19 +106,25 @@
                                     class="hide-menu"> Bills Report </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="reports-sales" class="sidebar-link"><i class="mdi mdi-office"></i><span class="hide-menu"> Sales Report </span></a>
+                            <a href="reports-sales" class="sidebar-link"><i class="mdi mdi-office"></i><span
+                                    class="hide-menu"> Sales Report </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="reports-purchases" class="sidebar-link"><i class="mdi mdi-truck-delivery"></i><span class="hide-menu"> Purchases Report </span></a>
+                            <a href="reports-purchases" class="sidebar-link"><i class="mdi mdi-truck-delivery"></i><span
+                                    class="hide-menu"> Purchases Report </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="reports-expenses" class="sidebar-link"><i class="mdi mdi-gas-station"></i><span class="hide-menu"> Expenses Report </span></a>
+                            <a href="reports-expenses" class="sidebar-link"><i class="mdi mdi-gas-station"></i><span
+                                    class="hide-menu"> Expenses Report </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="reports-profit-loss" class="sidebar-link"><i class="mdi mdi-cash-multiple"></i><span class="hide-menu"> Profit & Loss Report </span></a>
+                            <a href="reports-profit-loss" class="sidebar-link"><i
+                                    class="mdi mdi-cash-multiple"></i><span class="hide-menu"> Profit & Loss Report
+                                </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="reports-statement" class="sidebar-link"><i class="mdi mdi-book-multiple"></i><span class="hide-menu"> Statement of Account </span></a>
+                            <a href="reports-statement" class="sidebar-link"><i class="mdi mdi-book-multiple"></i><span
+                                    class="hide-menu"> Statement of Account </span></a>
                         </li>
                     </ul>
                 </li>
@@ -150,9 +177,16 @@
                             class="hide-menu">About</span></a>
                     <ul aria-expanded="false" class="collapse first-level">
                         <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{ url_for('ourPackages') }}"
-                                aria-expanded="false"><i class="mdi mdi-cube-outline"></i><span class="hide-menu">Our
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                                href="{{ url_for('ourPackages') }}" aria-expanded="false"><i
+                                    class="mdi mdi-cube-outline"></i><span class="hide-menu">Our
                                     Packages</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                                href="{{ url_for('download') }}" aria-expanded="false"><i
+                                    class="mdi mdi-minecraft"></i><span class="hide-menu">
+                                    Download App</span></a>
                         </li>
                         <li class="sidebar-item">
                             <a href="change-log" class="sidebar-link"><i class="mdi mdi-update"></i><span

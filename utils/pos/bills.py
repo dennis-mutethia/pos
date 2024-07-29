@@ -5,6 +5,7 @@ from flask_login import current_user
 from utils.customers.customers import Customers
 from utils.entities import Bill
 from utils.helper import Helper
+from utils.pos.bill_entries import BillEntries
 from utils.pos.payments import Payments
 
 class Bills():
@@ -153,7 +154,11 @@ class Bills():
             if request.form['action'] == 'assign_customer_bill':
                 bill_id = int(request.form['bill_id'])
                 customer_id = int(request.form['customer_id'])               
-                self.assign_customer(bill_id, customer_id)                     
+                self.assign_customer(bill_id, customer_id)     
+                   
+            if request.form['action'] == 'edit':
+                bill_id = int(request.form['bill_id'])           
+                BillEntries(self.db).edit(bill_id)                                      
                 
             elif request.form['action'] == 'submit_payment':
                 bill_id = int(request.form['bill_id'])

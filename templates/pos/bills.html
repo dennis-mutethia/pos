@@ -172,7 +172,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form method="POST">
-                <input type="hidden" id="editable_bill_id" name="editable_bill_id" />
+                <input type="hidden" id="editable_bill_id" name="bill_id" />
                 <div class="modal-header">
                     <h5 class="modal-title" id="editModalLabel">Are you Sure You want to Edit this Bill?</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
@@ -185,7 +185,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                    <button type="submit" id="submit_edit_bill" name="submit_edit_bill" value="submit_edit_bill"
+                    <button type="submit" id="submit_edit_bill" name="action" value="edit"
                         class="btn btn-info float-end text-white">Confirm Edit Bill</button>
                 </div>
             </form>

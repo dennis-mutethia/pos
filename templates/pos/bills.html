@@ -64,7 +64,7 @@
                     {% endif %}
                 </td>
                 <td class="text-center">
-                    {% if bill.paid == 0 %}
+                    {% if bill.total > bill.paid %}
                     <button class="btn btn-warning btn-xs text-white" data-toggle="modal" data-target="#editModal"
                         onclick="editBill({{ bill.id }})">Edit</button>
                     {% endif %}

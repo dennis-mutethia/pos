@@ -70,7 +70,7 @@ class BillEntries():
         INSERT INTO bill_entries(bill_id, stock_id, item_name, price, qty, shop_id, created_at, created_by) 
         VALUES (%s, %s, %s, %s, %s, %s, NOW(), %s) 
         ON CONFLICT (bill_id, stock_id, created_by) DO UPDATE 
-        SET qty = EXCLUDED.qty, updated_at = NOW(), updated_by = %s
+        SET price = EXCLUDED.price, qty = EXCLUDED.qty, updated_at = NOW(), updated_by = %s
         RETURNING id
         """
 

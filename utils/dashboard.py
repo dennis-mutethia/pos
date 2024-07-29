@@ -70,7 +70,31 @@ class Dashboard():
 
             return dates, sales_all, expenses_all
           
-                 
+    def get_stock_trend(self, report_date):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:
+            query = """
+            WITH s AS(
+                SELECT DATE(created_at) AS report_date, (COALESCE(opening, 0) + COALESCE(additions, 0)) * selling_price AS stock 
+                FROM stock
+                WHERE DATE(created_at) BETWEEN DATE(%s) - INTERVAL '30 days' AND DATE(%s) AND shop_id=%s
+            )
+            SELECT report_date, SUM(stock) AS stock
+            FROM s
+            GROUP BY report_date        
+            """
+            params = [report_date, report_date, current_user.shop.id]
+            
+            cursor.execute(query, tuple(params))
+            data = cursor.fetchall()
+            dates = []
+            stocks = []
+            for datum in data:  
+                dates.append(f"'{datum[0]}'")
+                stocks.append(datum[1])
+
+            return dates, stocks
+                  
     def __call__(self):
         current_date = datetime.now().strftime('%Y-%m-%d')
         report_date = current_date
@@ -88,10 +112,12 @@ class Dashboard():
         total_unpaid_bills = Bills(self.db).get_total_unpaid_bills()
         items, qtys, bgcolors = self.get_sales_per_item(report_date)
         dates, sales_all, expenses_all = self.get_sales_and_expenses(report_date)
+        dates_2, stocks_2 = self.get_stock_trend(report_date)
          
         return render_template('dashboard/index.html', page_title='Dashboard', helper=Helper(),
                                report_date=report_date,
                                total_cost=int(total_cost), total_sales=int(total_sales), total_expenses=int(total_expenses),
                                total_capital=int(total_capital), total_stock=int(total_stock), total_unpaid_bills=int(total_unpaid_bills),
-                               items=items, qtys=qtys, bgcolors=bgcolors, dates=dates, sales_all=sales_all, expenses_all=expenses_all
+                               items=items, qtys=qtys, bgcolors=bgcolors, dates=dates, sales_all=sales_all, expenses_all=expenses_all,
+                               dates_2=dates_2, stocks_2=stocks_2
                                )

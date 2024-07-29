@@ -91,7 +91,7 @@ class Dashboard():
          
         return render_template('dashboard/index.html', page_title='Dashboard', helper=Helper(),
                                report_date=report_date,
-                               total_cost=total_cost, total_sales=total_sales, total_expenses=total_expenses,
-                               total_capital=total_capital, total_stock=total_stock, total_unpaid_bills=total_unpaid_bills,
+                               total_cost=int(total_cost), total_sales=int(total_sales), total_expenses=int(total_expenses),
+                               total_capital=int(total_capital), total_stock=int(total_stock), total_unpaid_bills=int(total_unpaid_bills),
                                items=items, qtys=qtys, bgcolors=bgcolors, dates=dates, sales_all=sales_all, expenses_all=expenses_all
                                )

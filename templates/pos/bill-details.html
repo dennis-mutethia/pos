@@ -69,12 +69,15 @@
         {% if show_vat == 1 and bill.paid > 0 %}
         <thead>
             <tr>
+                <th class="text-center" colspan="4"><small>Tax Information</small></th>
+            </tr>
+            <tr>
                 <td colspan="2"><b><small>VATABLE AMOUNT</small></b></td>
-                <td colspan="2" class="text-right"><small>{{ helper.format_number_with_commas('%0.2f' % (bill.total / 1.16)|float) }}</small></td>
+                <td colspan="2" class="text-right"><small>{{ helper.format_number_with_commas(helper.format_number(bill.total / 1.16)) }}</small></td>
             </tr>
             <tr>
                 <td colspan="2"><b><small>VAT @ 16%</small></b></td>
-                <td colspan="2" class="text-right"><small>{{ helper.format_number_with_commas('%0.2f' % (0.16 * bill.total / 1.16)|float) }}</small></td>
+                <td colspan="2" class="text-right"><small>{{ helper.format_number_with_commas(helper.format_number(0.16 * bill.total / 1.16)) }}</small></td>
             </tr>
         </thead>
         {% endif %}

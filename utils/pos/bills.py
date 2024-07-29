@@ -1,10 +1,11 @@
 from datetime import datetime
-from flask import render_template, request
+from flask import redirect, render_template, request, url_for
 from flask_login import current_user
 
 from utils.customers.customers import Customers
 from utils.entities import Bill
 from utils.helper import Helper
+from utils.pos.bill_entries import BillEntries
 from utils.pos.payments import Payments
 
 class Bills():
@@ -132,7 +133,18 @@ class Bills():
             params = [paid, current_user.shop.id, id]
             cursor.execute(query, tuple(params))
             self.db.conn.commit()
-        
+    
+    def delete(self, id):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:
+            query = """
+            DELETE FROM bills
+            WHERE id=%s
+            """
+            params = [id]
+            cursor.execute(query, tuple(params))
+            self.db.conn.commit()    
+             
     def __call__(self):
         current_date = datetime.now().strftime('%Y-%m-%d')
         report_date = current_date
@@ -153,7 +165,14 @@ class Bills():
             if request.form['action'] == 'assign_customer_bill':
                 bill_id = int(request.form['bill_id'])
                 customer_id = int(request.form['customer_id'])               
-                self.assign_customer(bill_id, customer_id)                     
+                self.assign_customer(bill_id, customer_id)     
+                   
+            if request.form['action'] == 'edit':
+                bill_id = int(request.form['bill_id'])           
+                BillEntries(self.db).edit(bill_id)    
+                self.delete(bill_id) 
+                Payments(self.db).delete(bill_id)
+                return redirect(url_for('posNewSale'))                                  
                 
             elif request.form['action'] == 'submit_payment':
                 bill_id = int(request.form['bill_id'])

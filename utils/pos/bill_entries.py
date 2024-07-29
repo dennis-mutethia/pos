@@ -63,6 +63,18 @@ class BillEntries():
             else:
                 return None
             
+    def edit(self, bill_id):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:
+            query = """
+            UPDATE bill_entries
+            SET bill_id=0, updated_at=NOW(), updated_by=%s
+            WHERE bill_id=%s
+            """
+            params = [current_user.shop.id, bill_id]
+            cursor.execute(query, tuple(params))
+            self.db.conn.commit()    
+                   
     def add(self, bill_id, stock_id, item_name, price, qty):
         self.db.ensure_connection()
         

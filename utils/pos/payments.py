@@ -46,7 +46,19 @@ class Payments():
             except Exception as e:
                 self.db.conn.rollback()
                 raise e
-                 
+    
+    
+    def delete(self, id):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:
+            query = """
+            DELETE FROM payments
+            WHERE id=%s
+            """
+            params = [id]
+            cursor.execute(query, tuple(params))
+            self.db.conn.commit()    
+                       
     def __call__(self):
         if request.method == 'POST':       
             if request.form['action'] == 'add':

@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
-from flask import render_template, request
+from flask import redirect, render_template, request, url_for
 from flask_login import current_user
 
 from utils.helper import Helper
 from utils.customers.customers import Customers
+from utils.pos.bill_entries import BillEntries
 from utils.pos.bills import Bills
 from utils.pos.payments import Payments
 
@@ -61,7 +62,14 @@ class CustomerBills():
             if request.form['action'] == 'assign_customer_bill':
                 bill_id = int(request.form['bill_id'])
                 customer_id = int(request.form['customer_id'])              
-                Bills(self.db).assign_customer(bill_id, customer_id)                     
+                Bills(self.db).assign_customer(bill_id, customer_id)    
+                   
+            if request.form['action'] == 'edit':
+                bill_id = int(request.form['bill_id'])           
+                BillEntries(self.db).edit(bill_id)     
+                Bills(self.db).delete(bill_id)  
+                Payments(self.db).delete(bill_id)
+                return redirect(url_for('posNewSale'))               
                 
             elif request.form['action'] == 'submit_payment':
                 bill_id = int(request.form['bill_id'])

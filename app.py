@@ -1,5 +1,5 @@
 import os
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, render_template, url_for
 from flask_login import LoginManager, logout_user, login_required
 from dotenv import load_dotenv
 from flask_session import Session
@@ -183,6 +183,11 @@ def accountProfile():
 @login_required
 def ourPackages():
     return OurPackages(db)()
+
+@app.route('/download', methods=['GET'])
+@login_required
+def download():
+    return render_template('download.html', page_title='Download > Android App')
 
 if __name__ == '__main__':
     debug_mode = os.getenv('IS_DEBUG', 'False').lower() in ['true', '1', 't']

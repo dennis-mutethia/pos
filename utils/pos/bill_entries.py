@@ -62,7 +62,7 @@ class BillEntries():
                 return data[0], data[1]
             else:
                 return None
-       
+            
     def edit(self, bill_id):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:

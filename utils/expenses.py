@@ -76,12 +76,13 @@ class Expenses():
         
     def __call__(self):
         current_date = datetime.now().strftime('%Y-%m-%d')
-        from_date = to_date = current_date
+        from_date = datetime.now().replace(day=1).strftime('%Y-%m-%d')
+        to_date = current_date
         
         if request.method == 'GET':   
             try:    
-                from_date = request.args.get('from_date', current_date)
-                to_date = request.args.get('to_date', current_date)
+                from_date = request.args.get('from_date', from_date)
+                to_date = request.args.get('to_date', to_date)
                 
             except Exception as e:
                 print(f"An error occurred: {e}")

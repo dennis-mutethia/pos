@@ -73,9 +73,12 @@
                 </td>
                 <td>{{ bill.user.name }} </td>
                 <td class="text-right">{{ helper.format_number_with_commas(helper.format_number(bill.total)) }}</td>
-                <td class="text-right text-warning">{{ helper.format_number_with_commas(helper.format_number(bill.cash)) }}</td>
-                <td class="text-right text-success">{{ helper.format_number_with_commas(helper.format_number(bill.mpesa)) }}</td>
-                <td class="text-right text-danger">{{ helper.format_number_with_commas(helper.format_number(bill.total-bill.paid)) if bill.total >
+                <td class="text-right text-warning">{{ helper.format_number_with_commas(helper.format_number(bill.cash))
+                    }}</td>
+                <td class="text-right text-success">{{
+                    helper.format_number_with_commas(helper.format_number(bill.mpesa)) }}</td>
+                <td class="text-right text-danger">{{
+                    helper.format_number_with_commas(helper.format_number(bill.total-bill.paid)) if bill.total >
                     bill.paid else '' }}</td>
                 <td class="text-center">
                     {% if bill.total > bill.paid %}
@@ -87,6 +90,7 @@
                     {% if bill.total > bill.paid %}
                     <button class="btn btn-warning btn-xs text-white" data-toggle="modal" data-target="#editModal"
                         onclick="editBill({{ bill.id }})">Edit</button>
+                    {% endif %}
                 </td>
                 <td class="text-center">
                     <a href="#" class="text-primary mdi mdi-eye" title="View Bill" data-toggle="modal"
@@ -98,15 +102,22 @@
         <tfoot>
             <tr>
                 <th class="text-right" colspan="4"><b><u>TOTAL BILLS</u></b></th>
-                <th class="text-right"><b><u>{{ helper.format_number_with_commas(helper.format_number(grand_total)) }}</u></b></th>
-                <th class="text-right text-warning"><b><u>{{ helper.format_number_with_commas(helper.format_number(cash_total)) }}</u></b></th>
-                <th class="text-right text-success"><b><u>{{ helper.format_number_with_commas(helper.format_number(mpesa_total)) }}</u></b></th>
-                <th class="text-right text-danger"><b><u>{{ helper.format_number_with_commas(helper.format_number(grand_total - grand_paid)) }}</u></b></th>                
+                <th class="text-right"><b><u>{{ helper.format_number_with_commas(helper.format_number(grand_total))
+                            }}</u></b></th>
+                <th class="text-right text-warning"><b><u>{{
+                            helper.format_number_with_commas(helper.format_number(cash_total)) }}</u></b></th>
+                <th class="text-right text-success"><b><u>{{
+                            helper.format_number_with_commas(helper.format_number(mpesa_total)) }}</u></b></th>
+                <th class="text-right text-danger"><b><u>{{
+                            helper.format_number_with_commas(helper.format_number(grand_total - grand_paid)) }}</u></b>
+                </th>
                 <th class="text-center">
                     {% if (grand_total - grand_paid) > 0 and customer_id>0 %}
-                        <button class="btn btn-success btn-xs text-white" data-toggle="modal" data-target="#newModal" onclick="updateBillAmount(0,{{ helper.format_number(grand_total - grand_paid) }});">Pay Multiple Bills</button>
-                    {% endif %}                                  
-                </th>              
+                    <button class="btn btn-success btn-xs text-white" data-toggle="modal" data-target="#newModal"
+                        onclick="updateBillAmount(0,{{ helper.format_number(grand_total - grand_paid) }});">Pay Multiple
+                        Bills</button>
+                    {% endif %}
+                </th>
                 <th colspan="2"></th>
             </tr>
         </tfoot>

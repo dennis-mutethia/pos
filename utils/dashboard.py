@@ -87,7 +87,7 @@ class Dashboard():
         total_capital, total_stock = StockTake(self.db).get_total(report_date)
         total_unpaid_bills = Bills(self.db).get_total_unpaid_bills()
         items, qtys, bgcolors = self.get_sales_per_item(report_date)
-        dates, sales_all, expenses_all = get_sales_and_expenses(report_date)
+        dates, sales_all, expenses_all = self.get_sales_and_expenses(report_date)
          
         return render_template('dashboard/index.html', page_title='Dashboard', helper=Helper(),
                                report_date=report_date,

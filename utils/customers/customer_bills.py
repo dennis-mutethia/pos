@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from flask import render_template, request
+from flask import redirect, render_template, request, url_for
 from flask_login import current_user
 
 from utils.helper import Helper
@@ -66,7 +66,8 @@ class CustomerBills():
                    
             if request.form['action'] == 'edit':
                 bill_id = int(request.form['bill_id'])           
-                BillEntries(self.db).edit(bill_id)                     
+                BillEntries(self.db).edit(bill_id)       
+                return redirect(url_for('posNewSale'))               
                 
             elif request.form['action'] == 'submit_payment':
                 bill_id = int(request.form['bill_id'])

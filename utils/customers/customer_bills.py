@@ -74,8 +74,7 @@ class CustomerBills():
                     
                 else:
                     customer_id = int(request.args.get('customer_id', customer_id))
-                    for bill in self.get_bills_to_pay(customer_id, amount_paid):    
-                        print(bill)                    
+                    for bill in self.get_bills_to_pay(customer_id, amount_paid):   
                         Payments(self.db).add(bill['id'], bill['pay_amount'], payment_mode_id)                    
                         Bills(self.db).pay(bill['id'], bill['pay_amount']) 
                     

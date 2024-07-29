@@ -24,7 +24,6 @@ class CustomerBills():
             
             cursor.execute(query, tuple(params))
             data = cursor.fetchall()
-            data = cursor.fetchall()
             bills = []
             for datum in data: 
                 pay_amount = datum[1] if paid>datum[1] else paid
@@ -66,8 +65,8 @@ class CustomerBills():
                 
             elif request.form['action'] == 'submit_payment':
                 bill_id = int(request.form['bill_id'])
-                amount_paid = request.form['amount_paid']                
-                payment_mode_id = request.form['payment_mode_id'] 
+                amount_paid = float(request.form['amount_paid'])           
+                payment_mode_id = int(request.form['payment_mode_id'])
                 
                 if bill_id> 0:
                     Payments(self.db).add(bill_id, amount_paid, payment_mode_id)                    
@@ -75,7 +74,8 @@ class CustomerBills():
                     
                 else:
                     customer_id = int(request.args.get('customer_id', customer_id))
-                    for bill in self.get_bills_to_pay(customer_id, amount_paid):                        
+                    for bill in self.get_bills_to_pay(customer_id, amount_paid):    
+                        print(bill)                    
                         Payments(self.db).add(bill['id'], bill['pay_amount'], payment_mode_id)                    
                         Bills(self.db).pay(bill['id'], bill['pay_amount']) 
                     

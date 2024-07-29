@@ -102,9 +102,12 @@
                 <th class="text-right"><b><u>{{ helper.format_number_with_commas(helper.format_number(grand_total)) }}</u></b></th>
                 <th class="text-right text-warning"><b><u>{{ helper.format_number_with_commas(helper.format_number(cash_total)) }}</u></b></th>
                 <th class="text-right text-success"><b><u>{{ helper.format_number_with_commas(helper.format_number(mpesa_total)) }}</u></b></th>
-                <th class="text-right text-danger"><b><u>{{ helper.format_number_with_commas(helper.format_number(grand_total - grand_paid)) }}</u></b>
+                <th class="text-right text-danger"><b><u>{{ helper.format_number_with_commas(helper.format_number(grand_total - grand_paid)) }}</u></b></th>                
+                <th colspan="3" class="text-center">
+                    {% if (grand_total - grand_paid) > 0 and customer_id %}
+                        <button class="btn btn-success btn-xs text-white" data-toggle="modal" data-target="#newModal" onclick="updateBillAmount(0,{{ helper.format_number(grand_total - grand_paid) }});">Pay Multiple Bills</button>
+                    {% endif %}                                  
                 </th>
-                <th colspan="3"></th>
             </tr>
         </tfoot>
     </table><br />

@@ -60,12 +60,12 @@ class CustomerBills():
                 
         if request.method == 'POST':       
             if request.form['action'] == 'assign_customer_bill':
-                bill_id = request.form['bill_id']
-                customer_id = request.form['customer_id']                
+                bill_id = int(request.form['bill_id'])
+                customer_id = int(request.form['customer_id'])              
                 Bills(self.db).assign_customer(bill_id, customer_id)                     
                 
             elif request.form['action'] == 'submit_payment':
-                bill_id = request.form['bill_id']
+                bill_id = int(request.form['bill_id'])
                 amount_paid = request.form['amount_paid']                
                 payment_mode_id = request.form['payment_mode_id'] 
                 

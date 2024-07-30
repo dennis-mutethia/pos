@@ -137,7 +137,7 @@ class StockTake():
             cursor.execute(query, tuple(params))
             data = cursor.fetchone()
             if data:
-                return data[0], data[1]
+                return int(data[0]) if data[0] is not None else 0, int(data[1]) if data[1] is not None else 0
             else:
                 return None
             

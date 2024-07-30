@@ -31,8 +31,8 @@ class Dashboard():
             qtys = []
             bgcolors = []
             for datum in data:  
-                items.append(f"'{datum[0]}'")
-                qtys.append(datum[1])
+                items.append(f"'{datum[0] if datum[0] is not None else 0}'")
+                qtys.append(datum[1] if datum[1] is not None else 0)
                 bgcolors.append(f"'rgb({random.randint(1, 255)},{random.randint(1, 255)},{random.randint(1, 255)})'")
 
             return items, qtys, bgcolors
@@ -65,8 +65,8 @@ class Dashboard():
             expenses_all = []
             for datum in data:  
                 dates.append(f"'{datum[0]}'")
-                sales_all.append(datum[1])
-                expenses_all.append(datum[2])
+                sales_all.append(datum[1] if datum[1] is not None else 0)
+                expenses_all.append(datum[2] if datum[2] is not None else 0)
 
             return dates, sales_all, expenses_all
           
@@ -91,7 +91,7 @@ class Dashboard():
             stocks = []
             for datum in data:  
                 dates.append(f"'{datum[0]}'")
-                stocks.append(datum[1])
+                stocks.append(datum[1] if datum[1] is not None else 0)
 
             return dates, stocks
                   
@@ -116,8 +116,8 @@ class Dashboard():
          
         return render_template('dashboard/index.html', page_title='Dashboard', helper=Helper(),
                                report_date=report_date,
-                               total_cost=int(total_cost), total_sales=int(total_sales), total_expenses=int(total_expenses),
-                               total_capital=int(total_capital), total_stock=int(total_stock), total_unpaid_bills=int(total_unpaid_bills),
+                               total_cost=total_cost, total_sales=total_sales, total_expenses=total_expenses,
+                               total_capital=total_capital, total_stock=total_stock, total_unpaid_bills=total_unpaid_bills,
                                items=items, qtys=qtys, bgcolors=bgcolors, dates=dates, sales_all=sales_all, expenses_all=expenses_all,
                                dates_2=dates_2, stocks_2=stocks_2
                                )

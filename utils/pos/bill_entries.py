@@ -76,6 +76,7 @@ class BillEntries():
             self.db.conn.commit()    
                    
     def add(self, bill_id, stock_id, item_name, price, qty):
+        price = price.replace(',', '')
         self.db.ensure_connection()
         
         query = """

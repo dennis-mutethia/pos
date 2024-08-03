@@ -194,8 +194,8 @@
     }
 
     function UpdateBillEntry(id) {
-        let price = parseFloat(document.getElementById("pr_" + id).value.replaceAll(',', ''));
-        let qty = parseFloat(document.getElementById("qt_" + id).value.replaceAll(',', ''));
+        let price = parseFloat(document.getElementById("pr_" + id).value);
+        let qty = parseFloat(document.getElementById("qt_" + id).value);
         let inStock = parseFloat($("#stocko_" + id).html());
         if (qty > inStock) {
             toastr.error("Sorry!<br />Product Not in Stock. The maximum you can sell is " + inStock);
@@ -212,7 +212,7 @@
                 stock_id: id,
                 bill_id: 0,
                 item_name: name,
-                price: price,
+                price: price.replaceAll(',', ''),
                 qty: qty,
                 action: 'add'
             },

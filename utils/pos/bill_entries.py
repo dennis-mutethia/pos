@@ -59,7 +59,7 @@ class BillEntries():
             cursor.execute(query, tuple(params))
             data = cursor.fetchone()
             if data:
-                return int(data[0]) if data[0] is not None else 0, int(data[1]) if data[1] is not None else 0
+                return int(data[0]) if data[0] is not None and isinstance(data[0], (int, float)) else 0, int(data[1]) if data[1] is not None and isinstance(data[1], (int, float)) else 0
             else:
                 return None
             
@@ -76,6 +76,7 @@ class BillEntries():
             self.db.conn.commit()    
                    
     def add(self, bill_id, stock_id, item_name, price, qty):
+        price = price.replace(',', '')
         self.db.ensure_connection()
         
         query = """

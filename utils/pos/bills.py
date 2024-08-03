@@ -82,7 +82,7 @@ class Bills():
             cursor.execute(query, tuple(params))
             data = cursor.fetchone()
             if data:
-                return int(data[0]) if data[0] is not None else 0
+                return int(data[0]) if data[0] is not None and isinstance(data[0], (int, float)) else 0
             else:
                 return None
             

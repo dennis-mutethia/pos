@@ -212,7 +212,7 @@
                 stock_id: id,
                 bill_id: 0,
                 item_name: name,
-                price: price,
+                price: price.replaceAll(',', ''),
                 qty: qty,
                 action: 'add'
             },

@@ -181,7 +181,7 @@
         let product = document.getElementById("product_" + id);
         let stock = document.getElementById("stock_" + id);
         let name = product.name;
-        let price = product.value;
+        let price = parseFloat(product.value.replaceAll(',', ''));
         let inStock = parseFloat(stock.innerHTML);
         let oQty = document.getElementById("qt_" + id) ? parseFloat(document.getElementById("qt_" + id).value) : 0;
         let qty = oQty + 1;
@@ -194,6 +194,7 @@
     }
 
     function UpdateBillEntry(id) {
+        let name = $("#nm_" + id).html();
         let price = parseFloat(document.getElementById("pr_" + id).value);
         let qty = parseFloat(document.getElementById("qt_" + id).value);
         let inStock = parseFloat($("#stocko_" + id).html());
@@ -212,7 +213,7 @@
                 stock_id: id,
                 bill_id: 0,
                 item_name: name,
-                price: price.replaceAll(',', ''),
+                price: price,
                 qty: qty,
                 action: 'add'
             },

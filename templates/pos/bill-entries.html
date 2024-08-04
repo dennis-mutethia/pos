@@ -20,7 +20,7 @@
     <tbody>
       {% for bill_entry in bill_entries %}
       <tr>
-        <td>{{ bill_entry.item_name }}</td>
+        <td id="nm_{{ bill_entry.stock_id }}" >{{ bill_entry.item_name }}</td>
         <td class="text-center">
           <input id="pr_{{ bill_entry.stock_id }}" type="number" value="{{ helper.format_number(bill_entry.price) }}"
             onchange="UpdateBillEntry({{ bill_entry.stock_id }});" min="0" />

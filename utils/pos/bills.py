@@ -7,6 +7,7 @@ from utils.entities import Bill
 from utils.helper import Helper
 from utils.pos.bill_entries import BillEntries
 from utils.pos.payments import Payments
+from utils.settings.system_users import SystemUsers
 
 class Bills():
     def __init__(self, db): 
@@ -43,7 +44,7 @@ class Bills():
             bills = []
             for datum in data:                
                 customer = Customers(self.db).fetch_by_id(datum[4])
-                user = self.db.get_user_by_id(datum[5])  
+                user = SystemUsers(self.db).get_by_id(datum[5])  
                 payments = Payments(self.db).fetch_by_bill_id(datum[0])         
                 bills.append(Bill(datum[0], datum[1], datum[2], datum[3], customer, user, payments))
 
@@ -63,7 +64,7 @@ class Bills():
             data = cursor.fetchone()
             if data:
                 customer = Customers(self.db).fetch_by_id(data[4])
-                user = self.db.get_user_by_id(data[5])
+                user = SystemUsers(self.db).get_by_id(data[5])
                 payments = Payments(self.db).fetch_by_bill_id(data[0])
                 return Bill(data[0], data[1], data[2], data[3], customer, user, payments)
             else:

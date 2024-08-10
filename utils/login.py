@@ -46,7 +46,7 @@ class Login():
         user = SystemUsers(self.db).get_by_phone(user_phone)
         if user is None:
             user_id = SystemUsers(self.db).add(user_name, user_phone, 1, shop_id, user_password)
-            user = self.db.get_user_by_id(user_id)
+            user = SystemUsers(self.db).get_by_id(user_id)
         else:
             SystemUsers(self.db).update(user_id, user_name, user_phone, 1, shop_id, password=user_password)
                     

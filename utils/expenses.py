@@ -4,6 +4,7 @@ from flask_login import current_user
 
 from utils.entities import Expense
 from utils.helper import Helper
+from utils.settings.system_users import SystemUsers
 
 class Expenses():
     def __init__(self, db): 
@@ -23,7 +24,7 @@ class Expenses():
             data = cursor.fetchall()
             expenses = []
             for datum in data:                
-                user = self.db.get_user_by_id(datum[4])       
+                user = SystemUsers(self.db).get_by_id(datum[4])       
                 expenses.append(Expense(datum[0], datum[1], datum[2], datum[3], user))
 
             return expenses 

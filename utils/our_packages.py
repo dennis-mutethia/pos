@@ -1,7 +1,9 @@
 from flask import render_template, request
 from flask_login import current_user
 
+from utils.entities import Payment
 from utils.helper import Helper
+from utils.settings.system_users import SystemUsers
 
 class OurPackages():
     def __init__(self, db): 
@@ -22,7 +24,7 @@ class OurPackages():
             payments = []
             for datum in data:
                 payment_mode = self.db.get_payment_mode_by_id(datum[3])
-                user = self.db.get_user_by_id(datum[5])                
+                user = SystemUsers(self.db).get_by_id(datum[5])                
                 payments.append(Payment(datum[0], datum[1], datum[2], datum[4], user, payment_mode))
 
             return payments 

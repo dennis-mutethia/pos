@@ -3,6 +3,7 @@ from flask import redirect, render_template, request, url_for
 from flask_login import login_user
 
 from utils.inventory.stock_take import StockTake
+from utils.settings.system_users import SystemUsers
 
 class Login():
     def __init__(self, db): 
@@ -13,7 +14,7 @@ class Login():
             if request.form['action'] == 'login':
                 phone = request.form['phone']
                 password = request.form['password']   
-                user = self.db.authenticate_user(phone, password)
+                user = SystemUsers(self.db).authenticate(phone, password)
                 
                 if user:        
                     login_user(user)
@@ -42,12 +43,12 @@ class Login():
         license_id = self.db.save_license(package, payment_id)
         company_id = self.db.save_company(company_name, license_id)
         shop_id = self.db.save_shop(shop_name, shop_type_id, company_id, shop_location)
-        user = self.db.get_user_by_phone(user_phone)
+        user = SystemUsers(self.db).get_by_phone(user_phone)
         if user is None:
-            user_id = self.db.save_user(user_name, user_phone, 1, shop_id, user_password)
+            user_id = SystemUsers(self.db).add(user_name, user_phone, 1, shop_id, user_password)
             user = self.db.get_user_by_id(user_id)
         else:
-            self.db.update_user(user.id, user_name, user_password, shop_id)
+            SystemUsers(self.db).update(user_id, user_name, user_phone, 1, shop_id, password=user_password)
                     
         login_user(user)
         StockTake(self.db).load(current_date) 

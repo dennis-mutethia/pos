@@ -73,78 +73,8 @@ class Db():
             for shop_type in data:
                 shop_types.append(ShopType(shop_type[0], shop_type[1], shop_type[2]))
                 
-            return shop_types
-    
-    def get_user_by_id(self, id):
-        self.ensure_connection()
-        with self.conn.cursor() as cursor:
-            query = """
-            SELECT id, name, phone, user_level_id, shop_id
-            FROM users 
-            WHERE id = %s 
-            """
-            cursor.execute(query, (id,))
-            data = cursor.fetchone()
-            if data:
-                user_level = self.get_user_level_id(data[3])
-                shop = self.get_shop_by_id(data[4]) 
-                company = self.get_company_by_id(shop.company_id)
-                license = self.get_license_id(company.license_id)   
-                return User(data[0], data[1], data[2], user_level, shop, company, license)
-            else:
-                return None      
-    
-    def get_user_by_phone(self, phone):
-        self.ensure_connection()
-        with self.conn.cursor() as cursor:
-            query = """
-            SELECT id, name, phone, user_level_id, shop_id
-            FROM users 
-            WHERE phone = %s 
-            """
-            cursor.execute(query, (phone,))
-            data = cursor.fetchone()
-            if data:
-                user_level = self.get_user_level_id(data[3])
-                shop = self.get_shop_by_id(data[4]) 
-                company = self.get_company_by_id(shop.company_id)
-                license = self.get_license_id(company.license_id)   
-                return User(data[0], data[1], data[2], user_level, shop, company, license)
-            else:
-                return None    
-           
-    def authenticate_user(self, phone, password):
-        self.ensure_connection()
-        with self.conn.cursor() as cursor:
-            query = """
-            SELECT id, name, phone, user_level_id, shop_id
-            FROM users 
-            WHERE phone = %s AND password = %s 
-            """
-            cursor.execute(query, (phone, Helper().hash_password(password)))
-            data = cursor.fetchone()
-            if data:
-                user_level = self.get_user_level_id(data[3])
-                shop = self.get_shop_by_id(data[4]) 
-                company = self.get_company_by_id(shop.company_id)
-                license = self.get_license_id(company.license_id)   
-                return User(data[0], data[1], data[2], user_level, shop, company, license)
-            else:
-                return None 
-    
-    def save_user(self, name, phone, user_level_id, shop_id, password):
-        self.ensure_connection()
-        with self.conn.cursor() as cursor:
-            query = """
-            INSERT INTO users(name, phone, user_level_id, shop_id, password, created_at, created_by) 
-            VALUES(%s, %s, %s, %s, %s, NOW(), 0)
-            RETURNING id
-            """
-            cursor.execute(query, (name.upper(), phone, user_level_id, shop_id, Helper().hash_password(password)))
-            self.conn.commit()
-            user_id = cursor.fetchone()[0]
-            return user_id   
-    
+            return shop_types 
+        
     def save_payment(self, bill_id, amount, payment_mode_id):
         self.ensure_connection()
         with self.conn.cursor() as cursor:
@@ -228,6 +158,22 @@ class Db():
             else:
                 return None    
       
+    def get_company_shops(self):
+        self.ensure_connection()
+        with self.conn.cursor() as cursor:
+            query = """
+            SELECT id, name, shop_type_id, company_id, location, phone_1, phone_2, paybill, account_no, till_no
+            FROM shops 
+            WHERE company_id = %s 
+            """
+            cursor.execute(query, (current_user.company.id,))
+            data = cursor.fetchall()
+            shops = []
+            for datum in data:
+                shops.append(Shop(datum[0], datum[1], datum[2], datum[3], datum[4], datum[5], datum[6], datum[7], datum[8], datum[9]))
+            
+            return shops
+      
     def get_shop_by_id(self, id):
         self.ensure_connection()
         with self.conn.cursor() as cursor:
@@ -240,21 +186,6 @@ class Db():
             data = cursor.fetchone()
             if data:
                 return Shop(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9])
-            else:
-                return None       
-      
-    def get_user_level_id(self, id):
-        self.ensure_connection()
-        with self.conn.cursor() as cursor:
-            query = """
-            SELECT id, name, level, description
-            FROM user_levels 
-            WHERE id = %s 
-            """
-            cursor.execute(query, (id,))
-            data = cursor.fetchone()
-            if data:
-                return UserLevel(data[0], data[1], data[2], data[3])
             else:
                 return None    
         
@@ -271,18 +202,7 @@ class Db():
             if data:
                 return Package(data[0], data[1], data[2], data[3], data[4], data[5])
             else:
-                return None    
-            
-    def update_user(self, user_id, name, password, shop_id):
-        self.ensure_connection()
-        with self.conn.cursor() as cursor:
-            query = """
-            UPDATE users 
-            SET name = %s, password = %s, shop_id = %s, updated_by=%s, updated_at=NOW() 
-            WHERE id=%s
-            """
-            cursor.execute(query, (name.upper(), Helper().hash_password(password), shop_id, user_id, user_id))
-            self.conn.commit()
+                return None   
             
     def fetch_payment_modes(self):
         self.ensure_connection() 

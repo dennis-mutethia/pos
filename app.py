@@ -5,8 +5,8 @@ from dotenv import load_dotenv
 from flask_session import Session
 from redis import Redis
 
+from utils.account_profile import AccountProfile
 from utils.our_packages import OurPackages
-from utils.accountProfile import AccountProfile
 from utils.customers.customer_bills import CustomerBills
 from utils.customers.customers import Customers
 from utils.dashboard import Dashboard
@@ -23,6 +23,7 @@ from utils.pos.bill_entries import BillEntries
 from utils.pos.bills import Bills
 from utils.pos.new_sale import NewSale
 from utils.pos.print import Print
+from utils.settings.system_users import SystemUsers
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000  # One year in seconds
@@ -52,7 +53,7 @@ db = Db()
 # Callback to reload the user object
 @login_manager.user_loader
 def load_user(user_id):
-    return db.get_user_by_id(user_id)
+    return SystemUsers(db).get_by_id(user_id)
 
 # Routes
 @app.route('/')
@@ -173,6 +174,16 @@ def customerBills():
 @login_required
 def expenses():
     return Expenses(db)()
+
+@app.route('/system-users', methods=['GET', 'POST'])
+@login_required
+def systemUsers():
+    return SystemUsers(db)()
+
+@app.route('/system-users-update', methods=['POST'])
+@login_required
+def systemUserUpdate():
+    return SystemUsers(db)()
 
 @app.route('/account-profile', methods=['GET', 'POST'])
 @login_required

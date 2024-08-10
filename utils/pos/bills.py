@@ -18,7 +18,7 @@ class Bills():
             query = """
             SELECT id, total, paid, created_at, customer_id, created_by
             FROM bills
-            WHERE (DATE(created_at) BETWEEN DATE(%s) AND DATE(%s)) AND shop_id = %s
+            WHERE (DATE(created_at) BETWEEN DATE(%s) AND DATE(%s)) AND shop_id = %s AND total != 'Nan'
             """
             params = [from_date, to_date, current_user.shop.id]
             
@@ -55,7 +55,7 @@ class Bills():
             query = """
             SELECT id, total, paid, created_at, customer_id, created_by
             FROM bills
-            WHERE id = %s
+            WHERE id = %s AND total != 'Nan'
             """
             params = [id]
             
@@ -75,7 +75,7 @@ class Bills():
             query = """
             SELECT SUM(total - paid) AS total_debts
             FROM bills
-            WHERE shop_id = %s
+            WHERE shop_id = %s AND total != 'Nan'
             """
             params = [current_user.shop.id]
             

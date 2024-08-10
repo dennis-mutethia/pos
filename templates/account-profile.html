@@ -29,6 +29,18 @@
                         placeholder="(Type a new Password to Change)" />
                 </div>
             </div>
+            <div class="form-group row">
+                <label class="col-sm-3 text-end control-label col-form-label">User Level</label>
+                <div class="col-sm-9">
+                    <label class="col-sm-3 control-label col-form-label">{{ current_user.user_level.name }}</label>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-3 text-end control-label col-form-label">Attached Shop</label>
+                <div class="col-sm-9">
+                    <label class="col-sm-3 control-label col-form-label">{{ current_user.shop.name }}</label>
+                </div>
+            </div>
             <div class="border-top">
                 <div class="card-footer">
                     <button type="submit" id="submit_update_user" name="action" value="update"

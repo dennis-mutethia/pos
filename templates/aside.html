@@ -86,10 +86,6 @@
                         </li>
                     </ul>
                 </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="cashbox" aria-expanded="false"><i
-                            class="mdi mdi-cash-multiple"></i><span class="hide-menu">CashBox</span></a>
-                </li>
                 {% endif %}
                 {% if current_user.user_level.id in [0, 1, 4] %}
                 <li class="sidebar-item">
@@ -146,13 +142,8 @@
                                     class="hide-menu"> Shops </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="settings-system-users" class="sidebar-link"><i
+                            <a href="{{ url_for('systemUsers') }}" class="sidebar-link"><i
                                     class="mdi mdi-account-multiple"></i><span class="hide-menu"> System Users
-                                </span></a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="settings-system-logs" class="sidebar-link"><i
-                                    class="mdi mdi-reorder-horizontal"></i><span class="hide-menu"> System Audit Logs
                                 </span></a>
                         </li>
                     </ul>

@@ -49,7 +49,7 @@ class Dashboard():
             sales AS(
                 SELECT DATE(created_at) AS report_date, SUM(total) AS total_sales
                 FROM bills
-                WHERE DATE(created_at) BETWEEN DATE(%s) - INTERVAL '30 days' AND DATE(%s) AND shop_id=%s
+                WHERE DATE(created_at) BETWEEN DATE(%s) - INTERVAL '30 days' AND DATE(%s) AND shop_id=%s AND total != 'Nan'
                 GROUP BY report_date
             )
             SELECT report_date, total_sales, COALESCE(total_expenses,0) AS total_expenses

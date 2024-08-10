@@ -14,7 +14,7 @@ class UserLevel():
     def __init__(self, id, name, level, description):
         self.id = id
         self.name = name
-        self.name = level
+        self.level = level
         self.description = description 
         
 class ShopType():

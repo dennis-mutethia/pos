@@ -27,7 +27,7 @@ class SystemUsers():
             users = []
             for datum in data:      
                 user_level = self.get_user_level_id(datum[3])
-                shop = MyShops(self.db).get_by_id(data[4]) 
+                shop = MyShops(self.db).get_by_id(datum[4]) 
                 company = self.db.get_company_by_id(shop.company_id)
                 license = self.db.get_license_id(company.license_id)   
                 users.append(User(datum[0], datum[1], datum[2], user_level, shop, company, license))
@@ -46,7 +46,7 @@ class SystemUsers():
             data = cursor.fetchone()
             if data:
                 user_level = self.get_user_level_id(data[3])
-                shop = MyShops(self.db).get_by_id(data[4]) 
+                shop = MyShops(self.db).get_by_id(data[4])
                 company = self.db.get_company_by_id(shop.company_id)
                 license = self.db.get_license_id(company.license_id)   
                 return User(data[0], data[1], data[2], user_level, shop, company, license)
@@ -65,7 +65,7 @@ class SystemUsers():
             data = cursor.fetchone()
             if data:
                 user_level = self.get_user_level_id(data[3])
-                shop = MyShops(self.db).get_by_id(data[4]) 
+                shop = MyShops(self.db).get_by_id(data[4])
                 company = self.db.get_company_by_id(shop.company_id)
                 license = self.db.get_license_id(company.license_id)   
                 return User(data[0], data[1], data[2], user_level, shop, company, license)
@@ -84,7 +84,7 @@ class SystemUsers():
             data = cursor.fetchone()
             if data:
                 user_level = self.get_user_level_id(data[3])
-                shop = MyShops(self.db).get_by_id(data[4]) 
+                shop = MyShops(self.db).get_by_id(data[4])
                 company = self.db.get_company_by_id(shop.company_id)
                 license = self.db.get_license_id(company.license_id)   
                 return User(data[0], data[1], data[2], user_level, shop, company, license)

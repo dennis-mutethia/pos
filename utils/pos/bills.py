@@ -17,7 +17,7 @@ class Bills():
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
-            SELECT id, total, paid, created_at, customer_id, created_by
+            SELECT id, total, paid, created_at + INTERVAL '3 HOURS' AS created_at, customer_id, created_by
             FROM bills
             WHERE (DATE(created_at) BETWEEN DATE(%s) AND DATE(%s)) AND shop_id = %s AND total != 'Nan'
             """
@@ -54,7 +54,7 @@ class Bills():
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
-            SELECT id, total, paid, created_at, customer_id, created_by
+            SELECT id, total, paid, created_at + INTERVAL '3 HOURS' AS created_at, customer_id, created_by
             FROM bills
             WHERE id = %s AND total != 'Nan'
             """

@@ -125,7 +125,7 @@
                     </ul>
                 </li>
                 {% endif %}
-                {% if current_user.user_level.id in [0, 1] %}
+                {% if current_user.user_level.id in [0, 1, 2, 4] %}
                 <li class="sidebar-item">
                     <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)"
                         aria-expanded="false"><i class="mdi mdi-settings"></i><span class="hide-menu">Settings
@@ -138,8 +138,8 @@
                         </li>
                         {% endif %}
                         <li class="sidebar-item">
-                            <a href="settings-shops" class="sidebar-link"><i class="mdi mdi-gift"></i><span
-                                    class="hide-menu"> Shops </span></a>
+                            <a href="{{ url_for('myShops') }}" class="sidebar-link"><i class="mdi mdi-gift"></i><span
+                                    class="hide-menu"> My Shops </span></a>
                         </li>
                         <li class="sidebar-item">
                             <a href="{{ url_for('systemUsers') }}" class="sidebar-link"><i
@@ -147,13 +147,6 @@
                                 </span></a>
                         </li>
                     </ul>
-                </li>
-                {% endif %}
-                {% if current_user.user_level.id in [0, 1, 2, 4] %}
-                <li class="sidebar-item">
-                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="login-select-shop?href=dashboard"
-                        aria-expanded="false"><i class="mdi mdi-swap-horizontal"></i><span class="hide-menu">Switch
-                            Shop</span></a>
                 </li>
                 {% endif %}
                 {% endif %}

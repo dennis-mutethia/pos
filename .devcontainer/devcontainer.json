@@ -1,6 +1,8 @@
 {
     "name": "POS",
-    "dockerFile": "Dockerfile",
+    "runServices": ["app", "db"],
+    "service": "app",
+    "workspaceFolder": "/workspace",
     "customizations": {
         "vscode": {
             "extensions": [
@@ -13,5 +15,12 @@
                 "terminal.integrated.defaultProfile.linux#": "/bin/bash"
             }
         }
-    }
+    },
+    "remoteEnv": {
+        "POSTGRES_USER": "${localEnv:DB_USER}",
+        "POSTGRES_PASSWORD": "${localEnv:DB_PASSWORD}",
+        "POSTGRES_DB": "${localEnv:DB_NAME}"
+    },
+    "dockerComposeFile": ["../docker-compose.yml"],
+    "forwardPorts": [5000, 5432]
 }

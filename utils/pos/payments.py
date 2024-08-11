@@ -13,7 +13,7 @@ class Payments():
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
-            SELECT id, bill_id, amount, payment_mode_id, created_at, created_by
+            SELECT id, bill_id, amount, payment_mode_id, created_at + INTERVAL '3 HOURS' AS created_at, created_by
             FROM payments
             WHERE bill_id = %s
             """

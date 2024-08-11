@@ -63,17 +63,6 @@ class Db():
             """
             cursor.execute(query, (shop_id, current_user.id))
             self.conn.commit()
-            
-    def fetch_shop_types(self):
-        self.ensure_connection() 
-        with self.conn.cursor() as cursor:
-            cursor.execute("SELECT id, name, description FROM shop_types ORDER BY name")
-            data = cursor.fetchall()
-            shop_types = []
-            for shop_type in data:
-                shop_types.append(ShopType(shop_type[0], shop_type[1], shop_type[2]))
-                
-            return shop_types 
         
     def save_payment(self, bill_id, amount, payment_mode_id):
         self.ensure_connection()
@@ -114,19 +103,6 @@ class Db():
             self.conn.commit()
             company_id = cursor.fetchone()[0]
             return company_id 
-    
-    def save_shop(self, name, shop_type_id, company_id, location):
-        self.ensure_connection()
-        with self.conn.cursor() as cursor:
-            query = """
-            INSERT INTO shops(name, shop_type_id, company_id, location, created_at, created_by) 
-            VALUES(%s, %s, %s, %s, NOW(), 0) 
-            RETURNING id
-            """
-            cursor.execute(query, (name.upper(), shop_type_id, company_id, location.upper()))
-            self.conn.commit()
-            shop_id = cursor.fetchone()[0]
-            return shop_id
       
     def get_license_id(self, id):
         self.ensure_connection()
@@ -173,21 +149,6 @@ class Db():
                 shops.append(Shop(datum[0], datum[1], datum[2], datum[3], datum[4], datum[5], datum[6], datum[7], datum[8], datum[9]))
             
             return shops
-      
-    def get_shop_by_id(self, id):
-        self.ensure_connection()
-        with self.conn.cursor() as cursor:
-            query = """
-            SELECT id, name, shop_type_id, company_id, location, phone_1, phone_2, paybill, account_no, till_no
-            FROM shops 
-            WHERE id = %s 
-            """
-            cursor.execute(query, (id,))
-            data = cursor.fetchone()
-            if data:
-                return Shop(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9])
-            else:
-                return None    
         
     def get_package_by_id(self, id):
         self.ensure_connection()

@@ -7,6 +7,8 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+COPY requirements.txt .
 #update pip & install dependencies
-RUN pip install --upgrade pip 
+RUN pip install --upgrade pip \
+    && pip install -r requirements.txt
     

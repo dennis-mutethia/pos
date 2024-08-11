@@ -23,6 +23,7 @@ from utils.pos.bill_entries import BillEntries
 from utils.pos.bills import Bills
 from utils.pos.new_sale import NewSale
 from utils.pos.print import Print
+from utils.settings.my_shops import MyShops
 from utils.settings.system_users import SystemUsers
 
 app = Flask(__name__)
@@ -174,6 +175,11 @@ def customerBills():
 @login_required
 def expenses():
     return Expenses(db)()
+
+@app.route('/my-shops', methods=['GET', 'POST'])
+@login_required
+def myShops():
+    return MyShops(db)()
 
 @app.route('/system-users', methods=['GET', 'POST'])
 @login_required

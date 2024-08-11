@@ -3,6 +3,7 @@ from flask import redirect, render_template, request, url_for
 from flask_login import login_user
 
 from utils.inventory.stock_take import StockTake
+from utils.settings.my_shops import MyShops
 from utils.settings.system_users import SystemUsers
 
 class Login():
@@ -42,7 +43,7 @@ class Login():
         payment_id = self.db.save_payment(0, 0, 4)
         license_id = self.db.save_license(package, payment_id)
         company_id = self.db.save_company(company_name, license_id)
-        shop_id = self.db.save_shop(shop_name, shop_type_id, company_id, shop_location)
+        shop_id = MyShops(self.db).add(shop_name, shop_type_id, company_id, shop_location, phone_1='', phone_2='', paybill='', account_no='', till_no='', created_by=0)
         user = SystemUsers(self.db).get_by_phone(user_phone)
         if user is None:
             user_id = SystemUsers(self.db).add(user_name, user_phone, 1, shop_id, user_password)
@@ -61,5 +62,5 @@ class Login():
             elif request.form['action'] == 'login':
                 return self.login()
 
-        shop_types = self.db.fetch_shop_types()
+        shop_types = MyShops(self.db).fetch_shop_types()
         return render_template('login.html', shop=None, shop_types=shop_types, error=None)

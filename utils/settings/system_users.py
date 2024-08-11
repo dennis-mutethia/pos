@@ -4,6 +4,7 @@ from flask_login import current_user
 
 from utils.entities import Expense, User, UserLevel
 from utils.helper import Helper
+from utils.settings.my_shops import MyShops
 
 class SystemUsers():
     def __init__(self, db): 
@@ -45,7 +46,7 @@ class SystemUsers():
             data = cursor.fetchone()
             if data:
                 user_level = self.get_user_level_id(data[3])
-                shop = self.db.get_shop_by_id(data[4]) 
+                shop = MyShops(self.db).get_by_id(data[4]) 
                 company = self.db.get_company_by_id(shop.company_id)
                 license = self.db.get_license_id(company.license_id)   
                 return User(data[0], data[1], data[2], user_level, shop, company, license)

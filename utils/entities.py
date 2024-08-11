@@ -38,10 +38,10 @@ class Company():
         self.license_id = license_id
         
 class Shop():
-    def __init__(self, id, name, shop_type_id, company_id, location, phone_1, phone_2, paybill, account_no, till_no):
+    def __init__(self, id, name, shop_type, company_id, location, phone_1, phone_2, paybill, account_no, till_no):
         self.id = id
         self.name = name
-        self.shop_type_id = shop_type_id
+        self.shop_type = shop_type
         self.company_id = company_id
         self.company = None
         self.location = location

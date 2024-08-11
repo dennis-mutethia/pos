@@ -8,14 +8,14 @@
     <table class="table-striped table-bordered table-condensed">
         <thead>
             <tr>
-                <th>NAME</th>
-                <th>LOCATION</th>
-                <th>SHOP TYPE</th>
-                <th>PHONE I</th>
-                <th>PHONE II</th>
-                <th>PAYBILL</th>
-                <th>ACCOUNT NO.</th>
-                <th>TILL NO.</th>
+                <th class="text-center">NAME</th>
+                <th class="text-center">LOCATION</th>
+                <th class="text-center">SHOP TYPE</th>
+                <th class="text-center">PHONE I</th>
+                <th class="text-center">PHONE II</th>
+                <th class="text-center">PAYBILL</th>
+                <th class="text-center">ACCOUNT NO.</th>
+                <th class="text-center">TILL NO.</th>
                 <th colspan="2" class="text-center">
                     <a href="#" class="btn btn-xs btn-primary btn-flat" style="width: 100%" data-toggle="modal"
                         data-target="#newModal">Add New Shop</a>
@@ -25,7 +25,18 @@
         <tbody>
             {% for shop in shops %}
             <tr>
-                <td id="name_{{ shop.id }}">{{ shop.name }}</td>
+                <td>
+                    <form method="POST">
+                        <input id="name_{{ shop.id }}" name="name" type="hidden" value="{{ shop.name }}" />
+                        <input name="shop_id" type="hidden" value="{{ shop.id }}" />
+                        {% if shop.id != current_user.shop.id %}
+                        <button type="submit" name="action" value="switch" style="width: 100%"
+                            class=" btn-flat btn-xs btn-warning">{{ shop.name }} <br/>(Click to Login)</button>
+                        {% else %}
+                        {{ shop.name }}
+                        {% endif %}
+                    </form>
+                </td>
                 <td id="location_{{ shop.id }}">{{ shop.location }}</td>
                 <td>{{ shop.shop_type.name }}</td>
                 <input id="shop_type_{{ shop.id }}" type="hidden" value="{{ shop.shop_type.id }}" />
@@ -156,12 +167,12 @@
 
 <script>
     {% if toastr_message %}
-        toastr.success('{{ toastr_message }}');
+    toastr.success('{{ toastr_message }}');
     {% endif %}
 
     function editShop(id) {
         $('#shop_id').val(id);
-        $('#name').val($('#name_' + id).html());
+        $('#name').val($('#name_' + id).val());
         $('#location').val($('#location_' + id).html());
         $('#shop_type_id').val($('#shop_type_' + id).val());
         $('#phone_1').val($('#phone_1_' + id).html());

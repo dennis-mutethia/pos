@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import render_template, request
+from flask import redirect, render_template, request, url_for
 from flask_login import current_user
 
 from utils.entities import Expense, Shop, ShopType, User, UserLevel
@@ -68,6 +68,17 @@ class MyShops():
             cursor.execute(query, (name.upper(), shop_type_id, company_id, location.upper(), phone_1, phone_2, paybill, account_no, till_no, updated_by, shop_id))
             self.db.conn.commit()
             
+    def switch(self, shop_id):
+        self.db.ensure_connection()
+        with self.db.conn.cursor() as cursor:
+            query = """
+            UPDATE users
+            SET shop_id = %s
+            WHERE id = %s
+            """
+            cursor.execute(query, (shop_id, current_user.id))
+            self.db.conn.commit()
+            
     def delete(self, id):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
@@ -121,13 +132,19 @@ class MyShops():
                     shop_id = request.form['shop_id']
                     self.update(shop_id, name, shop_type_id, company_id, location, phone_1, phone_2, paybill, account_no, till_no, created_by)
                     toastr_message = f'{name} Updated Successfully'
-                
+            
+            elif request.form['action'] == 'switch':
+                shop_id = request.form['shop_id']
+                name = request.form['name']
+                self.switch(shop_id)
+                toastr_message = f'Successfully Switched Shop to {name}'
+                return redirect(url_for('myShops'))
+                    
             elif request.form['action'] == 'delete':
                 shop_id = request.form['shop_id']
                 self.delete(shop_id)
                 toastr_message = f'Shop Deleted Successfully'
-                
-                
+        
         shops = self.fetch() 
         shop_types = self.fetch_shop_types()
             

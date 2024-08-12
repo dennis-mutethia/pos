@@ -33,12 +33,13 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000  # One year in seconds
 load_dotenv()
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SESSION_TYPE'] = 'redis'
-app.config['SESSION_REDIS'] = r = Redis(
+app.config['SESSION_REDIS'] = Redis(
     host=os.getenv('REDIS_HOSTNAME'),
     port=os.getenv('REDIS_PORT'),
     password=os.getenv('REDIS_PASSWORD'),
-    ssl=True
+    ssl=False if os.getenv('REDIS_SSL') in ['False', '0'] else True
 )
+
 app.config['SESSION_COOKIE_SECURE'] = True  # Set to True if using HTTPS on Vercel
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'

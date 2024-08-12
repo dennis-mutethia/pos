@@ -16,12 +16,6 @@
             }
         }
     },
-    "remoteEnv": {
-        "POSTGRES_USER": "${localEnv:DB_USER}",
-        "POSTGRES_PASSWORD": "${localEnv:DB_PASSWORD}",
-        "POSTGRES_DB": "${localEnv:DB_NAME}",
-        "REDIS_PASSWORD": "${localEnv:REDIS_PASSWORD}"
-    },
     "dockerComposeFile": ["../docker-compose.yml"],
     "forwardPorts": [5000, 5432, 6379]
 }

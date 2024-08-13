@@ -131,6 +131,7 @@ class StockTake():
         
             SELECT SUM(in_stock * purchase_price) capital, SUM(in_stock * selling_price) AS stock_amount 
             FROM all_stock
+            WHERE in_stock != 'Nan'
             """
             params = [report_date, current_user.shop.id, report_date, current_user.shop.id]
             

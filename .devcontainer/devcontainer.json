@@ -1,6 +1,6 @@
 {
     "name": "POS",
-    "runServices": ["app", "db"],
+    "runServices": ["app", "db", "redis"],
     "service": "app",
     "workspaceFolder": "/workspace",
     "customizations": {
@@ -16,11 +16,6 @@
             }
         }
     },
-    "remoteEnv": {
-        "POSTGRES_USER": "${localEnv:DB_USER}",
-        "POSTGRES_PASSWORD": "${localEnv:DB_PASSWORD}",
-        "POSTGRES_DB": "${localEnv:DB_NAME}"
-    },
     "dockerComposeFile": ["../docker-compose.yml"],
-    "forwardPorts": [5000, 5432]
+    "forwardPorts": [5000, 5432, 6379]
 }

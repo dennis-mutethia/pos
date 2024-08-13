@@ -17,7 +17,7 @@ class StockTake():
         WITH sales AS(
             SELECT stock_id, SUM(qty) sold
             FROM bill_entries
-            WHERE shop_id = %s
+            WHERE shop_id = %s AND bill_id>0
             GROUP BY stock_id
         ),
         p AS (
@@ -61,7 +61,7 @@ class StockTake():
         WITH sales AS(
             SELECT stock_id, SUM(qty) sold
             FROM bill_entries
-            WHERE shop_id = %s
+            WHERE shop_id = %s AND bill_id>0
             GROUP BY stock_id
         ),
         all_stock AS(
@@ -119,7 +119,7 @@ class StockTake():
             WITH sales AS(
                 SELECT stock_id, SUM(qty) sold
                 FROM bill_entries
-                WHERE DATE(created_at) = DATE(%s) AND shop_id = %s
+                WHERE DATE(created_at) = DATE(%s) AND shop_id = %s AND bill_id>0
                 GROUP BY stock_id
             ),
             all_stock AS(
@@ -131,7 +131,6 @@ class StockTake():
         
             SELECT SUM(in_stock * purchase_price) capital, SUM(in_stock * selling_price) AS stock_amount 
             FROM all_stock
-            WHERE in_stock != 'Nan'
             """
             params = [report_date, current_user.shop.id, report_date, current_user.shop.id]
             

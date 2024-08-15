@@ -23,6 +23,7 @@ from utils.pos.bill_entries import BillEntries
 from utils.pos.bills import Bills
 from utils.pos.new_sale import NewSale
 from utils.pos.print import Print
+from utils.reports.bills_report import BillsReport
 from utils.settings.my_shops import MyShops
 from utils.settings.system_users import SystemUsers
 
@@ -176,6 +177,11 @@ def customerBills():
 @login_required
 def expenses():
     return Expenses(db)()
+
+@app.route('/bills-report', methods=['GET', 'POST'])
+@login_required
+def billsReport():
+    return BillsReport(db)()
 
 @app.route('/my-shops', methods=['GET', 'POST'])
 @login_required

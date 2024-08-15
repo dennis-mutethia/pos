@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from flask import redirect, render_template, request, url_for, send_file
 from io import BytesIO
+from flask_login import current_user
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
@@ -180,7 +181,7 @@ class BillsReport():
         
         if download == 1:   
             pdf_file = self.generate_pdf_file(bills, from_date, to_date)
-            return send_file(pdf_file, as_attachment=True, download_name='book_catalog.pdf')
+            return send_file(pdf_file, as_attachment=True, download_name=f"{current_user.shop.name}_Customers_Bills_Report_From_{from_date.replace('-','_')}_to_{to_date.replace('-','_')}.pdf")
         
         return render_template('reports/bills-report.html', page_title='Reports > Bills', helper=Helper(),
                                bills=bills, current_date=current_date, bill_status=bill_status, 

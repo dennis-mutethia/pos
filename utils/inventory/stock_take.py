@@ -119,18 +119,19 @@ class StockTake():
             WITH sales AS(
                 SELECT stock_id, SUM(qty) sold
                 FROM bill_entries
-                WHERE DATE(created_at) = DATE(%s) AND shop_id = %s AND bill_id>0
+                WHERE DATE(created_at) = DATE(%s) AND shop_id = %s AND bill_id>0 AND qty != 'Nan'
                 GROUP BY stock_id
             ),
             all_stock AS(
                 SELECT (COALESCE(opening, 0) + COALESCE(additions, 0)  - COALESCE(sold, 0)) AS in_stock, purchase_price, selling_price
                 FROM stock 
                 LEFT JOIN sales ON sales.stock_id = stock.id
-                WHERE stock_date=%s AND shop_id = %s
+                WHERE stock_date=%s AND shop_id = %s AND purchase_price != 'Nan' AND selling_price != 'Nan'
             )        
         
             SELECT SUM(in_stock * purchase_price) capital, SUM(in_stock * selling_price) AS stock_amount 
             FROM all_stock
+            WHERE in_stock != 'Nan'
             """
             params = [report_date, current_user.shop.id, report_date, current_user.shop.id]
             

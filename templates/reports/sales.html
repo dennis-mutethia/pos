@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- ============================================================== -->
+<!-- Container fluid  -->
+<!-- ============================================================== -->
+<div class="container-fluid card table-responsive">
+    <form id="filter-frm" method="GET" class="row">
+        <input type="hidden" id="page" name="page" value="{{ page }}" />
+        <div class="col-6">
+            <input onchange="applyFilter(1)" style="height: 25px" type="date" id="report_date" name="report_date"
+                required="required" value="{{ report_date }}" max="{{ current_date }}" />
+        </div>
+    </form><br />
+    <table class="table-bordered table-striped">
+        <thead>
+            <tr>
+                <th class="text-right" rowspan="2">BILL No.</th>
+                <th class="text-center" rowspan="2">DATE TIME</th>
+                <th rowspan="2">CUSTOMER</th>
+                <th rowspan="2">SOLD BY</th>
+                <th class="text-center" rowspan="2">TOTAL</th>
+                <th class="text-center" colspan="2">PAID</th>
+                <th class="text-center" rowspan="2">BAL</th>
+                <th class="text-center" colspan="3" rowspan="2">ACTION</th>
+            </tr>
+            <tr>
+                <th class="text-center">CASH</th>
+                <th class="text-center">MPESA</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bill in bills %}
+            <tr>
+                <td class="text-right">#{{ bill.id }}</td>
+                <td class="text-center">{{ bill.created_at }}</td>
+                <td>
+                    {% if bill.customer %}
+                    {{ bill.customer.name }}
+                    {% else %}
+                    <a href="#" data-toggle="modal" data-target="#assignCustomerModal"
+                        onclick="assignCustomerBill({{ bill.id }})">Assign Customer</a>
+                    {% endif %}
+                </td>
+                <td>{{ bill.user.name }} </td>
+                <td class="text-right">{{ helper.format_number_with_commas(helper.format_number(bill.total)) }}</td>
+                <td class="text-right text-warning">{{ helper.format_number_with_commas(helper.format_number(bill.cash))
+                    }}</td>
+                <td class="text-right text-success">{{
+                    helper.format_number_with_commas(helper.format_number(bill.mpesa)) }}</td>
+                <td class="text-right text-danger">{{
+                    helper.format_number_with_commas(helper.format_number(bill.total-bill.paid)) if bill.total >
+                    bill.paid else '' }}</td>
+                <td class="text-center">
+                    {% if bill.total > bill.paid %}
+                    <button class="btn btn-success btn-xs text-white" data-toggle="modal" data-target="#newModal"
+                        onclick="updateBillAmount({{ bill.id }},{{helper.format_number(bill.total-bill.paid) }});">Pay</button>
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    {% if bill.total > bill.paid %}
+                    <button class="btn btn-warning btn-xs text-white" data-toggle="modal" data-target="#editModal"
+                        onclick="editBill({{ bill.id }})">Edit</button>
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    <a href="#" class="text-primary mdi mdi-eye" title="View Bill" data-toggle="modal"
+                        data-target="#viewBillModal" onclick="fetch_bill_details({{ bill.id }});">View</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th class="text-right" colspan="4"><b><u>TOTAL BILLS</u></b></th>
+                <th class="text-right"><b><u>{{ helper.format_number_with_commas(helper.format_number(grand_total))
+                            }}</u></b></th>
+                <th class="text-right text-warning"><b><u>{{
+                            helper.format_number_with_commas(helper.format_number(cash_total)) }}</u></b></th>
+                <th class="text-right text-success"><b><u>{{
+                            helper.format_number_with_commas(helper.format_number(mpesa_total)) }}</u></b></th>
+                <th class="text-right text-danger"><b><u>{{
+                            helper.format_number_with_commas(helper.format_number(grand_total - grand_paid)) }}</u></b>
+                </th>
+                <th colspan="3"></th>
+            </tr>
+        </tfoot>
+    </table><br />
+
+    <!--Pagination-->
+    <div class="row">
+        <div class="col-md-5"></div>
+        <div class="col-md-4 text-center">
+            <nav aria-label="Page navigation example" class="text-center">
+                <ul class="pagination" class="text-center">
+                    <li class="page-item {{ '' if prev_page > 0 else 'disabled' }}">
+                        <button class="page-link" id="prev_page"
+                            onclick="applyFilter({{ prev_page }})">Previous</button>
+                    </li>
+                    <li class="page-item {{ '' if next_page > 0 else 'disabled' }}">
+                        <button class="page-link" id="next_page" onclick="applyFilter({{ next_page }})">Next</button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+    </div>
+    <!-- End Pagination-->
+</div>
+<!-- ============================================================== -->
+<!-- End Container fluid  -->
+<!-- ============================================================== -->
+
+<script>
+    function applyFilter(page) {
+        $("#page").val(page);
+        $("#filter-frm").submit();
+    }
+
+</script>
+
+{% endblock %}

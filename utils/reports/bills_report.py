@@ -23,7 +23,7 @@ class BillsReport():
         x_margin = 20
         y_margin = 750
         line_height = 20
-        col_widths = [150, 100, 100, 50, 50, 50, 50]  # Column widths matching the number of headers
+        col_widths = [150, 100, 100, 50, 50, 50, 50, 1]  # Column widths matching the number of headers
 
         p.setFont("Helvetica-Bold", 10)
         p.drawString(150, y_margin+10, f"Customers Bills Report From {from_date} to {to_date}")
@@ -31,7 +31,7 @@ class BillsReport():
 
         # Table headers
         y_position = y_margin - line_height
-        headers = ["DATE TIME", "CUSTOMER", "SOLD BY", "TOTAL", "CASH", "MPESA", "BAL"]
+        headers = ["DATE TIME", "CUSTOMER", "SOLD BY", "TOTAL", "CASH", "MPESA", "BAL", ""]
         current_x = x_margin
 
         # Draw headers and top border
@@ -65,7 +65,8 @@ class BillsReport():
                 str(int(bill.total)),
                 str(int(bill.cash)),
                 str(int(bill.mpesa)),
-                str(int(bill.total - bill.paid))
+                str(int(bill.total - bill.paid)),
+                ''
             ]
 
             # Draw the bill details and borders

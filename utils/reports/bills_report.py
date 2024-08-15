@@ -24,8 +24,9 @@ class BillsReport():
         line_height = 20
         col_widths = [150, 100, 100, 50, 50, 50, 50]  # Column widths matching the number of headers
 
+        # Title
         p.setFont("Helvetica-Bold", 10)
-        p.drawString(150, y_margin+10, f"Customers Bills Report From {from_date} to {to_date}")
+        p.drawString(150, y_margin + 10, f"Customers Bills Report From {from_date} to {to_date}")
         p.setFont("Helvetica", 8)
 
         # Table headers
@@ -35,16 +36,16 @@ class BillsReport():
 
         # Draw headers and top border
         for i, header in enumerate(headers):
-            p.drawString(current_x + 5, y_position, header)  # Slightly offset text from the border
+            p.drawString(current_x + 5, y_position - 5, header)  # Offset text to be centered vertically
             current_x += col_widths[i]
 
         # Draw borders for header row
         p.line(x_margin, y_position + line_height, width - x_margin, y_position + line_height)  # Top border
-        p.line(x_margin, y_position, width - x_margin, y_position)  # Bottom border
+        p.line(x_margin, y_position - 2, width - x_margin, y_position - 2)  # Bottom border (adjusted down)
 
         current_x = x_margin
         for col_width in col_widths:
-            p.line(current_x, y_position + line_height, current_x, y_position)  # Vertical borders
+            p.line(current_x, y_position + line_height, current_x, y_position - 2)  # Vertical borders
             current_x += col_width
 
         y_position -= line_height
@@ -69,16 +70,16 @@ class BillsReport():
 
             # Draw the bill details and borders
             for i, detail in enumerate(bill_details):
-                p.drawString(current_x + 5, y_position, detail)
+                p.drawString(current_x + 5, y_position - 5, detail)  # Offset text to be centered vertically
                 current_x += col_widths[i]
             
             # Draw borders for each row
             p.line(x_margin, y_position + line_height, width - x_margin, y_position + line_height)  # Top border
-            p.line(x_margin, y_position, width - x_margin, y_position)  # Bottom border
+            p.line(x_margin, y_position - 2, width - x_margin, y_position - 2)  # Bottom border (adjusted down)
 
             current_x = x_margin
             for col_width in col_widths:
-                p.line(current_x, y_position + line_height, current_x, y_position)  # Vertical borders
+                p.line(current_x, y_position + line_height, current_x, y_position - 2)  # Vertical borders
                 current_x += col_width
 
             y_position -= line_height

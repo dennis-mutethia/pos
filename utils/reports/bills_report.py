@@ -182,7 +182,7 @@ class BillsReport():
         
         if download == 1:   
             pdf_file = self.generate_pdf_file(bills, from_date, to_date)
-            return send_file(pdf_file, as_attachment=True, download_name=f"Customers_Bills_Report_from_{from_date}_to_{to_date} - {current_user.shop.name}.pdf")
+            return send_file(pdf_file, as_attachment=True, download_name=f"Customers_Bills_Report_from_{from_date}_to_{to_date}_{page} - {current_user.shop.name}.pdf")
         
         return render_template('reports/bills-report.html', page_title='Reports > Bills', helper=Helper(),
                                bills=bills, current_date=current_date, bill_status=bill_status, 

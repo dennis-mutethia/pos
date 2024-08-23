@@ -54,7 +54,7 @@ class Bills():
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
-            SELECT id, total, paid, created_at + INTERVAL '3 HOURS' AS created_at, customer_id, created_by
+            SELECT id, total, paid, TO_CHAR(created_at + INTERVAL '3 HOURS', 'YYYY-MM-DD HH24:MI') AS created_at, customer_id, created_by
             FROM bills
             WHERE id = %s AND total != 'Nan'
             """

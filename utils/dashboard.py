@@ -75,11 +75,11 @@ class Dashboard():
         with self.db.conn.cursor() as cursor:
             query = """
             WITH s AS(
-                SELECT DATE(created_at) AS report_date, (COALESCE(opening, 0) + COALESCE(additions, 0)) * selling_price AS stock 
+                SELECT DATE(created_at) AS report_date, (COALESCE(opening, 0) + COALESCE(additions, 0)) * selling_price AS stock, COALESCE(additions, 0) * purchase_price AS purchases 
                 FROM stock
-                WHERE DATE(created_at) BETWEEN DATE(%s) - INTERVAL '30 days' AND DATE(%s) AND shop_id=%s
+                WHERE DATE(created_at) BETWEEN DATE(%s) - INTERVAL '30 days' AND DATE(%s) AND shop_id=%s AND opening != 'Nan' AND additions != 'Nan'
             )
-            SELECT report_date, SUM(stock) AS stock
+            SELECT report_date, SUM(stock) AS stock, SUM(purchases) AS purchases
             FROM s
             GROUP BY report_date        
             """
@@ -89,12 +89,14 @@ class Dashboard():
             data = cursor.fetchall()
             dates = []
             stocks = []
+            purchases = []
             for datum in data:  
                 dates.append(f"'{datum[0]}'")
                 stocks.append(datum[1] if datum[1] is not None else 0)
+                purchases.append(datum[2] if datum[2] is not None else 0)
 
-            return dates, stocks
-                  
+            return dates, stocks, purchases
+                 
     def __call__(self):
         current_date = datetime.now().strftime('%Y-%m-%d')
         report_date = current_date
@@ -112,12 +114,12 @@ class Dashboard():
         total_unpaid_bills = Bills(self.db).get_total_unpaid_bills()
         items, qtys, bgcolors = self.get_sales_per_item(report_date)
         dates, sales_all, expenses_all = self.get_sales_and_expenses(report_date)
-        dates_2, stocks_2 = self.get_stock_trend(report_date)
+        dates_2, stocks_2, purchases = self.get_stock_trend(report_date)
          
         return render_template('dashboard/index.html', page_title='Dashboard', helper=Helper(),
                                report_date=report_date,
                                total_cost=total_cost, total_sales=total_sales, total_expenses=total_expenses,
                                total_capital=total_capital, total_stock=total_stock, total_unpaid_bills=total_unpaid_bills,
                                items=items, qtys=qtys, bgcolors=bgcolors, dates=dates, sales_all=sales_all, expenses_all=expenses_all,
-                               dates_2=dates_2, stocks_2=stocks_2
+                               dates_2=dates_2, stocks_2=stocks_2, purchases=purchases
                                )

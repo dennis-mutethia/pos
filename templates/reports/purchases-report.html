@@ -36,6 +36,7 @@
     <table class="table-bordered table-striped">
         <thead>
             <tr>
+                <th class="text-center">DATE</th>
                 <th class="text-center">PRODUCT</th>
                 <th class="text-center">CATEGORY</th>
                 <th class="text-center">PURCHASES</th>
@@ -47,6 +48,7 @@
             {% for purchase in purchases %}
             {% set total = purchase.purchase_price * purchase.additions %}
             <tr>
+                <td class="text-center">{{ purchase.report_date }}</td>
                 <td>{{ purchase.name }}</td>
                 <td>{{ purchase.category_name }}</td>
                 <td class="text-center">{{ helper.format_number_with_commas(helper.format_number(purchase.additions)) }}</td>

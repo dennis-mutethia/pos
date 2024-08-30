@@ -39,8 +39,8 @@
             {% for sale in sales %}
             {% set total = sale.selling_price * sale.sold %}
             <tr>
-                <td class="text-center">{{ sale.item_name }}</td>
-                <td class="text-center">{{ sale.category_name }}</td>
+                <td>{{ sale.item_name }}</td>
+                <td>{{ sale.category_name }}</td>
                 <td class="text-center">{{ helper.format_number_with_commas(helper.format_number(sale.sold)) }}</td>
                 <td class="text-center">{{ helper.format_number_with_commas(helper.format_number(sale.selling_price)) }}</td>
                 <td class="text-center">{{ helper.format_number_with_commas(helper.format_number(total))}}</td>

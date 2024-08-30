@@ -143,6 +143,20 @@ class Expense():
         self.name = name 
         self.amount = amount     
         self.user = user   
+         
+class Sale():
+    def __init__(self, item_name, category_name, selling_price, sold):
+        self.item_name = item_name  
+        self.category_name = category_name 
+        self.selling_price = selling_price     
+        self.sold = sold   
+         
+class Purchase():
+    def __init__(self, name, category_name, purchase_price, additions):
+        self.name = name  
+        self.category_name = category_name 
+        self.purchase_price = purchase_price     
+        self.additions = additions   
         
         
           

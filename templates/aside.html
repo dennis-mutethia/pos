@@ -94,7 +94,7 @@
                             class="hide-menu">Reports </span></a>
                     <ul aria-expanded="false" class="collapse first-level">
                         <li class="sidebar-item">
-                            <a href="reports-sales" class="sidebar-link"><i class="mdi mdi-office"></i><span
+                            <a href="{{ url_for('salesReport') }}" class="sidebar-link"><i class="mdi mdi-office"></i><span
                                     class="hide-menu"> Sales Report </span></a>
                         </li>
                         <li class="sidebar-item">
@@ -102,7 +102,7 @@
                                     class="hide-menu"> Bills Report </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="reports-purchases" class="sidebar-link"><i class="mdi mdi-truck-delivery"></i><span
+                            <a href="{{ url_for('purchasesReport') }}" class="sidebar-link"><i class="mdi mdi-truck-delivery"></i><span
                                     class="hide-menu"> Purchases Report </span></a>
                         </li>
                         <li class="sidebar-item">

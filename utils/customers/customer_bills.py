@@ -76,7 +76,7 @@ class CustomerBills():
                 amount_paid = float(request.form['amount_paid'])           
                 payment_mode_id = int(request.form['payment_mode_id'])
                 
-                if bill_id> 0:
+                if bill_id > 0:
                     Payments(self.db).add(bill_id, amount_paid, payment_mode_id)                    
                     Bills(self.db).pay(bill_id, amount_paid) 
                     

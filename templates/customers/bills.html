@@ -111,14 +111,14 @@
                 <th class="text-right text-danger"><b><u>{{
                             helper.format_number_with_commas(helper.format_number(grand_total - grand_paid)) }}</u></b>
                 </th>
-                <th class="text-center">
+                <th class="text-center" colspan="2">
                     {% if (grand_total - grand_paid) > 0 and customer_id>0 %}
                     <button class="btn btn-success btn-xs text-white" data-toggle="modal" data-target="#newModal"
                         onclick="updateBillAmount(0,{{ helper.format_number(grand_total - grand_paid) }});">Pay Multiple
                         Bills</button>
                     {% endif %}
                 </th>
-                <th colspan="2"></th>
+                <th></th>
             </tr>
         </tfoot>
     </table><br />

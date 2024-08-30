@@ -26,6 +26,7 @@ from utils.pos.print import Print
 from utils.reports.bills_report import BillsReport
 from utils.reports.purchases_report import PurchasesReport
 from utils.reports.sales_report import SalesReport
+from utils.reports.stock_report import StockReport
 from utils.settings.my_shops import MyShops
 from utils.settings.system_users import SystemUsers
 
@@ -194,6 +195,11 @@ def salesReport():
 @login_required
 def purchasesReport():
     return PurchasesReport(db)()
+
+@app.route('/stock-report', methods=['GET'])
+@login_required
+def stockReport():
+    return StockReport(db)()
 
 @app.route('/my-shops', methods=['GET', 'POST'])
 @login_required

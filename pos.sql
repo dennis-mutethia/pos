@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS change_log (
   id SERIAL PRIMARY KEY,
   date date,
-  version varchar(16),
-  menu varchar(16),
-  submenu varchar(32),
-  description varchar(1028),
+  version TEXT,
+  menu TEXT,
+  submenu TEXT,
+  description TEXT,
   created_at TIMESTAMP,
   created_by INT,
   updated_at TIMESTAMP,
@@ -14,12 +14,12 @@ CREATE TABLE IF NOT EXISTS change_log (
 -- Table structure for table packages
 CREATE TABLE IF NOT EXISTS packages (
   id SERIAL PRIMARY KEY,
-  name varchar(64),
+  name TEXT,
   amount DOUBLE PRECISION,
   pay DOUBLE PRECISION,
-  description varchar(256),
-  offer varchar(64),
-  color varchar(32),
+  description TEXT,
+  offer TEXT,
+  color TEXT,
   validity INT,
   created_at TIMESTAMP,
   created_by INT,
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS packages (
 -- Table structure for table licenses
 CREATE TABLE IF NOT EXISTS licenses (
   id SERIAL PRIMARY KEY,
-  key varchar(512),
+  key TEXT,
   package_id INT,
   expires_at TIMESTAMP,
   payment_id INT,
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS licenses (
 -- Table structure for table companies
 CREATE TABLE IF NOT EXISTS companies (
   id SERIAL PRIMARY KEY,
-  name varchar(32),
+  name TEXT,
   license_id INT,
   created_at TIMESTAMP,
   created_by INT,
@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS companies (
 -- Table structure for table shop_types
 CREATE TABLE IF NOT EXISTS shop_types (
   id SERIAL PRIMARY KEY,
-  name varchar(32),
-  description varchar(1028),
+  name TEXT,
+  description TEXT,
   created_at TIMESTAMP,
   created_by INT,
   updated_at TIMESTAMP,
@@ -68,27 +68,27 @@ CREATE TABLE IF NOT EXISTS shop_types (
 -- Table structure for table shops
 CREATE TABLE IF NOT EXISTS shops (
   id SERIAL PRIMARY KEY,
-  name varchar(32),
-  location varchar(32),
+  name TEXT,
+  location TEXT,
   company_id INT,
   shop_type_id INT,
   created_at TIMESTAMP,
   created_by INT,
   updated_at TIMESTAMP,
   updated_by INT,
-  phone_1 varchar(20),
-  phone_2 varchar(20),
-  paybill varchar(16),
-  account_no varchar(32),
-  till_no varchar(16)
+  phone_1 TEXT,
+  phone_2 TEXT,
+  paybill TEXT,
+  account_no TEXT,
+  till_no TEXT
 );
 
 -- Table structure for table user_levels
 CREATE TABLE IF NOT EXISTS user_levels (
   id SERIAL PRIMARY KEY,
-  name varchar(32),
+  name TEXT,
   level INT DEFAULT '0',
-  description varchar(1028),
+  description TEXT,
   created_at TIMESTAMP,
   created_by INT,
   updated_at TIMESTAMP,
@@ -99,11 +99,11 @@ CREATE TABLE IF NOT EXISTS user_levels (
 -- Table structure for table users
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
-  name varchar(64),
-  phone varchar(20),
+  name TEXT,
+  phone TEXT,
   shop_id INT,
   user_level_id INT DEFAULT '0',
-  password varchar(256),
+  password TEXT,
   created_at TIMESTAMP,
   created_by INT,
   updated_at TIMESTAMP,
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- Table structure for table product_categories
 CREATE TABLE IF NOT EXISTS product_categories (
   id SERIAL PRIMARY KEY,
-  name varchar(32),
+  name TEXT,
   shop_id INT,
   created_at TIMESTAMP,
   created_by INT,
@@ -126,7 +126,7 @@ CREATE TABLE IF NOT EXISTS product_categories (
 -- Table structure for table products
 CREATE TABLE IF NOT EXISTS products (
   id SERIAL PRIMARY KEY,
-  name varchar(32),
+  name TEXT,
   purchase_price DOUBLE PRECISION,
   selling_price DOUBLE PRECISION,
   category_id INT,
@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS stock (
   id SERIAL PRIMARY KEY,
   stock_date date,
   product_id INT,
-  name varchar(32),
+  name TEXT,
   category_id INT,
   purchase_price DOUBLE PRECISION,
   selling_price DOUBLE PRECISION,
@@ -175,7 +175,7 @@ CREATE TABLE IF NOT EXISTS bill_entries (
   id SERIAL PRIMARY KEY,
   bill_id INT,
   stock_id INT,
-  item_name varchar(32),
+  item_name TEXT,
   price DOUBLE PRECISION,
   qty DOUBLE PRECISION,
   shop_id INT,
@@ -189,8 +189,8 @@ CREATE TABLE IF NOT EXISTS bill_entries (
 -- Table structure for table customers
 CREATE TABLE IF NOT EXISTS customers (
   id SERIAL PRIMARY KEY,
-  name varchar(32),
-  phone varchar(20),
+  name TEXT,
+  phone TEXT,
   shop_id INT,
   created_at TIMESTAMP,
   created_by INT,
@@ -217,7 +217,7 @@ CREATE TABLE IF NOT EXISTS debts (
 CREATE TABLE IF NOT EXISTS expenses (
   id SERIAL PRIMARY KEY,
   date date,
-  name varchar(32),
+  name TEXT,
   amount DOUBLE PRECISION,
   shop_id INT,
   created_at TIMESTAMP,
@@ -229,8 +229,8 @@ CREATE TABLE IF NOT EXISTS expenses (
 -- Table structure for table payment_modes
 CREATE TABLE IF NOT EXISTS payment_modes (
   id SERIAL PRIMARY KEY,
-  name varchar(32),
-  account varchar(32),
+  name TEXT,
+  account TEXT,
   shop_id INT,
   created_at TIMESTAMP,
   created_by INT,
@@ -264,45 +264,3 @@ CREATE TABLE IF NOT EXISTS cashbox (
   updated_by INT,
   UNIQUE (date)
 );
-
--- Dumping data for table packages
-INSERT INTO packages (name, amount, pay, description, offer, color, validity) VALUES
-('7-DAY TRIAL', 0, 0, 'FREE TRIAL PERIOD', '', 'danger', 7),
-('1-MONTH', 1000, 1000, '1 MONTH BASIC PREMIUM PACKAGE', 'STARTER', 'success', 31),
-('3-MONTHS', 3000, 3000, '3 MONTHS BRONZE PACKAGE', 'OPTIMIZED', 'warning', 93),
-('6-MONTHS S.T.S', 6000, 5000, '6 MONTHS SHORT TERM SUPPORT', 'SAVE UPTO 10%', 'primary', 186),
-('1-YEAR L.T.S', 12000, 9000, '1 YEAR LONG TERM SUPPORT', 'SAVE UPTO 15%', 'secondary', 366),
-('2-YEARS L.T.S', 24000, 16000, '2 YEARS LONG TERM SUPPORT', 'SAVE UPTO 20%', 'info', 732),
-('3-YEARS L.T.S', 36000, 25000, '3 YEARS LONG TERM SUPPORT', 'SAVE UPTO 30%', 'success', 1098)
-ON CONFLICT (name) DO NOTHING;
-
--- Dumping data for table shop_types
-INSERT INTO shop_types (name) VALUES
-('WINES & SPIRITS / BAR'),
-('PHARMACY / CHEMIST'),
-('AGROVET'),
-('HARDWARE'),
-('BUTCHERY'),
-('GENERAL SHOP'),
-('AUTO SPARE PARTS'),
-('BOUTIQUE'),
-('CAR DEALER'),
-('COSMETIC & BEAUTY'),
-('PETROL STATION'),
-('GREEN GROCERY')
-ON CONFLICT (name) DO NOTHING;
-
--- Dumping data for table user_levels
-INSERT INTO user_levels (name, description) VALUES
-('SUPER ADMIN', 'All Permissions<br />Can access admin portal'),
-('ADMIN', 'All Permissions<br />\nCan Navigate Multiple Shops'),
-('SUPERVISOR', 'Stock<br /> \nInventory<br />\nCustomer Bills<br />\nExpenses<br />\nCan Navigate Multiple Shops'),
-('SALES', 'Stock<br /> \nInventory<br /> \nCustomer Bills<br />\nExpenses<br />\nCannot Navigate Multiple Shops'),
-('DIRECTOR', 'View Reports Only<br /> \nCan Navigate Multiple Shops')
-ON CONFLICT (name) DO NOTHING;
-
--- Dumping data for table payment_modes
-INSERT INTO payment_modes (name, account, shop_id) VALUES
-('CASH', NULL, 1),
-('MPESA', NULL, 1)
-ON CONFLICT (name) DO NOTHING;

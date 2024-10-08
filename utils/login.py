@@ -26,7 +26,7 @@ class Login():
                         return redirect(url_for('posNewSale')) 
                 else: 
                     error = 'Login failed! Phone & Password do not match or Phone does not exist.'
-                    shop_types = self.db.fetch_shop_types()
+                    shop_types = MyShops(self.db).fetch_shop_types()
                     return render_template('login.html', shop_types=shop_types, error=error)
     
     def register(self):           

@@ -100,7 +100,7 @@ class Customers():
                 return 'success'
                    
             elif request.form['action'] == 'delete':
-                id = request.form['item_id']
+                id = request.form['customer_id']
                 self.delete(id) 
         
         customers = self.fetch()

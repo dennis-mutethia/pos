@@ -8,7 +8,7 @@ from reportlab.pdfgen import canvas
 from utils.helper import Helper
 from utils.settings.system_users import SystemUsers
 
-class ExpensesReport():
+class ProfitReport():
     def __init__(self, db): 
         self.db = db
 
@@ -131,9 +131,9 @@ class ExpensesReport():
         
         if download == 1:   
             pdf_file = self.generate_pdf_file(expenses, from_date, to_date)
-            return send_file(pdf_file, as_attachment=True, download_name=f"Expenses_Report_from_{from_date}_to_{to_date}_{page} - {current_user.shop.name}.pdf")
+            return send_file(pdf_file, as_attachment=True, download_name=f"Profit_and_Loss_Report_from_{from_date}_to_{to_date}_{page} - {current_user.shop.name}.pdf")
                     
-        return render_template('reports/expenses-report.html', page_title='Reports > Expenses', helper=Helper(),
+        return render_template('reports/profit-report.html', page_title='Reports > Profit & Loss', helper=Helper(),
                                expenses=expenses, from_date=from_date, to_date=to_date, current_date=current_date,
                                page=page, prev_page=prev_page, next_page=next_page
                                )

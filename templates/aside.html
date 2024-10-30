@@ -114,12 +114,12 @@
                                     class="hide-menu"> Expenses Report </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="reports-profit-loss" class="sidebar-link"><i
+                            <a href="{{ url_for('profitReport') }}" class="sidebar-link"><i
                                     class="mdi mdi-cash-multiple"></i><span class="hide-menu"> Profit & Loss Report
                                 </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="reports-statement" class="sidebar-link"><i class="mdi mdi-book-multiple"></i><span
+                            <a href="{{ url_for('statementOfAccount') }}" class="sidebar-link"><i class="mdi mdi-book-multiple"></i><span
                                     class="hide-menu"> Statement of Account </span></a>
                         </li>
                     </ul>

@@ -25,8 +25,10 @@ from utils.pos.new_sale import NewSale
 from utils.pos.print import Print
 from utils.reports.bills_report import BillsReport
 from utils.reports.expenses_report import ExpensesReport
+from utils.reports.profit_report import ProfitReport
 from utils.reports.purchases_report import PurchasesReport
 from utils.reports.sales_report import SalesReport
+from utils.reports.statement_of_account import StatementOfAccount
 from utils.reports.stock_report import StockReport
 from utils.settings.my_shops import MyShops
 from utils.settings.system_users import SystemUsers
@@ -65,7 +67,7 @@ def load_user(user_id):
 # Routes
 @app.route('/')
 def index():
-    return redirect(url_for('login'))
+    return redirect(url_for('dashboard'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -201,6 +203,16 @@ def purchasesReport():
 @login_required
 def expensesReport():
     return ExpensesReport(db)()
+
+@app.route('/profit-and-loss-report', methods=['GET'])
+@login_required
+def profitReport():
+    return ProfitReport(db)()
+
+@app.route('/statement-of-account', methods=['GET'])
+@login_required
+def statementOfAccount():
+    return StatementOfAccount(db)()
 
 @app.route('/stock-report', methods=['GET'])
 @login_required

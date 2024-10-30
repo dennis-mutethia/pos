@@ -29,27 +29,39 @@
         <thead>
             <tr>
                 <th class="text-center">DATE</th>
-                <th class="text-center">EXPENSE</th>
-                <th class="text-center">CREATED BY</th>
-                <th class="text-center">AMOUNT</th>
+                <th class="text-center">SALES</th>
+                <th class="text-center">COST</th>
+                <th class="text-center">GROSS PROFIT</th>
+                <th class="text-center">EXPENSES</th>
+                <th class="text-center">NET PROFIT</th>
             </tr>
         </thead>
         <tbody>
-            {% set ns = namespace(total=0) %}
-            {% for expense in expenses %}
-            {% set ns.total = ns.total + expense.amount %}
+            {% set ns = namespace(total_sales=0, total_cost=0, total_gross_profit=0, total_expenses=0, total_net_profit=0) %}
+            {% for profit in profits %}
+            {% set ns.total_sales = ns.total_sales + profit.sales %}
+            {% set ns.total_cost = ns.total_cost + profit.cost %}
+            {% set ns.total_gross_profit = ns.total_gross_profit + profit.gross_profit %}
+            {% set ns.total_expenses = ns.total_expenses + profit.expenses %}
+            {% set ns.total_net_profit = ns.total_net_profit + profit.net_profit %}
             <tr>
-                <td>{{ expense.date }}</td>
-                <td>{{ expense.name }}</td>
-                <td>{{ expense.user.name }}</td>
-                <td class="text-right">{{ helper.format_number(expense.amount) }}</td>
+                <td>{{ profit.report_date }}</td>
+                <td class="text-right">{{ helper.format_number_with_commas(profit.sales) }}</td>
+                <td class="text-right">{{ helper.format_number_with_commas(profit.cost) }}</td>
+                <td class="text-right">{{ helper.format_number_with_commas(profit.gross_profit) }}</td>
+                <td class="text-right">{{ helper.format_number_with_commas(profit.expenses) }}</td>
+                <td class="text-right">{{ helper.format_number_with_commas(profit.net_profit) }}</td>
             </tr>
             {% endfor %}
         </tbody>
         <tfoot>
             <tr>
-                <th class="text-right" colspan="3"><b><u>TOTAL EXPENSES</u></b></th>
-                <th class="text-right"><b><u>{{ helper.format_number(ns.total) }}</u></b></th>
+                <th class="text-right"><b><u>TOTALS</u></b></th>
+                <th class="text-right"><b><u>{{ helper.format_number_with_commas(ns.total_sales) }}</u></b></th>
+                <th class="text-right"><b><u>{{ helper.format_number_with_commas(ns.total_cost) }}</u></b></th>
+                <th class="text-right"><b><u>{{ helper.format_number_with_commas(ns.total_gross_profit) }}</u></b></th>
+                <th class="text-right"><b><u>{{ helper.format_number_with_commas(ns.total_expenses) }}</u></b></th>
+                <th class="text-right"><b><u>{{ helper.format_number_with_commas(ns.total_net_profit) }}</u></b></th>
             </tr>
         </tfoot>
     </table><br />

@@ -5,6 +5,7 @@ from flask_login import current_user
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
+from utils.entities import Profit
 from utils.helper import Helper
 from utils.settings.system_users import SystemUsers
 
@@ -95,24 +96,42 @@ class ProfitReport():
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
-            SELECT id, date, name, amount, created_by
-            FROM expenses
-            WHERE (DATE(date) BETWEEN DATE(%s) AND DATE(%s)) AND shop_id = %s
+            WITH exp AS(
+                SELECT date, SUM(amount) total_expenses
+                FROM expenses
+                GROUP BY date
+            ),
+            sales AS(
+                SELECT DATE(b.created_at) AS report_date, be.price*be.qty AS sales, s.purchase_price*be.qty AS cost
+                FROM bills b
+                JOIN bill_entries be ON be.bill_id = b.id
+                JOIN stock s ON s.id = be.stock_id 
+                WHERE DATE(b.created_at) BETWEEN DATE(%s) AND DATE(%s) AND b.shop_id=%s AND total != 'Nan'
+            ),
+            totals AS(
+                SELECT report_date, SUM(sales) AS total_sales, SUM(cost) AS total_cost
+                FROM sales  
+                GROUP BY report_date
+            )
+            SELECT report_date, total_sales, total_cost, COALESCE(total_expenses,0) AS total_expenses
+            FROM totals
+            LEFT JOIN exp ON exp.date=totals.report_date    
+            ORDER BY report_date     
             """
             params = [from_date, to_date, current_user.shop.id]
             
             cursor.execute(query, tuple(params))
             data = cursor.fetchall()
-            expenses = []
+            profits = []
             for datum in data:                
-                user = SystemUsers(self.db).get_by_id(datum[4])       
-                expenses.append(Expense(datum[0], datum[1], datum[2], datum[3], user))
+                profits.append(Profit(datum[0], datum[1], datum[2], datum[3]))
 
-            return expenses 
+            return profits 
          
     def __call__(self):
         current_date = datetime.now().strftime('%Y-%m-%d')
-        from_date = to_date = current_date
+        from_date = datetime.now().replace(day=1).strftime('%Y-%m-%d')
+        to_date = current_date
         page = 1
         download = 0
         
@@ -125,15 +144,15 @@ class ProfitReport():
             except Exception as e:
                 print(f"An error occurred: {e}")               
         
-        expenses = self.fetch(from_date, to_date) 
+        profits = self.fetch(from_date, to_date) 
         prev_page = page-1 if page>1 else 0
-        next_page = page+1 if len(expenses)==50 else 0
+        next_page = page+1 if len(profits)==50 else 0
         
         if download == 1:   
-            pdf_file = self.generate_pdf_file(expenses, from_date, to_date)
+            pdf_file = self.generate_pdf_file(profits, from_date, to_date)
             return send_file(pdf_file, as_attachment=True, download_name=f"Profit_and_Loss_Report_from_{from_date}_to_{to_date}_{page} - {current_user.shop.name}.pdf")
                     
         return render_template('reports/profit-report.html', page_title='Reports > Profit & Loss', helper=Helper(),
-                               expenses=expenses, from_date=from_date, to_date=to_date, current_date=current_date,
+                               profits=profits, from_date=from_date, to_date=to_date, current_date=current_date,
                                page=page, prev_page=prev_page, next_page=next_page
                                )

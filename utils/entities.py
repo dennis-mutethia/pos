@@ -158,7 +158,16 @@ class Purchase():
         self.name = name  
         self.category_name = category_name 
         self.purchase_price = purchase_price     
-        self.additions = additions   
+        self.additions = additions    
+         
+class Profit():
+    def __init__(self, report_date, sales, cost, expenses):
+        self.report_date = report_date
+        self.sales = sales  
+        self.cost = cost    
+        self.expenses = expenses   
+        self.gross_profit = sales - cost
+        self.net_profit = sales - cost - expenses
         
         
           

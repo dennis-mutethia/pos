@@ -5,6 +5,7 @@ from flask_login import current_user
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
+from utils.entities import Expense
 from utils.helper import Helper
 from utils.settings.system_users import SystemUsers
 
@@ -98,6 +99,7 @@ class ExpensesReport():
             SELECT id, date, name, amount, created_by
             FROM expenses
             WHERE (DATE(date) BETWEEN DATE(%s) AND DATE(%s)) AND shop_id = %s
+            ORDER BY date
             """
             params = [from_date, to_date, current_user.shop.id]
             
@@ -112,7 +114,8 @@ class ExpensesReport():
          
     def __call__(self):
         current_date = datetime.now().strftime('%Y-%m-%d')
-        from_date = to_date = current_date
+        from_date = datetime.now().replace(day=1).strftime('%Y-%m-%d')
+        to_date = current_date
         page = 1
         download = 0
         

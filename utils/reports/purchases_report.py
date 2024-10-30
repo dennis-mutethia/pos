@@ -107,7 +107,7 @@ class PurchasesReport():
             
             query = query + """
             GROUP BY report_date, s.name, pc.name, s.purchase_price
-            ORDER BY report_date DESC, pc.name, s.name
+            ORDER BY report_date ASC, pc.name, s.name
             """
             
             if page>0:

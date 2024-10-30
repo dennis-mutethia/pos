@@ -168,6 +168,13 @@ class Profit():
         self.expenses = expenses   
         self.gross_profit = sales - cost
         self.net_profit = sales - cost - expenses
+         
+class Statement():
+    def __init__(self, date, sales, purchases, expenses):
+        self.date = date
+        self.sales = sales  
+        self.purchases = purchases    
+        self.expenses = expenses   
         
         
           

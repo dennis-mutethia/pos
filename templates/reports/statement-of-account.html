@@ -21,58 +21,58 @@
             <input onchange="applyFilter(1)" style="height: 25px" type="date" id="to_date" name="to_date"
                 required="required" value="{{ to_date }}" max="{{ current_date }}" />
         </div>
-        <div class="col-1 text-right">
+        <!-- <div class="col-1 text-right">
             <button type="submit" name="download" value="1" class="btn btn-xs btn-primary" style="width: 100%;">Export To PDF</button>
-        </div>
+        </div> -->
     </form><br />
-    <table class="table-bordered table-striped">
+    <table class="table-striped">
         <thead>
             <tr>
-                <th class="text-center">DATE</th>
-                <th class="text-center">EXPENSE</th>
-                <th class="text-center">CREATED BY</th>
-                <th class="text-center">AMOUNT</th>
+                <th>DATE</th>
+                <th class="text-center" colspan="2"><u>MONEY IN</u></th>
+                <th></th>
+                <th class="text-center" style="border-left: double">DATE</th>
+                <th class="text-center" colspan="2" ><u>MONEY OUT</u></th>
             </tr>
         </thead>
         <tbody>
-            {% set ns = namespace(total=0) %}
-            {% for expense in expenses %}
-            {% set ns.total = ns.total + expense.amount %}
+            {% set ns = namespace(old_date='', total_sales=0, total_purchases=0, total_expenses=0) %}
+            {% for statement in statements %}  
+            {% set ns.total_sales = ns.total_sales + statement.sales %}    
+            {% set ns.total_expenses = ns.total_expenses + statement.expenses %}   
+            {% set ns.total_purchases = ns.total_purchases + statement.purchases %}           
             <tr>
-                <td>{{ expense.date }}</td>
-                <td>{{ expense.name }}</td>
-                <td>{{ expense.user.name }}</td>
-                <td class="text-right">{{ helper.format_number(expense.amount) }}</td>
+                <td>
+                    {{ statement.date if statement.sales>0 }}
+                </td>
+                <td class="text-right">{{ 'Sales:' if statement.sales>0 }}</td>
+                <td class="text-right">
+                    {{ helper.format_number_with_commas(statement.sales) if statement.sales>0 }}
+                </td>
+                <td></td>
+                <td class="text-center" style="border-left: double">
+                    {{ statement.date if statement.purchases>0 or statement.expenses>0 }}
+                </td>
+                <td class="text-right">
+                    {{ 'Purchases:' if statement.purchases>0 }}
+                    {{ 'Expenses:' if statement.expenses>0 }}
+                </td>
+                <td class="text-right">
+                    {{ helper.format_number_with_commas(statement.purchases) if statement.purchases>0 }}
+                    {{ helper.format_number_with_commas(statement.expenses) if statement.expenses>0 }}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
         <tfoot>
             <tr>
-                <th class="text-right" colspan="3"><b><u>TOTAL EXPENSES</u></b></th>
-                <th class="text-right"><b><u>{{ helper.format_number(ns.total) }}</u></b></th>
-            </tr>
+                <th class="text-center" colspan="2"><b><u>TOTALS</u></b></th>
+                <th class="text-right"><b><u>{{ helper.format_number_with_commas(ns.total_sales) }}</u></b></th>
+                <th></th>
+                <th class="text-right" colspan="3" style="border-left: double"><b><u>{{ helper.format_number_with_commas(ns.total_purchases+ns.total_expenses) }}</u></b></th>
+          </tr>
         </tfoot>
     </table><br />
-
-    <!--Pagination-->
-    <div class="row">
-        <div class="col-md-5"></div>
-        <div class="col-md-4 text-center">
-            <nav aria-label="Page navigation example" class="text-center">
-                <ul class="pagination" class="text-center">
-                    <li class="page-item {{ '' if prev_page > 0 else 'disabled' }}">
-                        <button class="page-link" id="prev_page"
-                            onclick="applyFilter({{ prev_page }})">Previous</button>
-                    </li>
-                    <li class="page-item {{ '' if next_page > 0 else 'disabled' }}">
-                        <button class="page-link" id="next_page" onclick="applyFilter({{ next_page }})">Next</button>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-
-    </div>
-    <!-- End Pagination-->
 </div>
 <!-- ============================================================== -->
 <!-- End Container fluid  -->

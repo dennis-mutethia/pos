@@ -24,6 +24,7 @@ from utils.pos.bills import Bills
 from utils.pos.new_sale import NewSale
 from utils.pos.print import Print
 from utils.reports.bills_report import BillsReport
+from utils.reports.expenses_report import ExpensesReport
 from utils.reports.purchases_report import PurchasesReport
 from utils.reports.sales_report import SalesReport
 from utils.reports.stock_report import StockReport
@@ -195,6 +196,11 @@ def salesReport():
 @login_required
 def purchasesReport():
     return PurchasesReport(db)()
+
+@app.route('/expenses-report', methods=['GET'])
+@login_required
+def expensesReport():
+    return ExpensesReport(db)()
 
 @app.route('/stock-report', methods=['GET'])
 @login_required

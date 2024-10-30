@@ -30,6 +30,7 @@ from utils.reports.purchases_report import PurchasesReport
 from utils.reports.sales_report import SalesReport
 from utils.reports.statement_of_account import StatementOfAccount
 from utils.reports.stock_report import StockReport
+from utils.settings.companies import Companies
 from utils.settings.my_shops import MyShops
 from utils.settings.system_users import SystemUsers
 
@@ -233,6 +234,11 @@ def systemUsers():
 @login_required
 def systemUserUpdate():
     return SystemUsers(db)()
+
+@app.route('/companies', methods=['GET', 'POST'])
+@login_required
+def companies():
+    return Companies(db)()
 
 @app.route('/account-profile', methods=['GET', 'POST'])
 @login_required

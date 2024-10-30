@@ -1,8 +1,7 @@
-from datetime import datetime
 from flask import redirect, render_template, request, url_for
 from flask_login import current_user
 
-from utils.entities import Expense, Shop, ShopType, User, UserLevel
+from utils.entities import Shop, ShopType
 from utils.helper import Helper
 
 class MyShops():

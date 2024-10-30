@@ -133,7 +133,7 @@
                     <ul aria-expanded="false" class="collapse first-level">
                         {% if current_user.user_level.id in [0] %}
                         <li class="sidebar-item">
-                            <a href="admin-companies" class="sidebar-link"><i class="mdi mdi-truck-delivery"></i><span
+                            <a href="{{ url_for('companies') }}" class="sidebar-link"><i class="mdi mdi-truck-delivery"></i><span
                                     class="hide-menu"> Companies </span></a>
                         </li>
                         {% endif %}

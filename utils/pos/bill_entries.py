@@ -122,7 +122,7 @@ class BillEntries():
                 
             elif request.form['action'] == 'delete':
                 id = request.form['item_id']
-                self.delete(id) 
+                #self.delete(id) 
                 
         bill_entries = self.fetch(0)
         grandtotal = 0

@@ -1,7 +1,7 @@
 from flask import redirect, render_template, request, url_for
 from flask_login import current_user
 
-from utils.entities import Package, Shop
+from utils.entities import Package
 from utils.helper import Helper
 
 class Company():
@@ -41,12 +41,11 @@ class Companies():
 
             return companies 
     
-    #def __init__(self, id, name, amount, description, color, validity):
     def fetch_packages(self):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
-            SELECT id, name, amount, description, color, validity
+            SELECT id, name, amount, description, color, validity, pay, offer
             FROM packages 
             ORDER BY validity
             """
@@ -55,7 +54,7 @@ class Companies():
             data = cursor.fetchall()
             packages = []
             for datum in data:   
-                packages.append(Package(datum[0], datum[1], datum[2], datum[3], datum[4], datum[5]))
+                packages.append(Package(datum[0], datum[1], datum[2], datum[3], datum[4], datum[5], datum[6], datum[7]))
 
             return packages 
        
@@ -82,14 +81,15 @@ class Companies():
             cursor.execute(query, (package_id, f'+{package.validity} DAYS', current_user.id, id))
             self.db.conn.commit()
             
-    def delete(self, id):
+    def access_shop(self, shop_id):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
-            DELETE FROM shops
+            UPDATE users
+            SET shop_id = %s
             WHERE id = %s
             """
-            cursor.execute(query, (id,))
+            cursor.execute(query, (shop_id,current_user.id))
             self.db.conn.commit()
         
     def __call__(self):   
@@ -107,6 +107,12 @@ class Companies():
                 package_id = request.form['package_id']
                 self.update_license(id, package_id)
                 toastr_message = 'License Renewed Successfully'
+                                
+            elif request.form['action'] == 'access':
+                shop_id = request.form['id']
+                self.access_shop(shop_id)
+                toastr_message = 'Successfully Switched Shop'
+                return redirect(url_for('companies'))
         
         companies = self.fetch() 
         packages = self.fetch_packages()

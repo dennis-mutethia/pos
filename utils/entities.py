@@ -52,13 +52,15 @@ class Shop():
         self.till_no = till_no
 
 class Package():
-    def __init__(self, id, name, amount, description, color, validity):
+    def __init__(self, id, name, amount, description, color, validity, pay=None, offer=None):
         self.id = id
         self.name = name
         self.amount = amount
         self.description = description
         self.color = color
         self.validity = validity
+        self.pay = pay
+        self.offer = offer
 
 class ProductCategory():
     def __init__(self, id, name, products_count):

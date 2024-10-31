@@ -65,7 +65,7 @@
                     <select name="package_id" id="package_id" style="width: 100%;" class="text-center">
                         <option value="0">-- Select Package --</option>
                         {% for package in packages %}
-                        <option value="{{ package.id }}">{{ package.name }}</option>
+                        <option value="{{ package.id }}">{{ package.name ~ ' @ ' ~ helper.format_number_with_commas(package.pay) }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -118,7 +118,7 @@
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <div class="card" id="shopsTable"></div>
+                <div class="card" id="shops_table"></div>
             </form>
         </div>
     </div>
@@ -136,6 +136,17 @@
     function editCompany(id, name) {
         $('#editable_company_id').val(id);
         $('#editable_company_name').val(name);
+    }
+
+    function fetchShops(id) {
+        $('#shops_table').html('');
+        $.ajax({
+            type: 'GET',
+            url: "{{ url_for('companyShops') }}?id="+id,
+            success: function (data) {
+                $('#shops_table').html(data);
+            }
+        });
     }
 
 </script>

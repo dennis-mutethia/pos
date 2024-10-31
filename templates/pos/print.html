@@ -111,7 +111,7 @@
                         setInterval(function () {
                             window.close();
                         }, 10000);
-                        let kra = 'https://itax.kra.go.ke/KRA-Portal/invoiceChk.htm?actionCode=loadPage&invoiceNo=' + Date.now();
+                        let kra = 'https://itax.kra.go.ke/KRA-Portal/invoiceChk.htm?actionCode=loadPage&invoiceNo={{ bill.id }}';
 
                         var bill_details = '{{ current_user.shop.name }} - {{ current_user.shop.location }}\n' +
                             'BILL NO: {{ bill.id }}\n' +

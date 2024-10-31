@@ -66,42 +66,24 @@
     </div>
     <h3 class="col-12 text-center">Our Packages</h3>
     <div class="row">
-        <?php
-$sql = <<<SQL
-SELECT `id`,`name`,`amount`,`pay`,`description`,`offer`,`color`
-FROM `packages` 
-WHERE `id`>1
-SQL;
-
-if ($stmt = $mysqli->prepare($sql)) {
-$stmt->execute();
-$stmt->bind_result($id,$name,$amount,$pay,$description,$offer,$color);
-while ($stmt->fetch()) { ?>
+        {% for pkg in packages %}
         <div class="col-4">
-            <div class="alert alert-<?php echo $color; ?>" role="alert">
-                <h4 class="alert-heading">
-                    <?php echo ucwords($name); ?>
-                </h4>
-                <p>
-                    <?php echo ucwords($description); ?>
-                </p>
+            <div class="alert alert-{{ pkg.color }}" role="alert">
+                <h4 class="alert-heading">{{ pkg.name }}</h4>
+                <p>{{ pkg.description }}</p>
                 <hr />
                 <p class="mb-0">
-                    Ksh.<s>
-                        <?php echo number_format_custom($amount>$pay ? $amount : ''); ?>
-                    </s>
-                    <?php echo number_format_custom($pay); ?>
+                    Ksh.
+                    {% if pkg.amount > pkg.pay %}
+                        <s>{{ helper.format_number_with_commas(pkg.amount) }}</s>
+                    {% endif %}
+                    {{ helper.format_number_with_commas(pkg.pay) }}
                 </p>
                 <hr />
-                <p class="mb-0">
-                    <?php echo ucwords($offer); ?>
-                </p>
+                <p class="mb-0">{{ pkg.offer }}</p>
             </div>
         </div>
-        <?php   }
-$stmt->close();
-}
-?>
+        {% endfor %}
     </div>
 </div>
 <!-- ============================================================== -->

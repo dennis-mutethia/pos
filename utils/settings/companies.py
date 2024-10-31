@@ -3,6 +3,7 @@ from flask_login import current_user
 
 from utils.entities import Package
 from utils.helper import Helper
+from utils.our_packages import OurPackages
 
 class Company():
     def __init__(self, id, name, phone, created_at, license_id, license_key, expires_at, package, validity):
@@ -40,23 +41,6 @@ class Companies():
                 companies.append(Company(datum[0], datum[1], datum[2], datum[3], datum[4], datum[5], datum[6], datum[7], datum[8]))
 
             return companies 
-    
-    def fetch_packages(self):
-        self.db.ensure_connection()
-        with self.db.conn.cursor() as cursor:
-            query = """
-            SELECT id, name, amount, description, color, validity, pay, offer
-            FROM packages 
-            ORDER BY validity
-            """
-                        
-            cursor.execute(query)
-            data = cursor.fetchall()
-            packages = []
-            for datum in data:   
-                packages.append(Package(datum[0], datum[1], datum[2], datum[3], datum[4], datum[5], datum[6], datum[7]))
-
-            return packages 
        
     def update(self, id, name):
         self.db.ensure_connection()
@@ -115,7 +99,7 @@ class Companies():
                 return redirect(url_for('companies'))
         
         companies = self.fetch() 
-        packages = self.fetch_packages()
+        packages = OurPackages(self.db).fetch_packages()
             
         return render_template('settings/companies.html', page_title='Companies', helper=Helper(),
                                companies=companies, packages=packages, toastr_message=toastr_message )

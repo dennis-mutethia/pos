@@ -29,7 +29,7 @@ class SystemUsers():
                 user_level = self.get_user_level_id(datum[3])
                 shop = MyShops(self.db).get_by_id(datum[4]) 
                 company = self.db.get_company_by_id(shop.company_id)
-                license = self.db.get_license_id(company.license_id)   
+                license = self.db.get_license_by_id(company.license_id)   
                 users.append(User(datum[0], datum[1], datum[2], user_level, shop, company, license))
 
             return users 
@@ -48,7 +48,7 @@ class SystemUsers():
                 user_level = self.get_user_level_id(data[3])
                 shop = MyShops(self.db).get_by_id(data[4])
                 company = self.db.get_company_by_id(shop.company_id)
-                license = self.db.get_license_id(company.license_id)   
+                license = self.db.get_license_by_id(company.license_id)   
                 return User(data[0], data[1], data[2], user_level, shop, company, license)
             else:
                 return None      
@@ -67,7 +67,7 @@ class SystemUsers():
                 user_level = self.get_user_level_id(data[3])
                 shop = MyShops(self.db).get_by_id(data[4])
                 company = self.db.get_company_by_id(shop.company_id)
-                license = self.db.get_license_id(company.license_id)   
+                license = self.db.get_license_by_id(company.license_id)   
                 return User(data[0], data[1], data[2], user_level, shop, company, license)
             else:
                 return None    
@@ -86,7 +86,7 @@ class SystemUsers():
                 user_level = self.get_user_level_id(data[3])
                 shop = MyShops(self.db).get_by_id(data[4])
                 company = self.db.get_company_by_id(shop.company_id)
-                license = self.db.get_license_id(company.license_id)   
+                license = self.db.get_license_by_id(company.license_id)   
                 return User(data[0], data[1], data[2], user_level, shop, company, license)
             else:
                 return None 

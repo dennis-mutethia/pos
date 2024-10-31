@@ -29,24 +29,24 @@
                         </tr>
                         <tr>
                             <th>LICENSE KEY:</th>
-                            <td>{{ current_user.license.key }}</td>
+                            <td>{{ (current_user.license.key[:4] ~ '************' ~ current_user.license.key[-4:]).upper() }}</td>
                         </tr>
                         <tr>
                             <th>PACKAGE:</th>
                             <td>
-                                <?php echo $package_name; ?>
+                                {{ package.name }}
                             </td>
                         </tr>
                         <tr>
                             <th>DESCRIPTION:</th>
                             <td>
-                                <?php echo $package_description; ?>
+                                {{ package.description }}
                             </td>
                         </tr>
                         <tr>
                             <th>AMOUNT:</th>
                             <td>
-                                <?php echo number_format($package_amount); ?>
+                                {{ helper.format_number_with_commas(package.amount) }}
                             </td>
                         </tr>
                         <tr>
@@ -55,11 +55,8 @@
                         </tr>
                         <tr>
                             <th>VALIDITY:</th>
-                            <td style="color: <?php
-                                                echo $_SESSION['stock_app_inventory_logged_user']->company_valid > 7 ? 'green' :
-                                                        ($_SESSION['stock_app_inventory_logged_user']->company_valid > 3 ? 'blue' : 'red');
-                                                ?>">
-                                <?php echo $_SESSION['stock_app_inventory_logged_user']->company_valid; ?> DAYS
+                            <td style="color: {{ 'green' if current_user.license.validity > 7 else ('blue' if current_user.license.validity > 7 else 'red') }}">
+                                {{ current_user.license.validity }} DAYS
                             </td>
                         </tr>
                     </tbody>

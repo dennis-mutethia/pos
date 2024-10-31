@@ -104,18 +104,18 @@ class Db():
             company_id = cursor.fetchone()[0]
             return company_id 
       
-    def get_license_id(self, id):
+    def get_license_by_id(self, id):
         self.ensure_connection()
         with self.conn.cursor() as cursor:
             query = """
-            SELECT id, key, package_id, expires_at, expires_at > NOW() as is_valid
+            SELECT id, key, package_id, DATE(expires_at), expires_at > NOW(), EXTRACT(DAY FROM (expires_at - NOW()))
             FROM licenses 
             WHERE id = %s 
             """
             cursor.execute(query, (id,))
             data = cursor.fetchone()
             if data:
-                return License(data[0], data[1], data[2], data[3], data[4])
+                return License(data[0], data[1], data[2], data[3], data[4], data[5])
             else:
                 return None    
       

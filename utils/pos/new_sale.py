@@ -6,7 +6,7 @@ import user_agents
 from utils.customers.customers import Customers
 from utils.helper import Helper
 from utils.inventory.products_categories import ProductsCategories
-from utils.inventory.stock_take import StockTake
+from utils.stock.stock_take import StockTake
 from utils.pos.bills import Bills
 from utils.pos.bill_entries import BillEntries
 from utils.pos.payments import Payments

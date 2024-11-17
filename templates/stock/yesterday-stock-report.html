@@ -6,14 +6,7 @@
 <!-- ============================================================== -->
 <div class="container-fluid table-responsive">
     <form id="filter-frm" method="GET" class="row">
-        <div class="col-4">
-            <input onchange="applyFilter()" style="height: 25px" type="date" id="stock_date" name="stock_date" max="{{ current_date }}" required="required" value="{{ stock_date }}" />
-        </div>
-        <div class="col-4">
-            <input onchange="applyFilter()" style="height: 25px" type="text" id="search" name="search" value="{{ search }}" placeholder="Search Item" autofocus
-                onfocus="this.value = this.value;" />
-        </div>
-        <div class="col-4">
+        <div class="col-12">
             <select onchange="applyFilter()" name="category_id" id="category_id" style="width: 100%;">
                 <option value="0">Filter by Category</option>
                 {% for product_category in product_categories %}
@@ -37,26 +30,39 @@
            </tr>
        </thead>
         <tbody>
+            {% set ns = namespace(total=0) %}
             {% for stock in stocks %}
+            {% set sold = stock.yesterday_opening+stock.yesterday_additions - stock.opening %}
+            {% set total = sold * stock.selling_price %}
+            {% set ns.total = ns.total + (total if sold>0 else 0) %}
             <style>
                 input {
                     width: 100%;
                 }
+                td{
+                    color: {{ 'red' if sold<0 else 'white' }}
+                }
             </style>
             <tr>                 
-                <td>{{ stock.name }}</td> 
+                <td >{{ stock.name }}</td> 
                 <td>{{ stock.category_name }}</td> 
                 <td class="text-center">{{ helper.format_number(stock.yesterday_opening) }}</td> 
                 <td class="text-center">{{ helper.format_number(stock.yesterday_additions) }}</td> 
                 <td class="text-center">{{ helper.format_number(stock.yesterday_opening+stock.yesterday_additions) }}</td> 
                 <td class="text-center">{{ helper.format_number(stock.opening) }}</td> 
-                <td class="text-center">{{ helper.format_number(stock.yesterday_sold) }}</td> 
+                <td class="text-center">{{ helper.format_number(sold) }}</td> 
 
                 <td class="text-center">{{ helper.format_number(stock.selling_price) }}</td> 
-                <td class="text-center">{{ helper.format_number(stock.selling_price * stock.sold) }}</td> 
+                <td class="text-center">{{ helper.format_number(total) }}</td> 
             </tr>
             {% endfor %}
-        </tbody>
+        </tbody>        
+        <tfoot>
+            <tr>
+                <th class="text-right" colspan="8">TOTAL SALES</th>
+                <th class="text-center">{{ helper.format_number(ns.total) }}</th>
+            </tr>
+        </tfoot>
     </table>
 </div>
 <!-- ============================================================== -->

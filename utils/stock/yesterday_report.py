@@ -159,6 +159,6 @@ class YesterdayStockReport():
              
         product_categories = ProductsCategories(self.db).fetch()
         stocks = self.fetch(stock_date, search, category_id)
-        return render_template('inventory/stock-report.html', helper=Helper(), 
+        return render_template('stock/yesterday-stock-report.html', helper=Helper(), 
                                product_categories=product_categories, stocks=stocks, 
                                page_title='Stock Report', stock_date=stock_date, current_date=current_date, search=search, category_id=category_id)

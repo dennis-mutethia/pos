@@ -16,7 +16,7 @@ from utils.inventory.products import Products
 from utils.inventory.products_categories import ProductsCategories
 from utils.inventory.purchases import Purchases
 from utils.inventory.stock_adjustment import StockAdjustment
-from utils.inventory.stock_take import StockTake
+from utils.stock.stock_take import StockTake
 from utils.login import Login
 from utils.pos.bill_details import BillDetails
 from utils.pos.bill_entries import BillEntries
@@ -34,6 +34,7 @@ from utils.settings.companies import Companies
 from utils.settings.company_shops import CompanyShops
 from utils.settings.my_shops import MyShops
 from utils.settings.system_users import SystemUsers
+from utils.stock.yesterday_report import YesterdayStockReport
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000  # One year in seconds
@@ -106,15 +107,20 @@ def inventoryProducts():
 def inventoryProductsUpdate():    
     return Products(db)()
 
-@app.route('/inventory-stock-take', methods=['GET', 'POST'])
+@app.route('/stock-take', methods=['GET', 'POST'])
 @login_required
-def inventoryStockTake():
+def stockTake():
     return StockTake(db)()
 
-@app.route('/inventory-stock-take-update', methods=['POST'])
+@app.route('/stock-take-update', methods=['POST'])
 @login_required
-def inventoryStockTakeUpdate():    
+def stockTakeUpdate():    
     return StockTake(db)()
+
+@app.route('/yesterday-stock-report', methods=['GET'])
+@login_required
+def yesterdayStockReport():    
+    return YesterdayStockReport(db)()
 
 @app.route('/inventory-purchases', methods=['GET', 'POST'])
 @login_required
@@ -135,36 +141,6 @@ def inventoryStockAdjustment():
 @login_required
 def inventoryStockAdjustmentUpdate():
     return StockAdjustment(db)()
-
-@app.route('/pos-new-sale', methods=['GET', 'POST'])
-@login_required
-def posNewSale():
-    return NewSale(db)()
-
-@app.route('/pos-bill-entries', methods=['GET'])
-@login_required
-def posBillEntries():
-    return BillEntries(db)()
-
-@app.route('/pos-bill-entries-update', methods=['POST'])
-@login_required
-def posBillEntriesUpdate():
-    return BillEntries(db)()
-
-@app.route('/pos-print', methods=['GET'])
-@login_required
-def posPrint():
-    return Print(db)()
-
-@app.route('/pos-bills', methods=['GET', 'POST'])
-@login_required
-def posBills():
-    return Bills(db)()
-
-@app.route('/pos-details', methods=['GET'])
-@login_required
-def posBillDetails():
-    return BillDetails(db)()
 
 @app.route('/customers', methods=['GET', 'POST'])
 @login_required

@@ -1,11 +1,8 @@
-from datetime import datetime
 from flask import render_template, request
 from flask_login import current_user
 
 from utils.helper import Helper
 from utils.entities import Customer
-from utils.inventory.products_categories import ProductsCategories
-from utils.inventory.stock_take import StockTake
 
 class Customers():
     def __init__(self, db): 

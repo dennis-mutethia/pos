@@ -157,7 +157,7 @@ class SystemUsers():
             data = cursor.fetchall()
             user_levels = []
             for datum in data:      
-                user_levels.append(UserLevel(datum[0], datum[1], datum[2], datum[3]))
+                user_levels.append(UserLevel(datum[0], datum[1], datum[2], datum[3].replace('\\n','')))
 
             return user_levels 
         

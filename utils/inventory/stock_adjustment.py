@@ -3,7 +3,7 @@ from datetime import datetime
 
 from utils.helper import Helper
 from utils.inventory.products_categories import ProductsCategories
-from utils.inventory.stock_take import StockTake
+from utils.stock.stock_take import StockTake
 
 class StockAdjustment():
     def __init__(self, db): 

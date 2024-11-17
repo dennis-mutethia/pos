@@ -5,7 +5,7 @@ from flask_login import current_user
 from utils.helper import Helper
 from utils.entities import Product
 from utils.inventory.products_categories import ProductsCategories
-from utils.inventory.stock_take import StockTake
+from utils.stock.stock_take import StockTake
 
 class Products():
     def __init__(self, db): 

@@ -22,15 +22,15 @@
                 {% if current_user.user_level.id in [0, 1, 2, 3] %}
                 <li class="sidebar-item">
                     <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)"
-                        aria-expanded="false"><i class="mdi mdi-gift"></i><span class="hide-menu">POS </span></a>
+                        aria-expanded="false"><i class="mdi mdi-gift"></i><span class="hide-menu">Stock </span></a>
                     <ul aria-expanded="false" class="collapse first-level">
                         <li class="sidebar-item">
-                            <a href="{{ url_for('posNewSale') }}" class="sidebar-link"><i
-                                    class="mdi mdi-shopping"></i><span class="hide-menu"> New Sale </span></a>
+                            <a href="{{ url_for('stockTake') }}" class="sidebar-link"><i
+                                    class="mdi mdi-shopping"></i><span class="hide-menu"> Stock Take </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="{{ url_for('posBills') }}" class="sidebar-link"><i
-                                    class="mdi mdi-calendar"></i><span class="hide-menu"> Today Bills </span></a>
+                            <a href="{{ url_for('yesterdayStockReport') }}" class="sidebar-link"><i
+                                    class="mdi mdi-calendar"></i><span class="hide-menu"> Yesterday Stock Report </span></a>
                         </li>
                     </ul>
                 </li>
@@ -72,10 +72,6 @@
                                     class="mdi mdi-shopping"></i><span class="hide-menu"> Products Price List
                                 </span></a>
                         </li>
-                        <!-- <li class="sidebar-item">
-                            <a href="{{ url_for('inventoryStockTake') }}" class="sidebar-link"><i
-                                    class="mdi mdi-table-edit"></i><span class="hide-menu"> Stock Take </span></a>
-                        </li> -->
                         <li class="sidebar-item">
                             <a href="{{ url_for('inventoryPurchases') }}" class="sidebar-link"><i
                                     class="mdi mdi-truck-delivery"></i><span class="hide-menu"> Purchases </span></a>

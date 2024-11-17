@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import redirect, render_template, request, url_for
 from flask_login import login_user
 
-from utils.inventory.stock_take import StockTake
+from utils.stock.stock_take import StockTake
 from utils.settings.my_shops import MyShops
 from utils.settings.system_users import SystemUsers
 

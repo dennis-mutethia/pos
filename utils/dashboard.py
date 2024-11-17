@@ -5,7 +5,7 @@ from flask_login import current_user
 
 from utils.expenses import Expenses
 from utils.helper import Helper
-from utils.inventory.stock_take import StockTake
+from utils.stock.stock_take import StockTake
 from utils.pos.bill_entries import BillEntries
 from utils.pos.bills import Bills
 

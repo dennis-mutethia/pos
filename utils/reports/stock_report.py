@@ -8,7 +8,7 @@ from reportlab.pdfgen import canvas
 from utils.entities import Sale
 from utils.helper import Helper
 from utils.inventory.products_categories import ProductsCategories
-from utils.inventory.stock_take import StockTake
+from utils.stock.stock_take import StockTake
 
 class Stock():
     def __init__(self, stock_date, name, category_name, opening, additions, sold, selling_price):

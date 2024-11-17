@@ -150,9 +150,10 @@ class SystemUsers():
             query = """
             SELECT id, name, level, description
             FROM user_levels 
+            WHERE id >= %s
             ORDER BY id
             """
-            cursor.execute(query)
+            cursor.execute(query, (current_user.user_level.id,))
             data = cursor.fetchall()
             user_levels = []
             for datum in data:      

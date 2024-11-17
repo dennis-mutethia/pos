@@ -9,7 +9,51 @@ from utils.inventory.products_categories import ProductsCategories
 class StockTake():
     def __init__(self, db): 
         self.db = db
-     
+                    
+    def load(self, stock_date):
+        self.db.ensure_connection()
+        
+        query = """         
+        WITH sales AS(
+            SELECT stock_id, SUM(qty) sold
+            FROM bill_entries
+            WHERE shop_id = %s AND bill_id>0
+            GROUP BY stock_id
+        ),
+        p AS (
+            SELECT id, name, category_id, purchase_price, selling_price
+            FROM products 
+            WHERE shop_id = %s
+        ),
+        yesterday AS (
+            SELECT product_id, name, category_id, purchase_price, selling_price, opening, additions, COALESCE(sold, 0) AS sold
+            FROM stock
+            LEFT JOIN sales ON sales.stock_id = stock.id
+            WHERE DATE(stock_date) = DATE(%s) - 1
+        ),
+        today AS (
+            SELECT DATE(%s) AS stock_date, 
+                COALESCE(yesterday.product_id, p.id) AS product_id, 
+                COALESCE(yesterday.name, p.name) AS name, 
+                COALESCE(yesterday.category_id, p.category_id) AS category_id,
+                COALESCE(yesterday.purchase_price, p.purchase_price) AS purchase_price,
+                COALESCE(yesterday.selling_price, p.selling_price) AS selling_price,
+                COALESCE((yesterday.opening+yesterday.additions-yesterday.sold), 0) AS opening,
+                0 AS additions,
+                %s AS shop_id, NOW() AS created_at, %s AS created_by              
+            FROM p
+            LEFT JOIN yesterday ON yesterday.product_id = p.id
+        )
+        INSERT INTO stock (stock_date, product_id, name, category_id, purchase_price, selling_price, opening, additions, shop_id, created_at, created_by) 
+        SELECT * FROM today
+        ON CONFLICT (stock_date, product_id, shop_id) DO NOTHING
+        """
+        params = [current_user.shop.id, current_user.shop.id, stock_date, stock_date, current_user.shop.id, current_user.id]
+
+        with self.db.conn.cursor() as cursor:           
+            cursor.execute(query, tuple(params))
+            self.db.conn.commit()
+    
     def fetch(self, stock_date, search, category_id, in_stock=0, page=0):
         self.db.ensure_connection()
     

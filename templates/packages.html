@@ -46,7 +46,7 @@
                         <tr>
                             <th>AMOUNT:</th>
                             <td>
-                                {{ helper.format_number_with_commas(package.amount) }}
+                                {{ helper.format_number_with_commas(package.amount/2) }}
                             </td>
                         </tr>
                         <tr>
@@ -75,9 +75,9 @@
                 <p class="mb-0">
                     Ksh.
                     {% if pkg.amount > pkg.pay %}
-                        <s>{{ helper.format_number_with_commas(pkg.amount) }}</s>
+                        <s>{{ helper.format_number_with_commas(pkg.amount/2) }}</s>
                     {% endif %}
-                    {{ helper.format_number_with_commas(pkg.pay) }}
+                    {{ helper.format_number_with_commas(pkg.pay/2) }}
                 </p>
                 <hr />
                 <p class="mb-0">{{ pkg.offer }}</p>

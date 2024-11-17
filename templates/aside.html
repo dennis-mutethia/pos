@@ -97,10 +97,10 @@
                             <a href="{{ url_for('purchasesReport') }}" class="sidebar-link"><i class="mdi mdi-truck-delivery"></i><span
                                     class="hide-menu"> Purchases Report </span></a>
                         </li>
-                        <!-- <li class="sidebar-item">
+                        <li class="sidebar-item">
                             <a href="{{ url_for('stockReport') }}" class="sidebar-link"><i class="mdi mdi-minecraft"></i><span
                                     class="hide-menu"> Stock Report </span></a>
-                        </li> -->
+                        </li>
                         <li class="sidebar-item">
                             <a href="{{ url_for('expensesReport') }}" class="sidebar-link"><i class="mdi mdi-gas-station"></i><span
                                     class="hide-menu"> Expenses Report </span></a>
@@ -148,28 +148,19 @@
                             Profile</span></a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)"
-                        aria-expanded="false"><i class="mdi mdi-information"></i><span
-                            class="hide-menu">About</span></a>
-                    <ul aria-expanded="false" class="collapse first-level">
-                        <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link"
-                                href="{{ url_for('ourPackages') }}" aria-expanded="false"><i
-                                    class="mdi mdi-cube-outline"></i><span class="hide-menu">Our
-                                    Packages</span></a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link"
-                                href="{{ url_for('download') }}" aria-expanded="false"><i
-                                    class="mdi mdi-minecraft"></i><span class="hide-menu">
-                                    Download App</span></a>
-                        </li>
-                        <!-- <li class="sidebar-item">
-                            <a href="change-log" class="sidebar-link"><i class="mdi mdi-update"></i><span
-                                    class="hide-menu">Change Log</span></a>
-                        </li> -->
-                    </ul>
+                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{ url_for('ourPackages') }}" 
+                        aria-expanded="false"><i class="mdi mdi-cube-outline"></i><span class="hide-menu">Our
+                            Packages</span></a>
                 </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{ url_for('download') }}" 
+                        aria-expanded="false"><i class="mdi mdi-minecraft"></i><span class="hide-menu">
+                            Download App</span></a>
+                </li>
+                <!-- <li class="sidebar-item">
+                    <a href="change-log" class="sidebar-link"><i class="mdi mdi-update"></i><span
+                            class="hide-menu">Change Log</span></a>
+                </li> -->
                 <li class="sidebar-item">
                     <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{ url_for('logout') }}"
                         aria-expanded="false" onclick="localStorage.clear();"><i class="mdi mdi-logout"></i><span

@@ -17,7 +17,7 @@ class Bills():
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
-            SELECT id, total, paid, TO_CHAR(created_at + INTERVAL '3 HOURS', 'YYYY-MM-DD HH24:MI') AS created_at, customer_id, created_by
+            SELECT id, total, paid, DATE(created_at) AS created_at, customer_id, created_by
             FROM bills
             WHERE (DATE(created_at) BETWEEN DATE(%s) AND DATE(%s)) AND shop_id = %s AND total != 'Nan'
             """
@@ -87,20 +87,15 @@ class Bills():
             else:
                 return None
             
-    def add(self, customer_id, amount_paid):
+    def add(self, customer_id, bill_amount):
         self.db.ensure_connection()            
         query = """
-        WITH temp_bill AS(
-            SELECT %s AS customer_id, SUM(price*qty) AS total, %s AS paid, %s AS shop_id, NOW() AS created_at, %s AS created_by
-            FROM bill_entries
-            WHERE shop_id = %s AND bill_id=0 AND created_by = %s
-        )
         INSERT INTO bills(customer_id, total, paid, shop_id, created_at, created_by) 
-        SELECT * FROM temp_bill
+        VALUES(%s, %s, 0, %s, NOW(), %s)
         RETURNING id
         """
 
-        params = (customer_id, amount_paid, current_user.shop.id, current_user.id, current_user.shop.id, current_user.id)
+        params = (customer_id, bill_amount, current_user.shop.id, current_user.id)
         try:
             with self.db.conn.cursor() as cursor:
                 cursor.execute(query, tuple(params))

@@ -35,6 +35,7 @@
             {% set sold = stock.yesterday_opening+stock.yesterday_additions - stock.opening %}
             {% set total = sold * stock.selling_price %}
             {% set ns.total = ns.total + (total if sold>0 else 0) %}
+            {% if sold!=0 %}
             <style>
                 input {
                     width: 100%;
@@ -46,21 +47,22 @@
             <tr>                 
                 <td >{{ stock.name }}</td> 
                 <td>{{ stock.category_name }}</td> 
-                <td class="text-center">{{ helper.format_number(stock.yesterday_opening) }}</td> 
-                <td class="text-center">{{ helper.format_number(stock.yesterday_additions) }}</td> 
-                <td class="text-center">{{ helper.format_number(stock.yesterday_opening+stock.yesterday_additions) }}</td> 
-                <td class="text-center">{{ helper.format_number(stock.opening) }}</td> 
-                <td class="text-center">{{ helper.format_number(sold) }}</td> 
+                <td class="text-center">{{ helper.format_number_with_commas(stock.yesterday_opening) }}</td> 
+                <td class="text-center">{{ helper.format_number_with_commas(stock.yesterday_additions) }}</td> 
+                <td class="text-center">{{ helper.format_number_with_commas(stock.yesterday_opening+stock.yesterday_additions) }}</td> 
+                <td class="text-center">{{ helper.format_number_with_commas(stock.opening) }}</td> 
+                <td class="text-center">{{ helper.format_number_with_commas(sold) }}</td> 
 
-                <td class="text-center">{{ helper.format_number(stock.selling_price) }}</td> 
-                <td class="text-center">{{ helper.format_number(total) }}</td> 
+                <td class="text-center">{{ helper.format_number_with_commas(stock.selling_price) }}</td> 
+                <td class="text-center">{{ helper.format_number_with_commas(total) }}</td> 
             </tr>
+            {% endif %}
             {% endfor %}
         </tbody>        
         <tfoot>
             <tr>
                 <th class="text-right" colspan="8">TOTAL SALES</th>
-                <th class="text-center">{{ helper.format_number(ns.total) }}</th>
+                <th class="text-center">{{ helper.format_number_with_commas(ns.total) }}</th>
             </tr>
         </tfoot>
     </table>

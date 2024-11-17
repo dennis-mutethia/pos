@@ -60,9 +60,9 @@ class CustomerBills():
                 
         if request.method == 'POST':       
             if request.form['action'] == 'assign_customer_bill':
-                bill_id = int(request.form['bill_id'])
+                bill_amount = int(request.form['bill_amount'])     
                 customer_id = int(request.form['customer_id'])              
-                Bills(self.db).assign_customer(bill_id, customer_id)    
+                Bills(self.db).add(customer_id, bill_amount)
                    
             if request.form['action'] == 'edit':
                 bill_id = int(request.form['bill_id'])           

@@ -9,85 +9,35 @@ from utils.inventory.products_categories import ProductsCategories
 class StockTake():
     def __init__(self, db): 
         self.db = db
-                    
-    def load(self, stock_date):
-        self.db.ensure_connection()
-        
-        query = """         
-        WITH sales AS(
-            SELECT stock_id, SUM(qty) sold
-            FROM bill_entries
-            WHERE shop_id = %s AND bill_id>0
-            GROUP BY stock_id
-        ),
-        p AS (
-            SELECT id, name, category_id, purchase_price, selling_price
-            FROM products 
-            WHERE shop_id = %s
-        ),
-        yesterday AS (
-            SELECT product_id, name, category_id, purchase_price, selling_price, opening, additions, COALESCE(sold, 0) AS sold
-            FROM stock
-            LEFT JOIN sales ON sales.stock_id = stock.id
-            WHERE DATE(stock_date) = DATE(%s) - 1
-        ),
-        today AS (
-            SELECT DATE(%s) AS stock_date, 
-                COALESCE(yesterday.product_id, p.id) AS product_id, 
-                COALESCE(yesterday.name, p.name) AS name, 
-                COALESCE(yesterday.category_id, p.category_id) AS category_id,
-                COALESCE(yesterday.purchase_price, p.purchase_price) AS purchase_price,
-                COALESCE(yesterday.selling_price, p.selling_price) AS selling_price,
-                COALESCE((yesterday.opening+yesterday.additions-yesterday.sold), 0) AS opening,
-                0 AS additions,
-                %s AS shop_id, NOW() AS created_at, %s AS created_by              
-            FROM p
-            LEFT JOIN yesterday ON yesterday.product_id = p.id
-        )
-        INSERT INTO stock (stock_date, product_id, name, category_id, purchase_price, selling_price, opening, additions, shop_id, created_at, created_by) 
-        SELECT * FROM today
-        ON CONFLICT (stock_date, product_id, shop_id) DO NOTHING
-        """
-        params = [current_user.shop.id, current_user.shop.id, stock_date, stock_date, current_user.shop.id, current_user.id]
-
-        with self.db.conn.cursor() as cursor:           
-            cursor.execute(query, tuple(params))
-            self.db.conn.commit()
-    
+     
     def fetch(self, stock_date, search, category_id, in_stock=0, page=0):
         self.db.ensure_connection()
     
         query = """
-        WITH sales AS(
-            SELECT stock_id, SUM(qty) sold
-            FROM bill_entries
-            WHERE shop_id = %s AND bill_id>0
-            GROUP BY stock_id
-        ),
-        all_stock AS(
-            SELECT id, stock_date, product_id, name, category_id, opening, additions, COALESCE(sold, 0) AS sold, selling_price, purchase_price
+        WITH all_stock AS(
+            SELECT id, stock_date, product_id, name, category_id, opening, additions, selling_price, purchase_price
             FROM stock 
-            LEFT JOIN sales ON sales.stock_id = stock.id
             WHERE shop_id = %s
         ),  
         yesterday AS (
-            SELECT product_id, opening, additions, sold
+            SELECT product_id, opening, additions
             FROM all_stock
             WHERE DATE(stock_date) = DATE(%s) - 1
         ), 
         today AS(
-            SELECT id, product_id, name, category_id, COALESCE(opening, 0) AS opening, COALESCE(additions,0) AS additions, sold, selling_price, purchase_price
+            SELECT id, product_id, name, category_id, COALESCE(opening, 0) AS opening, COALESCE(additions,0) AS additions, selling_price, purchase_price
             FROM all_stock
             WHERE DATE(stock_date) = DATE(%s)
         )
-        SELECT today.id, today.product_id, today.name, product_categories.name, COALESCE(yesterday.opening,0), COALESCE(yesterday.additions,0), COALESCE(yesterday.sold,0), 
-            today.opening, today.additions, today.sold, today.selling_price, today.purchase_price
+        SELECT today.id, today.product_id, today.name, product_categories.name, COALESCE(yesterday.opening,0), COALESCE(yesterday.additions,0),
+            today.opening, today.additions, today.selling_price, today.purchase_price
         FROM today
         INNER JOIN product_categories ON product_categories.id = today.category_id
         LEFT JOIN yesterday ON yesterday.product_id = today.product_id            
         WHERE (today.opening + today.additions) >= %s
+        ORDER BY product_categories.name, today.name
         """
-        params = [current_user.shop.id, current_user.shop.id, stock_date, stock_date, in_stock]
+        params = [current_user.shop.id, stock_date, stock_date, in_stock]
 
         if search:
             query += " AND today.name LIKE %s"
@@ -108,7 +58,7 @@ class StockTake():
             data = cursor.fetchall()
             stocks = []
             for stock in data:
-                stocks.append(Stock(stock[0], stock[1], stock[2], stock[3], stock[4], stock[5], stock[6], stock[7], stock[8], stock[9], stock[10], stock[11]))
+                stocks.append(Stock(stock[0], stock[1], stock[2], stock[3], stock[4], stock[5], stock[6], stock[7], stock[8], stock[9]))
 
             return stocks
         

@@ -46,7 +46,7 @@ app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_REDIS'] = Redis(
     host=os.getenv('REDIS_HOSTNAME'),
     port=os.getenv('REDIS_PORT'),
-    #password=os.getenv('REDIS_PASSWORD'),
+    password=os.getenv('REDIS_PASSWORD'),
     ssl=False if os.getenv('REDIS_SSL') in ['False', '0'] else True
 )
 

@@ -83,8 +83,6 @@ class Customers():
             """
             cursor.execute(query, (id,))
             self.db.conn.commit()
-        
-            
     def __call__(self):        
         if request.method == 'POST':       
             if request.form['action'] == 'add':
@@ -92,12 +90,11 @@ class Customers():
                 phone = request.form['phone']
                 self.add(name, phone)   
                 
-            elif request.form['action'] == 'update':
+            elif request.form['action'] == 'edit':
                 id = request.form['id']
                 name = request.form['name']
                 phone = request.form['phone'] 
                 self.update(id, name, phone)
-                return 'success'
                    
             elif request.form['action'] == 'delete':
                 id = request.form['customer_id']

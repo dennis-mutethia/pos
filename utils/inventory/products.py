@@ -140,19 +140,19 @@ class Products():
                 product_id = self.add(name, purchase_price, selling_price, category_id_new)
                 self.add_stock(product_id, name, category_id_new, purchase_price, selling_price,  in_stock)
             
-            elif request.form['action'] == 'update':
+            elif request.form['action'] == 'edit':
                 id = request.form['id']
-                category_id_new = request.form['category_id']
+                product_id = request.form['product_id']
+                category_id_new = request.form['category_id_new']
                 name = request.form['name']    
                 purchase_price = request.form['purchase_price']
                 selling_price = request.form['selling_price']
                 in_stock = request.form['in_stock']
-                product_id = self.update_stock(id, name, category_id_new, purchase_price, selling_price, in_stock) 
+                self.update_stock(id, name, category_id_new, purchase_price, selling_price, in_stock) 
                 self.update(product_id, name, category_id_new, purchase_price, selling_price)
-                return 'success'
                 
             elif request.form['action'] == 'delete':
-                id = request.form['item_id']
+                id = request.form['id']
                 self.delete(id) 
                 StockTake(self.db).delete(id) 
         
@@ -160,4 +160,4 @@ class Products():
         products = StockTake(self.db).fetch(current_date, search, category_id)
         return render_template('inventory/products.html', helper=Helper(), 
                                product_categories=product_categories, products=products, 
-                               page_title='Product Categories', search=search, category_id=category_id)
+                               page_title='Products', search=search, category_id=category_id)

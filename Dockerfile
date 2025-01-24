@@ -11,4 +11,7 @@ COPY requirements.txt .
 #update pip & install dependencies
 RUN pip install --upgrade pip \
     && pip install -r requirements.txt
-    
+
+COPY . . 
+
+ENTRYPOINT ["python", "app.py" ]

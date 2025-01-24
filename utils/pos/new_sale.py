@@ -72,7 +72,7 @@ class NewSale():
         for bill_entry in bill_entries:
             grandtotal = grandtotal + (bill_entry.price * bill_entry.qty) 
             
-        return render_template('pos/new-sale.html', helper=Helper(),
+        return render_template('pos/new-sale.html', helper=Helper(), menu='pos', sub_menu='new_sale',
                                product_categories=product_categories, stocks=stocks, customers=customers, in_stock=in_stock,
                                bill_entries=bill_entries, grandtotal=grandtotal, payment_modes=payment_modes, bill_id=bill_id, 
                                page_title='POS > New Sale', search=search, category_id=category_id, page=page, prev_page=prev_page, next_page=next_page,

@@ -71,7 +71,7 @@ class SalesReport():
             grand_total = grand_total + total
         
         product_categories = ProductsCategories(self.db).fetch()
-        return render_template('reports/sales-report.html', page_title='Reports > Sales', helper=Helper(),
+        return render_template('reports/sales-report.html', page_title='Reports > Sales', helper=Helper(), menu='reports', sub_menu='sales_report',
                                sales=sales, grand_total=grand_total, product_categories=product_categories, category_id=category_id,
                                current_date=current_date, from_date=from_date, to_date=to_date,
                                 page=page, prev_page=prev_page, next_page=next_page)

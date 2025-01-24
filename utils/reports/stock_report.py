@@ -85,7 +85,7 @@ class StockReport():
             grand_total = grand_total + total
        
         product_categories = ProductsCategories(self.db).fetch()
-        return render_template('reports/stock-report.html', page_title='Reports > Stock', helper=Helper(),
+        return render_template('reports/stock-report.html', page_title='Reports > Stock', helper=Helper(), menu='reports', sub_menu='stock_report',
                                stocks=stocks, grand_total=grand_total, product_categories=product_categories, category_id=category_id,
                                current_date=current_date, from_date=from_date, to_date=to_date,
                                 page=page, prev_page=prev_page, next_page=next_page)

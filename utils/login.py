@@ -1,3 +1,4 @@
+import random
 from datetime import datetime
 from flask import redirect, render_template, request, url_for
 from flask_login import login_user
@@ -11,23 +12,21 @@ class Login():
         self.db = db
            
     def login(self):  
-        if request.method == 'POST':
-            if request.form['action'] == 'login':
-                phone = request.form['phone']
-                password = request.form['password']   
-                user = SystemUsers(self.db).authenticate(phone, password)
-                
-                if user:        
-                    login_user(user)
-                    StockTake(self.db).load(datetime.now().strftime('%Y-%m-%d'))
-                    if user.user_level.id in [0, 1]:               
-                        return redirect(url_for('dashboard'))
-                    else:
-                        return redirect(url_for('posNewSale')) 
-                else: 
-                    error = 'Login failed! Phone & Password do not match or Phone does not exist.'
-                    shop_types = MyShops(self.db).fetch_shop_types()
-                    return render_template('login.html', shop_types=shop_types, error=error)
+        phone = request.form['phone']
+        password = request.form['password']   
+        user = SystemUsers(self.db).authenticate(phone, password)
+        
+        if user:        
+            login_user(user)
+            StockTake(self.db).load(datetime.now().strftime('%Y-%m-%d'))
+            if user.user_level.id in [0, 1]:               
+                return redirect(url_for('dashboard'))
+            else:
+                return redirect(url_for('posNewSale')) 
+        else: 
+            error = 'Login failed! Phone & Password do not match or Phone does not exist.'
+            shop_types = MyShops(self.db).fetch_shop_types()
+            return render_template('login.html', shop_types=shop_types, error=error)
     
     def register(self):           
         company_name = request.form['company_name']
@@ -54,13 +53,24 @@ class Login():
         login_user(user)
         StockTake(self.db).load(current_date) 
         return redirect(url_for('dashboard'))         
-      
+    
+    def reset_password(self):
+        phone = request.form['phone']
+        password = str(random.randint(1000, 9999))
+        print(password)
+        ## send SMS
+        SystemUsers(self.db).reset_password(phone, password, 0)
+        shop_types = MyShops(self.db).fetch_shop_types()
+        return render_template('login.html', shop=None, shop_types=shop_types, error=None)
+     
     def __call__(self):
         if request.method == 'POST':
             if request.form['action'] == 'register':
                 return self.register()
             elif request.form['action'] == 'login':
                 return self.login()
+            elif request.form['action'] == 'reset_password':
+                return self.reset_password()
 
         shop_types = MyShops(self.db).fetch_shop_types()
         return render_template('login.html', shop=None, shop_types=shop_types, error=None)

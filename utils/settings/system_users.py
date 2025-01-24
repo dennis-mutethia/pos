@@ -122,7 +122,7 @@ class SystemUsers():
             cursor.execute(query, tuple(params))
             self.db.conn.commit()
             
-    def reset_password(self, phone):
+    def reset_password(self, phone, password, updated_by):
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
@@ -130,7 +130,7 @@ class SystemUsers():
             SET password = %s, updated_by = %s, updated_at=NOW()   
             WHERE phone = %s         
             """
-            params = [Helper().hash_password(phone), current_user.id, phone]            
+            params = [Helper().hash_password(password), updated_by, phone]            
             cursor.execute(query, tuple(params))
             self.db.conn.commit()
             
@@ -194,7 +194,7 @@ class SystemUsers():
                 
             if request.form['action'] == 'reset_password':
                 phone = request.form['phone']                    
-                self.reset_password(phone)                 
+                self.reset_password(phone, phone, current_user.id)                 
                 
             elif request.form['action'] == 'delete':
                 user_id = request.form['id']

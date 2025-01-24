@@ -184,8 +184,8 @@ class SystemUsers():
                 shop_id = request.form['shop_id']     
                 self.add(name, phone, user_level_id, shop_id, password=phone)
                    
-            if request.form['action'] == 'update':
-                user_id = request.form['user_id']
+            if request.form['action'] == 'edit':
+                user_id = request.form['id']
                 name = request.form['name']
                 phone = request.form['phone']      
                 user_level_id = request.form['user_level_id']     
@@ -197,7 +197,7 @@ class SystemUsers():
                 self.reset_password(phone)                 
                 
             elif request.form['action'] == 'delete':
-                user_id = request.form['user_id']
+                user_id = request.form['id']
                 self.delete(user_id)
                 
                 

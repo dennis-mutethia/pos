@@ -20,7 +20,7 @@ class StatementOfAccount():
                 GROUP BY date
             ),            
             purchases AS(
-                SELECT stock_date,0,SUM(additions*purchase_price), 0
+                SELECT stock_date AS date,0,SUM(additions*purchase_price), 0
                 FROM stock
                 WHERE stock_date BETWEEN DATE(%s) AND DATE(%s) AND shop_id = %s
                 GROUP BY stock_date
@@ -36,8 +36,10 @@ class StatementOfAccount():
                 UNION SELECT * FROM purchases
                 UNION SELECT * FROM expenses
             )
-            SELECT * FROM final 
-            ORDER BY date ASC, sales DESC, purchases DESC, expenses DESC
+            SELECT date, MAX(sales) AS sales, MAX(purchases) AS purchases, MAX(expenses) AS expenses
+            FROM final 
+            GROUP BY date
+            ORDER BY date ASC
             """
             params = [
                 from_date, to_date, current_user.shop.id,

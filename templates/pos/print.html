@@ -61,7 +61,7 @@
     </style>
 </head>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- <script async src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script> -->
 
 <body class="skin-blue layout-boxed">
     <div class="content">
@@ -107,7 +107,7 @@
                     <div style="display: flex; justify-content: center;">
                         <div id="qr_code"></div>
                     </div>
-                    <script type="text/javascript">
+                    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
                         setInterval(function () {
                             window.close();
                         }, 10000);

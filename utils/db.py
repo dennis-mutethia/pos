@@ -154,14 +154,14 @@ class Db():
         self.ensure_connection()
         with self.conn.cursor() as cursor:
             query = """
-            SELECT id, name, amount, description, color, validity
+            SELECT id, name, amount, description, color, validity, pay
             FROM packages 
             WHERE id = %s 
             """
             cursor.execute(query, (id,))
             data = cursor.fetchone()
             if data:
-                return Package(data[0], data[1], data[2], data[3], data[4], data[5])
+                return Package(data[0], data[1], data[2], data[3], data[4], data[5], data[6])
             else:
                 return None   
             

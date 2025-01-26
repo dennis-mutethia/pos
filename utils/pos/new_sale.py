@@ -35,6 +35,7 @@ class NewSale():
         page = 1   
         in_stock = 0
         bill_id = 0 
+        toastr_message = None
         
         if request.method == 'GET':   
             try:    
@@ -47,8 +48,9 @@ class NewSale():
             except Exception as e:
                 print(f"An error occurred: {e}")
         
-        if request.method == 'POST':          
-            if request.form['action'] == 'submit_bill':
+        if request.method == 'POST':  
+            action = request.form['action']        
+            if action == 'submit_bill' or action == 'save_bill':
                 customer_id = int(request.form['customer_id'])
                 amount_paid = float(request.form['amount_paid'])
                 payment_mode_id = int(request.form['payment_mode_id'])
@@ -56,8 +58,11 @@ class NewSale():
                 self.update_bill_entries(bill_id)
                 if amount_paid>0:
                     Payments(self.db).add(bill_id, amount_paid, payment_mode_id)
+                if action == 'save_bill':
+                    bill_id = 0
+                    toastr_message = 'Bill Submitted & Saved Successfully'
 
-            elif request.form['action'] == 'clear':
+            elif action == 'clear':
                 BillEntries(self.db).clear()
         
         current_date = datetime.now().strftime('%Y-%m-%d')
@@ -72,7 +77,7 @@ class NewSale():
         for bill_entry in bill_entries:
             grandtotal = grandtotal + (bill_entry.price * bill_entry.qty) 
             
-        return render_template('pos/new-sale.html', helper=Helper(), menu='pos', sub_menu='new_sale',
+        return render_template('pos/new-sale.html', helper=Helper(), menu='pos', sub_menu='new_sale', toastr_message=toastr_message,
                                product_categories=product_categories, stocks=stocks, customers=customers, in_stock=in_stock,
                                bill_entries=bill_entries, grandtotal=grandtotal, payment_modes=payment_modes, bill_id=bill_id, 
                                page_title='POS > New Sale', search=search, category_id=category_id, page=page, prev_page=prev_page, next_page=next_page,

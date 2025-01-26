@@ -124,6 +124,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="submit" id="save_bill" name="action" value="save_bill"
+                        class="btn btn-warning">Save Only</button>
                     <button type="submit" id="submit_bill" name="action" value="submit_bill"
                         class="btn btn-success">Save & Print</button>
                 </div>
@@ -170,6 +172,11 @@
 
         });
         $("#search").focus();
+        
+        {% if toastr_message %}
+        toastr.success('{{ toastr_message }}');
+        {% endif %}
+
     });
 
     function applyFilter(page) {

@@ -72,7 +72,7 @@
             </tr>
             <tr>
                 <td colspan="2"><b><small>VATABLE AMOUNT</small></b></td>
-                <td colspan="2" class="text-center"><small>{{ helper.format_number_with_commas(bill.total / 1.1) }}</small></td>
+                <td colspan="2" class="text-center"><small>{{ helper.format_number_with_commas(bill.total - (0.16 * bill.total / 1.16)) }}</small></td>
             </tr>
             <tr>
                 <td colspan="2"><b><small>VAT @ 16%</small></b></td>

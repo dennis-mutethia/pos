@@ -1,9 +1,10 @@
 import os
-from flask import Flask, redirect, render_template, url_for
+from flask import Flask, redirect, render_template, url_for, session
 from flask_login import LoginManager, logout_user, login_required
 from dotenv import load_dotenv
 from flask_session import Session
 from redis import Redis
+from datetime import datetime, timedelta
 
 from utils.account_profile import AccountProfile
 from utils.our_packages import OurPackages
@@ -53,6 +54,20 @@ app.config['SESSION_COOKIE_SECURE'] = True  # Set to True if using HTTPS on Verc
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
+
+# Function to calculate seconds until midnight
+def seconds_until_midnight():
+    now = datetime.now()
+    midnight = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+    return int((midnight - now).total_seconds())
+
+# Set session lifetime before each request
+@app.before_request
+def set_session_lifetime():
+    lifetime = seconds_until_midnight()
+    app.config['PERMANENT_SESSION_LIFETIME'] = lifetime
+    session.permanent = True  # Make session permanent with custom lifetime
+        
 Session(app)
 login_manager = LoginManager()
 login_manager.init_app(app)

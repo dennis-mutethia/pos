@@ -276,6 +276,10 @@ def ourPackages():
 def download():
     return render_template('download.html', page_title='Download > Android App')
 
+@app.route('/zohoverify/verifyforzoho.html', methods=['GET'])
+def verifyforzoho():
+    return render_template('zohoverify/verifyforzoho.html')
+
 if __name__ == '__main__':
     debug_mode = os.getenv('IS_DEBUG', 'False').lower() in ['true', '1', 't']
     app.run(debug=debug_mode)

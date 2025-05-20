@@ -11,7 +11,7 @@ class StockTake():
         self.db = db
                     
     def load(self, stock_date):
-        self.db.create_current_month_partition()
+        # self.db.create_current_month_partition()
         
         self.db.ensure_connection()
         

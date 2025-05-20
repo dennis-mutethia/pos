@@ -42,7 +42,7 @@ class NewSale():
                 search = request.args.get('search', '')
                 category_id = int(request.args.get('category_id', 0))
                 page = int(request.args.get('page', 1))
-                in_stock = int(request.args.get('in_stock', 0))
+                in_stock = int(request.args.get('in_stock', 1))
             except ValueError as e:
                 print(f"Error converting category_id: {e}")
             except Exception as e:

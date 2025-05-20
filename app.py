@@ -41,7 +41,7 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000  # One year in seconds
 
 # Load environment variables from .env file
 load_dotenv()
-app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_REDIS'] = Redis(
     host=os.getenv('REDIS_HOSTNAME'),

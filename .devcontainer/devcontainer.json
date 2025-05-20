@@ -1,6 +1,6 @@
 {
     "name": "POS",
-    "runServices": ["app", "db", "redis"],
+    "runServices": ["app"],
     "service": "app",
     "workspaceFolder": "/workspace",
     "customizations": {
@@ -17,5 +17,5 @@
         }
     },
     "dockerComposeFile": ["../docker-compose.yml"],
-    "forwardPorts": [5000, 5432, 6379]
+    "forwardPorts": [5000]
 }

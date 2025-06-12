@@ -18,7 +18,7 @@ class CustomerBills():
             query = """
             SELECT id, total-paid bal
             FROM bills
-            WHERE total>paid AND customer_id=%s
+            WHERE total!='Nan' AND total>paid AND customer_id=%s
             ORDER BY id
             """
             params = [customer_id]

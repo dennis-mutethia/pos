@@ -247,7 +247,7 @@
         let amt = document.getElementById("grand_total").innerHTML;
         document.getElementById("bill_amount").innerHTML = amt;
         document.getElementById("total_bill_amount").value = amt.replaceAll(',', '');
-        document.getElementById("amount_paid").value = amt.replaceAll(',', '');
+        document.getElementById("amount_paid").value = 0; // amt.replaceAll(',', '');
         $("#customer_id").val($("#temp_customer_id").val());
     }
 

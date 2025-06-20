@@ -69,40 +69,11 @@
             <div class="col-md-2">
                 <!-- Block buttons -->
                 <div class="box">
-                    <div class="box-header text-center text-black text-bold printer-header">
-                        <small class="text-black text-bold">{{ current_user.shop.name }}</small><br />
-                        <small class="text-black">{{ current_user.shop.location }}</small><br />
-                        {% if current_user.shop.phone_1 %}
-                        <small class="text-black"> {{ current_user.shop.phone_1 }}</small><br />
-                        {% endif %}
-                        {% if current_user.shop.phone_2 %}
-                        <small class="text-black"> {{ current_user.shop.phone_2 }}</small><br />
-                        {% endif %}
-                        <small class="text-black">Customer Name: {{ bill.customer.name }}</small><br />
-                        <small class="text-black">Customer Phone: {{ bill.customer.phone }}</small><br />
-                        {% if current_user.shop.till_no %}
-                        <small class="text-black text-bold">
-                            MPESA BUY GOODS TILL: {{ current_user.shop.till_no }}
-                        </small><br />
-                        {% endif %}
-                        {% if current_user.shop.paybill %}
-                        <small class="text-black text-bold">
-                            MPESA PAYBILL: {{ current_user.shop.paybill }} <br />
-                            ACCOUNT NO.: {{ current_user.shop.account_no }}
-                        </small><br />
-                        {% endif %}
-                    </div>
-
+                    
+                    {% include 'pos/print-header.html' %}
                     {% include 'pos/bill-details.html' %}
+                    {% include 'pos/print-footer.html' %}
 
-                    <div id="bill-footer" class="box-footer text-center">
-                        <small>
-                            Bill No: {{ bill.id }}<br />
-                            Bill Created On: {{ bill.created_at }}<br />
-                            Served By: {{ bill.user.name }}<br />
-                            WELCOME!!!<br />
-                        </small>
-                    </div>
                     {% if show_vat == 1 and bill.paid > 0 %}
                     <div style="display: flex; justify-content: center;">
                         <div id="qr_code"></div>

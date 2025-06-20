@@ -1,0 +1,32 @@
+<style>
+    #table_print_footer table,
+    #table_print_footer thead,
+    #table_print_footer tbody,
+    #table_print_footer tr,
+    #table_print_footer td,
+    #table_print_footer th {
+        color: black;
+        width: 100%;
+    }
+</style>
+<div id="print-footer" class="box-body row text-center">
+    <table id="table_print_footer" margin="1%" width="99%" class="table table-condensed" style="color: black;">
+        <thead>
+            <tr>
+                <th class="text-center"><small><small class="text-black text-bold">Bill No: {{ bill.id }}</small></th>
+            </tr>
+            <tr>
+                <th class="text-center"><small class="text-black">Bill Created On: {{ bill.created_at }}</small>
+                </th>
+            </tr>
+            <tr>
+                <th class="text-center"><small class="text-black">Served By: {{ bill.user.name }}</small>
+                </th>
+            </tr>
+            <tr>
+                <th class="text-center"><small class="text-black">WELCOME!!!</small>
+                </th>
+            </tr>
+        </thead>
+    </table>
+</div>

@@ -1,0 +1,63 @@
+<style>
+    #table_print_header table,
+    #table_print_header thead,
+    #table_print_header tbody,
+    #table_print_header tr,
+    #table_print_header td,
+    #table_print_header th {
+        color: black;
+        width: 100%;
+    }
+</style>
+<div id="print-header" class="box-body row text-center">
+    <table id="table_print_header" margin="1%" width="99%" class="table table-condensed" style="color: black;">
+        <thead>
+            <tr>
+                <th class="text-center"><small><small class="text-black text-bold">{{
+                            current_user.shop.name }}</small></th>
+            </tr>
+            <tr>
+                <th class="text-center"><small class="text-black">{{ current_user.shop.location }}</small>
+                </th>
+            </tr>
+            {% if current_user.shop.phone_1 %}
+            <tr>
+                <th class="text-center"><small class="text-black"> {{ current_user.shop.phone_1 }}</small>
+                </th>
+            </tr>
+            {% endif %}
+            {% if current_user.shop.phone_2 %}
+            <tr>
+                <th class="text-center"><small class="text-black"> {{ current_user.shop.phone_2 }}</small>
+                </th>
+            </tr>
+            {% endif %}
+            <tr>
+                <th class="text-center"><small class="text-black">Customer Name: {{ bill.customer.name
+                        }}</small></th>
+            </tr>
+            <tr>
+                <th class="text-center"><small class="text-black">Customer Phone: {{ bill.customer.phone
+                        }}</small></th>
+            </tr>
+            {% if current_user.shop.till_no %}
+            <tr>
+                <th class="text-center"><small class="text-black text-bold">
+                        MPESA BUY GOODS TILL: {{ current_user.shop.till_no }}
+                    </small></th>
+            </tr>
+            {% endif %}
+            {% if current_user.shop.paybill %}
+            <tr>
+                <th class="text-center"><small class="text-black text-bold">
+                        MPESA PAYBILL: {{ current_user.shop.paybill }} </small></th>
+            </tr>
+            <tr>
+                <th class="text-center"><small class="text-black text-bold">
+                    ACCOUNT NO.: {{ current_user.shop.account_no }}
+                </small></th>
+            </tr>
+            {% endif %}
+        </thead>
+    </table>
+</div>

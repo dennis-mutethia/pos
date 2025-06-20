@@ -51,6 +51,7 @@
             <tr>
                 <th colspan="2"><small>DATETIME</small></th>
                 <th><small>MODE</small></th>
+                <th><small>PAID BY</small></th>
                 <th><small>AMOUNT</small></th>
             </tr>
         </thead>
@@ -59,6 +60,7 @@
             <tr style="color: black;">
                 <td colspan="2"><small>{{ payment.created_at }}</small></td>
                 <td><small>{{ payment.payment_mode.name }}</small></td>
+                <td><small>{{ payment.user.name }}</small></td>
                 <td><small>{{ helper.format_number_with_commas(payment.amount) }}</td>
             </tr>
             {% endfor %}

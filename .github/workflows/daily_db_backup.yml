@@ -1,4 +1,4 @@
-name: backup db
+name: daily db backup
 
 on:
   schedule:

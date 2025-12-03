@@ -141,8 +141,8 @@ CREATE TABLE IF NOT EXISTS stock (
   created_by INT,
   updated_at TIMESTAMP,
   updated_by INT,
-  PRIMARY KEY (stock_date, product_id, shop_id) -- Includes the partitioning column
-) PARTITION BY RANGE (stock_date);
+  UNIQUE(stock_date, product_id, shop_id)
+);
 
 
 -- Table structure for table bills

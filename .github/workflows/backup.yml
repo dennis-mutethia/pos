@@ -1,0 +1,26 @@
+name: backup db
+
+on:
+  schedule:
+    - cron: '0 1 * * *'  # This runs the job every day at 1am UTC --> 4am EAT
+    
+  workflow_dispatch:
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    steps:          
+      - name: install dependencies
+        run: |
+          apt update
+          apt install postgresql-client-16
+      
+      - name: perform backup
+        env:
+            DATABASE_URL_PRIMARY: ${{ secrets.DATABASE_URL_PRIMARY }} 
+            DATABASE_URL_SECONDARY: ${{ secrets.DATABASE_URL_SECONDARY }} 
+        run: |
+          pg_dump "$DATABASE_URL_PRIMARY" --clean --if-exists --quote-all-identifiers --no-owner --no-privileges > dump.sql
+          psql -d "$DATABASE_URL_SECONDARY" -f dump.sql
+
+      

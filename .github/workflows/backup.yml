@@ -11,9 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:          
       - name: install dependencies
-        run: |
-          apt update
-          apt install postgresql-client-16
+        run: sudo apt update && apt install postgresql-client-16 -y
       
       - name: perform backup
         env:

@@ -18,7 +18,7 @@ class Login():
         
         if user:        
             login_user(user)
-            StockTake(self.db).load(datetime.now().strftime('%Y-%m-%d'))
+            #StockTake(self.db).load(datetime.now().strftime('%Y-%m-%d'))
             if user.user_level.id in [0, 1]:               
                 return redirect(url_for('dashboard'))
             else:

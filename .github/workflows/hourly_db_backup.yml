@@ -1,8 +1,8 @@
-name: daily db backup
+name: hourly db backup
 
 on:
   schedule:
-    - cron: '0 1 * * *'  # This runs the job every day at 1am UTC --> 4am EAT
+    - cron: '0 * * * *'  # This runs the job every hour
     
   workflow_dispatch:
 

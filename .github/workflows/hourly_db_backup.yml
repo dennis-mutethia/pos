@@ -14,13 +14,13 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y curl ca-certificates gnupg
-          install -d /usr/share/postgresql-common/pgdg
+          sudo install -d /usr/share/postgresql-common/pgdg
           curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
           . /etc/os-release
-          sh -c "echo 'deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main' > /etc/apt/sources.list.d/pgdg.list"
+          sudo sh -c "echo 'deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main' > /etc/apt/sources.list.d/pgdg.list"
           sudo apt update
           # Now install the client
-          apt install postgresql-client-17 -y
+          sudo apt install postgresql-client-17 -y
 
           # use if primary is neon, secondary is supabase
           # sudo apt update

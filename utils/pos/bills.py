@@ -14,6 +14,10 @@ class Bills():
         self.db = db
             
     def fetch(self, from_date, to_date, bill_status, customer_id=0, page=0):
+        all_customers =  Customers(self.db).fetch()
+        all_users = SystemUsers(self.db).fetch()                  
+        all_payments = Payments(self.db).fetch()    
+        
         self.db.ensure_connection()
         with self.db.conn.cursor() as cursor:
             query = """
@@ -43,9 +47,9 @@ class Bills():
             data = cursor.fetchall()
             bills = []
             for datum in data:                
-                customer = Customers(self.db).fetch_by_id(datum[4])
-                user = SystemUsers(self.db).get_by_id(datum[5])  
-                payments = Payments(self.db).fetch_by_bill_id(datum[0])         
+                customer = next((c for c in all_customers if c.id == datum[4]), None)
+                user = next((u for u in all_users if u.id == datum[5]), None)
+                payments = [p for p in all_payments if p.bill_id == datum[0]]       
                 bills.append(Bill(datum[0], datum[1], datum[2], datum[3], customer, user, payments))
 
             return bills 

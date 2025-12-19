@@ -2,38 +2,24 @@ name: hourly db backup
 
 on:
   schedule:
-    - cron: '0 * * * *'  # This runs the job every hour
-    
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 jobs:
   execute:
     runs-on: ubuntu-latest
     steps:          
-      - name: install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y curl ca-certificates gnupg
-          sudo install -d /usr/share/postgresql-common/pgdg
-          curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
-          . /etc/os-release
-          sudo sh -c "echo 'deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main' > /etc/apt/sources.list.d/pgdg.list"
-          sudo apt update
-          # Now install the client
-          sudo apt install postgresql-client-17 -y
+      - name: Install PostgreSQL client
+        uses: tj-actions/install-postgresql@v3
+        with:
+          postgresql-version: 17
 
-          # use if primary is neon, secondary is supabase
-          # sudo apt update
-          # sudo apt install postgresql-client-17 -y
-      
       - name: dump
         env:
             DATABASE_URL_PRIMARY: ${{ secrets.DATABASE_URL_PRIMARY }} 
-        run: pg_dump "$DATABASE_URL_PRIMARY" --schema=public --clean --if-exists --quote-all-identifiers --no-owner --no-privileges -Fc > dump.sql
-      
+        run: pg_dump "$DATABASE_URL_PRIMARY" --schema=public --clean --if-exists --quote-all-identifiers --no-owner --no-privileges -Fc > dump.custom
+
       - name: restore
         env:
             DATABASE_URL_SECONDARY: ${{ secrets.DATABASE_URL_SECONDARY }} 
-        run: pg_restore -d "DATABASE_URL_SECONDARY" --clean --if-exists --no-owner --no-privileges dump.sql
-
-      
+        run: pg_restore -d "$DATABASE_URL_SECONDARY" --clean --if-exists --no-owner --no-privileges dump.custom

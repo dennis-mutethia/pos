@@ -29,11 +29,11 @@ jobs:
       - name: dump
         env:
             DATABASE_URL_PRIMARY: ${{ secrets.DATABASE_URL_PRIMARY }} 
-        run: pg_dump "$DATABASE_URL_PRIMARY" --clean --if-exists --quote-all-identifiers --no-owner --no-privileges > dump.sql
+        run: pg_dump "$DATABASE_URL_PRIMARY" --schema=public --clean --if-exists --quote-all-identifiers --no-owner --no-privileges -Fc > dump.sql
       
       - name: restore
         env:
             DATABASE_URL_SECONDARY: ${{ secrets.DATABASE_URL_SECONDARY }} 
-        run: psql -d "$DATABASE_URL_SECONDARY" -f dump.sql
+        run: pg_restore -d "DATABASE_URL_SECONDARY" --clean --if-exists --no-owner --no-privileges dump.sql
 
       

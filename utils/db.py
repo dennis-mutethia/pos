@@ -7,12 +7,7 @@ from utils.helper import Helper
 
 class Db():
     def __init__(self):
-        #self.database_url = os.getenv('DATABASE_URL')
-        self.database_host = os.getenv('DATABASE_HOST')
-        self.database_port = os.getenv('DATABASE_PORT') 
-        self.database_name = os.getenv('DATABASE_NAME')
-        self.database_user = os.getenv('DATABASE_USER')
-        self.database_password = os.getenv('DATABASE_PASSWORD')
+        self.database_url = os.getenv('DATABASE_URL')
         
         self.conn = None
         self.ensure_connection()
@@ -21,14 +16,7 @@ class Db():
         try:
             # Check if the connection is open
             if self.conn is None or self.conn.closed:
-                #self.conn = psycopg2.connect(self.database_url)
-                self.conn = psycopg2.connect(
-                    user=self.database_user,
-                    password=self.database_password,
-                    host=self.database_host,
-                    port=self.database_port,
-                    dbname=self.database_name
-                )
+                self.conn = psycopg2.connect(self.database_url)
             else:
                 # Test the connection
                 with self.conn.cursor() as cursor:
@@ -36,14 +24,7 @@ class Db():
         except Exception as e:
             print(e)
             # Reconnect if the connection is invalid
-            #self.conn = psycopg2.connect(self.database_url)
-            self.conn = psycopg2.connect(
-                user=self.database_user,
-                password=self.database_password,
-                host=self.database_host,
-                port=self.database_port,
-                dbname=self.database_name
-            )
+            self.conn = psycopg2.connect(self.database_url)
          
                    
     def create_base_tables(self):

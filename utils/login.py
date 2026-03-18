@@ -8,8 +8,9 @@ from utils.settings.my_shops import MyShops
 from utils.settings.system_users import SystemUsers
 
 class Login():
-    def __init__(self, db): 
+    def __init__(self, db, refresh_manager): 
         self.db = db
+        self.refresh_manager = refresh_manager
            
     def login(self):  
         phone = request.form['phone']

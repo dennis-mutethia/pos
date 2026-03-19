@@ -1,8 +1,7 @@
 Flask
 Flask-Login
-flask-session
+flask-jwt-extended
 psycopg2-binary
 python-dotenv
-pytz
-redis 
+pytz 
 user-agents

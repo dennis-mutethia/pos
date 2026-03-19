@@ -1,7 +1,8 @@
 import random
 from datetime import datetime
-from flask import redirect, render_template, request, url_for
+from flask import make_response, redirect, render_template, request, url_for
 from flask_login import login_user
+from flask_jwt_extended import create_access_token, set_access_cookies
 
 from utils.inventory.stock_take import StockTake
 from utils.settings.my_shops import MyShops
@@ -10,6 +11,13 @@ from utils.settings.system_users import SystemUsers
 class Login():
     def __init__(self, db): 
         self.db = db
+
+    def _redirect_with_jwt(self, user, endpoint):
+        """Helper: build a redirect response with JWT cookie attached."""
+        access_token = create_access_token(identity=str(user.id))
+        response = make_response(redirect(url_for(endpoint)))
+        set_access_cookies(response, access_token)
+        return response
            
     def login(self):  
         phone = request.form['phone']
@@ -18,11 +26,10 @@ class Login():
         
         if user:        
             login_user(user)
-            #StockTake(self.db).load(datetime.now().strftime('%Y-%m-%d'))
             if user.user_level.id in [0, 1]:               
-                return redirect(url_for('dashboard'))
+                return self._redirect_with_jwt(user, 'dashboard')
             else:
-                return redirect(url_for('posNewSale')) 
+                return self._redirect_with_jwt(user, 'posNewSale')
         else: 
             error = 'Login failed! Phone & Password do not match or Phone does not exist.'
             shop_types = MyShops(self.db).fetch_shop_types()
@@ -52,7 +59,7 @@ class Login():
                     
         login_user(user)
         StockTake(self.db).load(current_date) 
-        return redirect(url_for('dashboard'))         
+        return self._redirect_with_jwt(user, 'dashboard')
     
     def reset_password(self):
         phone = request.form['phone']

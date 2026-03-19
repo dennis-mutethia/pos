@@ -1,10 +1,9 @@
 import os
-from flask import Flask, redirect, render_template, url_for, session
+from flask import Flask, redirect, render_template, url_for, request, make_response
 from flask_login import LoginManager, logout_user, login_required
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, unset_jwt_cookies
 from dotenv import load_dotenv
-from flask_session import Session
-from redis import Redis
-from datetime import datetime, timedelta
+from datetime import timedelta, datetime, timezone
 
 from utils.account_profile import AccountProfile
 from utils.our_packages import OurPackages
@@ -37,51 +36,33 @@ from utils.settings.my_shops import MyShops
 from utils.settings.system_users import SystemUsers
 
 app = Flask(__name__)
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000  # One year in seconds
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
 
-# Load environment variables from .env file
 load_dotenv()
+
+# JWT Configuration
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config['SESSION_TYPE'] = 'redis'
-app.config['SESSION_REDIS'] = Redis(
-    host=os.getenv('REDIS_HOSTNAME'),
-    port=os.getenv('REDIS_PORT'),
-    password=os.getenv('REDIS_PASSWORD'),
-    ssl=False if os.getenv('REDIS_SSL') in ['False', '0'] else True
-)
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', os.getenv('SECRET_KEY'))
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+app.config['JWT_COOKIE_SECURE'] = True          # HTTPS only (Vercel uses HTTPS)
+app.config['JWT_COOKIE_HTTPONLY'] = True         # No JS access to cookie
+app.config['JWT_COOKIE_SAMESITE'] = 'Lax'
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=8)   # Adjust as needed
+app.config['JWT_COOKIE_CSRF_PROTECT'] = True     # CSRF protection for cookie-based JWT
 
-app.config['SESSION_COOKIE_SECURE'] = True  # Set to True if using HTTPS on Vercel
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-
-
-# Function to calculate seconds until midnight
-def seconds_until_midnight():
-    now = datetime.now()
-    midnight = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
-    return int((midnight - now).total_seconds())
-
-# Set session lifetime before each request
-@app.before_request
-def set_session_lifetime():
-    lifetime = seconds_until_midnight()
-    app.config['PERMANENT_SESSION_LIFETIME'] = lifetime
-    session.permanent = True  # Make session permanent with custom lifetime
-        
-Session(app)
+jwt = JWTManager(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 db = Db()
-#db.create_base_tables()
-         
-# Callback to reload the user object
+
 @login_manager.user_loader
 def load_user(user_id):
     return SystemUsers(db).get_by_id(user_id)
 
-# Routes
+# ── Routes ────────────────────────────────────────────────────────────────────
+
 @app.route('/')
 def index():
     return redirect(url_for('dashboard'))
@@ -93,13 +74,15 @@ def login():
 @app.route('/logout')
 @login_required
 def logout():
+    response = make_response(redirect(url_for('login')))
+    unset_jwt_cookies(response)   # Clears the JWT cookie — stateless "logout"
     logout_user()
-    return redirect(url_for('login'))
+    return response
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
-def dashboard(): 
-    return Dashboard(db)() 
+def dashboard():
+    return Dashboard(db)()
 
 @app.route('/inventory-products-categories', methods=['GET', 'POST'])
 @login_required
@@ -108,7 +91,7 @@ def inventoryProductsCategories():
 
 @app.route('/inventory-products-categories-update', methods=['POST'])
 @login_required
-def inventoryProductsCategoriesUpdate():    
+def inventoryProductsCategoriesUpdate():
     return ProductsCategories(db)()
 
 @app.route('/inventory-products', methods=['GET', 'POST'])
@@ -118,7 +101,7 @@ def inventoryProducts():
 
 @app.route('/inventory-products-update', methods=['POST'])
 @login_required
-def inventoryProductsUpdate():    
+def inventoryProductsUpdate():
     return Products(db)()
 
 @app.route('/inventory-stock-take', methods=['GET', 'POST'])
@@ -128,7 +111,7 @@ def inventoryStockTake():
 
 @app.route('/inventory-stock-take-update', methods=['POST'])
 @login_required
-def inventoryStockTakeUpdate():    
+def inventoryStockTakeUpdate():
     return StockTake(db)()
 
 @app.route('/inventory-purchases', methods=['GET', 'POST'])

@@ -47,7 +47,7 @@ app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 app.config['JWT_COOKIE_SECURE'] = True          # HTTPS only (Vercel uses HTTPS)
 app.config['JWT_COOKIE_HTTPONLY'] = True         # No JS access to cookie
 app.config['JWT_COOKIE_SAMESITE'] = 'Lax'
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=8)   # Adjust as needed
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=365)   # Adjust as needed
 app.config['JWT_COOKIE_CSRF_PROTECT'] = True     # CSRF protection for cookie-based JWT
 
 jwt = JWTManager(app)
